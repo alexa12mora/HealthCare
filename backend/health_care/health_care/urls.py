@@ -1,5 +1,5 @@
 """
-URL configuration for HealthCare project.
+URL configuration for health_care project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -15,8 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
+    path('app/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path("admin/", admin.site.urls),
+    path("medical_reports",include("medical_reports.urls"))
 ]

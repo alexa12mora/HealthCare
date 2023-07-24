@@ -1,0 +1,23 @@
+# Django-related files
+*.log
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+
+# Ignore migrations, but not the __init__.py files that create them
+**/migrations/
+**/migrations/**/__init__.py
+
+# Local development settings
+local_settings.py
+
+# Editor and OS files
+*.swp
+*~
+.DS_Store
+
+# statis files
+
+review_engine/static/*/*
+
