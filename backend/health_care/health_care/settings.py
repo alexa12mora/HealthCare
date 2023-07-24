@@ -53,6 +53,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "health_care.urls"
 
+CSRF_COOKIE_NAME = 'csrftoken'
+
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

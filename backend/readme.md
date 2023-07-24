@@ -15,15 +15,15 @@ Make migrations
 
 Then start the local server:
 ```bash
-python3 manage.py runserver --settings=review_engine.settings.<env>
+python3 manage.py runserver 
 ```
 
 Create a super-user:
 ```bash
-python3 manage.py createsuperuser --settings=review_engine.settings.<env>
+python3 manage.py createsuperuser 
 ```
 
 Run project
 ```bash
-python3 manage.py runserver --settings=review_engine.settings.<env>
+python3 manage.py runserver 
 ```
