@@ -8,7 +8,7 @@ Create a virtual environment using conda Windows/Linux:
 `conda env create -f environment.yml`
 
 Then activate the environment using:  
-`conda activate reviewengine`   
+`conda activate hc_env`   
 
 Then run this command
 `conda env update -f environment.yml`  
