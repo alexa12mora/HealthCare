@@ -4,8 +4,9 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordRes
 from django.views.generic import CreateView
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
-
+from .forms import UserForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def index(request):
   print("Hola")
@@ -145,8 +146,22 @@ def logout_view(request):
 
 @login_required(login_url='/accounts/login/')
 def profile(request):
+  user = request.user
+  if request.method == 'POST':
+      user_form = UserForm(request.POST, instance=user)
+      if user_form.is_valid():
+          user_form.save()
+          messages.success(request, 'Your profile has been updated successfully.')
+          return redirect('settings')
+      else:
+          messages.error(request, 'There was an error. Please check your information.')
+  else:
+      user_form = UserForm(instance=user)
+
   context = {
-    'segment': 'profile',
+      'segment': 'profile',
+      'user_form': user_form,
+      'user': user,
   }
   return render(request, 'pages/profile.html', context)
 

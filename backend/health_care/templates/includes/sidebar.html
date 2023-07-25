@@ -7,7 +7,7 @@
         <div class="b-bg">
           <i class="feather icon-trending-up"></i>
         </div>
-        <span class="b-title">Datta Able</span>
+        <span class="b-title">Health Care</span>
       </a>
       <a class="mobile-menu" id="mobile-collapse" href="javascript:"><span></span></a>
     </div>
@@ -22,30 +22,9 @@
           {% else %}
           <a href="{% url 'index' %}" class="nav-link ">
           {% endif %}
-            <span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span>
+            <span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Home</span>
           </a>
         </li>
-        <li class="nav-item {% if 'tables' in segment %}active{% endif %}">
-          <a href="{% url 'tables' %}" class="nav-link "><span class="pcoded-micon"><i
-                class="feather icon-server text-c-green"></i></span><span class="pcoded-mtext">Dynamic Tables</span></a>
-        </li>
-        <li class="nav-item">
-          <a href="/api/product/" class="nav-link "><span class="pcoded-micon"><i
-                class="feather icon-zap text-c-green"></i></span><span class="pcoded-mtext">Generated API</span></a>
-        </li>
-
-        {% if not request.user.is_authenticated %}
-        <li
-          data-username="Authentication Sign up Sign in reset password Change password Personal information profile settings map form subscribe"
-          class="nav-item pcoded-hasmenu">
-          <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i
-                class="feather icon-lock"></i></span><span class="pcoded-mtext">Authentication</span></a>
-          <ul class="pcoded-submenu">
-            <li class=""><a href="{% url 'login' %}" class="">Sign IN</a></li>
-            <li class=""><a href="{% url 'register' %}" class="">Sign UP</a></li>
-          </ul>
-        </li>
-        {% endif %}
 
         {% admin_get_menu as app_list %}
         {% if app_list %}

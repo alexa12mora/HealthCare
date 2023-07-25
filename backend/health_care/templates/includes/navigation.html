@@ -40,12 +40,14 @@
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
+      <!-- Dark Mode -->
       <li>
         <label>
           <i class="icon feather icon-sun" id="theme-indicator"></i>
           <input type="checkbox" id="theme-switch" class="d-none">
         </label>
       </li>
+      <!-- Notifications -->
       <li>
         <div class="dropdown">
           <a class="dropdown-toggle" href="javascript:" data-toggle="dropdown"><i
@@ -64,7 +66,8 @@
               </li>
               <li class="notification">
                 <div class="media">
-                  <img class="img-radius" src="{% static 'assets/images/user/avatar-1.jpg' %}" alt="Generic placeholder image">
+                  <img class="img-radius" src="{% static 'assets/images/user/avatar-1.jpg' %}"
+                    alt="Generic placeholder image">
                   <div class="media-body">
                     <p><strong>John Doe</strong><span class="n-time text-muted"><i
                           class="icon feather icon-clock m-r-10"></i>30 min</span></p>
@@ -77,7 +80,8 @@
               </li>
               <li class="notification">
                 <div class="media">
-                  <img class="img-radius" src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="Generic placeholder image">
+                  <img class="img-radius" src="{% static 'assets/images/user/avatar-2.jpg' %}"
+                    alt="Generic placeholder image">
                   <div class="media-body">
                     <p><strong>Joseph William</strong><span class="n-time text-muted"><i
                           class="icon feather icon-clock m-r-10"></i>30 min</span></p>
@@ -87,7 +91,8 @@
               </li>
               <li class="notification">
                 <div class="media">
-                  <img class="img-radius" src="{% static 'assets/images/user/avatar-3.jpg' %}" alt="Generic placeholder image">
+                  <img class="img-radius" src="{% static 'assets/images/user/avatar-3.jpg' %}"
+                    alt="Generic placeholder image">
                   <div class="media-body">
                     <p><strong>Sara Soudein</strong><span class="n-time text-muted"><i
                           class="icon feather icon-clock m-r-10"></i>30 min</span></p>
@@ -102,49 +107,50 @@
           </div>
         </div>
       </li>
+      {% if not request.user.is_authenticated %}
       <li>
-        <div class="dropdown drp-user">
-          <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
+        <a href="{% url 'login' %}" class="nav-link">Login</a>
+      </li>
+      <li>
+        <a href="{% url 'register' %}" class="nav-link">Sign Up</a>
+      </li>
+      {% else %}
+      <!-- Mostrar el usuario logueado y todas las opciones si está autenticado -->
+      <li>
+        <div class="dropdown">
+          <a class="dropdown-toggle" href="javascript:" data-toggle="dropdown">
             <i class="icon feather icon-settings"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right profile-notification">
             <div class="pro-head">
               <img src="{% static 'assets/images/user/avatar-1.jpg' %}" class="img-radius" alt="User-Profile-Image">
-              <span>John Doe</span>
-              {% if request.user.is_authenticated %}
-                {% if request.user.is_superuser %}
-                <a href="{% url 'admin:logout' %}" class="dud-logout" title="Logout">
-                {% else %}
-                <a href="{% url 'logout' %}" class="dud-logout" title="Logout">
-                {% endif %}
-                  <i class="feather icon-log-out"></i>
-                </a>
-              {% endif %}
+              <span>{{ request.user.username }}</span>
+              <a href="{% url 'logout' %}" class="dud-logout" title="Logout">
+                <i class="feather icon-log-out"></i>
+              </a>
             </div>
             <ul class="pro-body">
-              <li><a href="#" class="dropdown-item"><i class="feather icon-settings"></i>
-                  Settings</a></li>
+              <li><a href="#" class="dropdown-item"><i class="feather icon-settings"></i>Settings</a></li>
               <li><a href="{% url 'profile' %}" class="dropdown-item"><i class="feather icon-user"></i>
                   Profile</a></li>
               <li><a href="#" class="dropdown-item"><i class="feather icon-mail"></i> My
                   Messages</a></li>
               <li><a href="#" class="dropdown-item"><i class="feather icon-lock"></i> Lock
                   Screen</a></li>
-              {% if request.user.is_authenticated %}
               <li>
                 {% if request.user.is_superuser %}
                 <a href="{% url 'admin:password_change' %}" class="dropdown-item">
-                {% else %}
-                <a href="{% url 'password_change' %}" class="dropdown-item">
-                {% endif %}
-                  <i class="feather icon-edit"></i>Change Password
-                </a>
+                  {% else %}
+                  <a href="{% url 'password_change' %}" class="dropdown-item">
+                    {% endif %}
+                    <i class="feather icon-edit"></i>Change Password
+                  </a>
               </li>
-              {% endif %}
             </ul>
           </div>
         </div>
       </li>
+      {% endif %}
     </ul>
   </div>
 </header>
