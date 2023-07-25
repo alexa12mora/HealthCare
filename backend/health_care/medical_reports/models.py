@@ -7,6 +7,9 @@ class Doctor(models.Model):
 
     def __str__(self) -> str:
         return self.Name
+    
+    class Meta:
+        db_table = 'Doctor'
 
 class Assistants(models.Model):
     codAssistant = models.AutoField(primary_key=True)
@@ -15,6 +18,9 @@ class Assistants(models.Model):
     
     def __str__(self) -> str:
         return self.Name
+    
+    class Meta:
+        db_table = 'Assistants'
 
 class Patients(models.Model):
     PatientID = models.AutoField(primary_key=True)
@@ -22,6 +28,9 @@ class Patients(models.Model):
 
     def __str__(self) -> str:
         return self.PatientName
+    
+    class Meta:
+        db_table = 'Patients'
 
 class Banks(models.Model):
     BankID = models.AutoField(primary_key=True)
@@ -29,6 +38,9 @@ class Banks(models.Model):
 
     def __str__(self) -> str:
         return self.BankName
+    
+    class Meta:
+        db_table = 'Banks'
 
 class Insurers(models.Model):
     InsurerID = models.AutoField(primary_key=True)
@@ -36,6 +48,9 @@ class Insurers(models.Model):
 
     def __str__(self) -> str:
         return self.InsurerName
+    
+    class Meta:
+        db_table = 'Insurers'
 
 class Procedures(models.Model):
     ProcedureID = models.AutoField(primary_key=True)
@@ -47,11 +62,17 @@ class Procedures(models.Model):
 
     def __str__(self) -> str:
         return self.Name
+    
+    class Meta:
+        db_table = 'Procedures'
 
 class AssistantCosts(models.Model):
     CostID = models.AutoField(primary_key=True)
     AssistantType = models.CharField(max_length=100)
     CostAmount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'AssistantCosts'
 
 class OperationCosts(models.Model):
     CostID = models.AutoField(primary_key=True)
@@ -60,6 +81,9 @@ class OperationCosts(models.Model):
 
     def __str__(self) -> str:
         return self.OperationName
+    
+    class Meta:
+        db_table = 'OperationCosts'
 
 class ProcedureOperations(models.Model):
     OperationID = models.AutoField(primary_key=True)
@@ -71,6 +95,9 @@ class ProcedureOperations(models.Model):
     AssistantCostID = models.ForeignKey(AssistantCosts, on_delete=models.CASCADE)
     OperationCostID = models.ForeignKey(OperationCosts, on_delete=models.CASCADE)
 
+    class Meta:
+        db_table = 'ProcedureOperations'
+
 class AccessProfiles(models.Model):
     UserName = models.CharField(max_length=100, primary_key=True)
     Password = models.CharField(max_length=100)
@@ -81,6 +108,9 @@ class AccessProfiles(models.Model):
     
     def __str__(self) -> str:
         return self.UserName
+    
+    class Meta:
+        db_table = 'AccessProfiles'
 
 class Invoices(models.Model):
     InvoiceNumber = models.AutoField(primary_key=True)
@@ -89,11 +119,17 @@ class Invoices(models.Model):
     PatientID = models.ForeignKey(Patients, on_delete=models.CASCADE)
     PaymentStatus = models.CharField(max_length=20)
 
+    class Meta:
+        db_table = 'Invoices'
+
 class AssistantInvoices(models.Model):
     InvoiceAssistantID = models.AutoField(primary_key=True)
     IssuanceDate = models.DateField()
     AssistantID = models.ForeignKey(Assistants, on_delete=models.CASCADE)
     TotalAmount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'AssistantInvoices'
 
 class AssistantPayments(models.Model):
     OperationID = models.ForeignKey(ProcedureOperations, on_delete=models.CASCADE)
@@ -102,7 +138,7 @@ class AssistantPayments(models.Model):
     PaymentDate = models.DateField()
 
     class Meta:
-        # Use UniqueConstraint to define composite primary key
+        db_table = 'AssistantPayments'
         constraints = [
             models.UniqueConstraint(
                 fields=['OperationID', 'AssistantID'],
