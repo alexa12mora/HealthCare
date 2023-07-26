@@ -6,50 +6,30 @@
 {% block content %}
   <!-- [ Main Content ] start -->
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-12">
       <div class="card">
         <div class="card-header">
-          <h5>Edit Info</h5>
+          <h5>Actualizar mi información</h5>
         </div>
         <div class="card-block">
           <form method="post">
             {% csrf_token %}
             <div class="form-group">
-              <label for="{{ user_form.first_name.id_for_label }}">First Name</label>
+              <label for="{{ user_form.first_name.id_for_label }}">Nombre</label>
               {{ user_form.first_name }}
             </div>
             <div class="form-group">
-              <label for="{{ user_form.last_name.id_for_label }}">Last Name</label>
+              <label for="{{ user_form.last_name.id_for_label }}">Apellidos</label>
               {{ user_form.last_name }}
             </div>
             <div class="form-group">
-              <label for="{{ user_form.email.id_for_label }}">Email address</label>
+              <label for="{{ user_form.email.id_for_label }}">Correo</label>
               {{ user_form.email }}
-              <small id="{{ user_form.email.auto_id }}Help" class="form-text text-muted">We'll never share your email with anyone else.</small>
+              <small id="{{ user_form.email.auto_id }}Help" class="form-text text-muted">Nunca compartiremos su correo electrónico con nadie más.</small>
             </div>
             <!-- Add more fields as needed -->
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
           </form>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-4">
-      <div class="card">
-        <div class="card-block">
-          <div class="d-flex align-items-center justify-content-center flex-column">
-            <div class="w-50 p-3">
-              <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'images/default_profile_picture.jpg' %}{% endif %}" alt="Profile Image" class="img-fluid rounded-circle">
-            </div>
-            <div class="text-center">
-              <h4 class="font-weight-bold h6">{{ user.get_full_name }}</h4>
-              <p class="font-italic text-muted">{{ user.profile.bio }}</p>
-            </div>
-          </div>
-
-          <div class="small font-weight-light mt-4 text-center text-muted">
-            <p>{{ user.profile.additional_info }}</p>
-          </div>
-          <!-- Add social media links or any other information about the user -->
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@
       <div class="b-bg">
         <i class="feather icon-trending-up"></i>
       </div>
-      <span class="b-title">Datta Able</span>
+      <span class="b-title">SURGI PAY</span>
     </a>
   </div>
   <a class="mobile-menu" id="mobile-header" href="javascript:">
@@ -18,7 +18,7 @@
       <li><a href="javascript:" class="full-screen" onclick="javascript:toggleFullScreen()"><i
             class="feather icon-maximize"></i></a></li>
       <li class="nav-item dropdown">
-        <a class="dropdown-toggle" href="javascript:" data-toggle="dropdown">Dropdown</a>
+        <a class="dropdown-toggle" href="javascript:" data-toggle="dropdown">Acciones</a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="javascript:">Action</a></li>
           <li><a class="dropdown-item" href="javascript:">Another action</a></li>
@@ -54,7 +54,7 @@
               class="icon feather icon-bell"></i></a>
           <div class="dropdown-menu dropdown-menu-right notification">
             <div class="noti-head">
-              <h6 class="d-inline-block m-b-0">Notifications</h6>
+              <h6 class="d-inline-block m-b-0">Notificaciones</h6>
               <div class="float-right">
                 <a href="javascript:" class="m-r-10">mark as read</a>
                 <a href="javascript:">clear all</a>
@@ -109,10 +109,10 @@
       </li>
       {% if not request.user.is_authenticated %}
       <li>
-        <a href="{% url 'login' %}" class="nav-link">Login</a>
+        <a href="{% url 'login' %}" class="nav-link">Inicio de sesión</a>
       </li>
       <li>
-        <a href="{% url 'register' %}" class="nav-link">Sign Up</a>
+        <a href="{% url 'register' %}" class="nav-link">Registrarse</a>
       </li>
       {% else %}
       <!-- Mostrar el usuario logueado y todas las opciones si está autenticado -->
@@ -130,20 +130,17 @@
               </a>
             </div>
             <ul class="pro-body">
-              <li><a href="#" class="dropdown-item"><i class="feather icon-settings"></i>Settings</a></li>
+              <li><a href="#" class="dropdown-item"><i class="feather icon-settings"></i>Configuración</a></li>
               <li><a href="{% url 'profile' %}" class="dropdown-item"><i class="feather icon-user"></i>
-                  Profile</a></li>
-              <li><a href="#" class="dropdown-item"><i class="feather icon-mail"></i> My
-                  Messages</a></li>
-              <li><a href="#" class="dropdown-item"><i class="feather icon-lock"></i> Lock
-                  Screen</a></li>
+                  Mi perfil</a></li>
+              <li><a href="#" class="dropdown-item"><i class="feather icon-lock"></i> Bloquear pantalla</a></li>
               <li>
                 {% if request.user.is_superuser %}
                 <a href="{% url 'admin:password_change' %}" class="dropdown-item">
                   {% else %}
                   <a href="{% url 'password_change' %}" class="dropdown-item">
                     {% endif %}
-                    <i class="feather icon-edit"></i>Change Password
+                    <i class="feather icon-edit"></i>Cambiar mi contraseña
                   </a>
               </li>
             </ul>
