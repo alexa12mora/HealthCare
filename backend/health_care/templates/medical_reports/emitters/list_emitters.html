@@ -1,0 +1,204 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Carga de jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- [ Main Content ] start -->
+<!--[ Recent Patients ] start-->
+<div class="col-xl-12 col-md-6">
+    <div class="card Recent-Users">
+        <div class="card-header">
+            <h5>Emisores</h5>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal"
+                data-target="#exampleModalCenter" style="background-color: #21734F;">Agregar
+                <i class="feather icon-plus-square"></i>
+            </button>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Registro</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="update-form" class="needs-validation" novalidate method="post"
+                            action="{% url 'create_emisores' %}">
+                            {% csrf_token %}
+                            <input type="hidden" id="update-id" name="id" value="">
+                            <div class="form-row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="validationCustom01">Nombre del emisor</label>
+                                    {{ form.NombreBanco }}
+                                    <div class="invalid-feedback">
+                                        Requerido
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary" style="background-color: #21734F;">Guardar
+                                    cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block px-0 py-3">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Codigo de emisor</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aseguradoras in emisores %}
+                        <tr class="unread" id="row-{{ aseguradoras.pk }}">
+                            <td>
+                                <p class="m-0">{{ aseguradoras.CodBanco }}</p>
+                            </td>
+                            <td>
+                                <p class="m-0">{{ aseguradoras.NombreBanco }}</p>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0);" class="label text-white f-12 btn-danger btn-like"
+                                    onclick="deleteEmisor('{{ aseguradoras.pk }}')" style="background-color: #C70039">
+                                    <i class="feather icon-trash-2"></i>
+                                </a>
+                                <!-- Modal Edit -->
+                                <div class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">Actualizacion</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="update-form" class="needs-validation" novalidate method="post"
+                                                    action="{% url 'actualizar_emisor' aseguradoras.pk %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" id="update-id" name="id" value="">
+                                                    <div class="form-row">
+                                                        <div class="col-md-12 mb-3">
+                                                            <label for="validationCustom01">Nombre del emisor</label>
+                                                            {{ form.NombreBanco }}
+                                                            <div class="invalid-feedback">
+                                                                Requerido
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Cancelar</button>
+                                                        <button type="submit" class="btn btn-primary"
+                                                            style="background-color: #21734F;">Guardar
+                                                            cambios</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="label  text-white f-12 btn-primary" data-toggle="modal"
+                                    data-target="#exampleModalCenter1" style="background-color: #007bff"><i
+                                        class="feather icon-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 6px 12px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+</style>
+
+<script>
+
+    function deleteEmisor(id) {
+        // Solicitar al servidor eliminar la aseguradora con el ID proporcionado
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eliminar_emisor' 0 %}".replace('0', id),
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function () {
+                // Si la eliminación fue exitosa, eliminamos la fila de la tabla
+                $('#row-' + id).remove();
+            },
+            error: function () {
+                alert('Error al eliminar la aseguradora.');
+            },
+        });
+    }
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+
+{% endblock content %}

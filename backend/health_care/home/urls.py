@@ -61,4 +61,24 @@ urlpatterns = [
   path('listar/aseguradoras/', views.list_insurers, name='listar_aseguradoras'),
   path('actualizar/<int:pk>/', views.update_insurer, name='actualizar_aseguradora'),
   path('eliminar_aseguradora/<int:pk>/', views.eliminar_aseguradora, name='eliminar_aseguradora'),
+  
+  #Emisores
+  path('listar/emisores/', views.list_emitters, name='list_emisores'),
+  path('agregar/emisores/', views.emitters, name='create_emisores'),
+  path('actualizar/<int:pk>/', views.update_insurer, name='actualizar_emisor'),
+  path('eliminar/emisores/<int:pk>/', views.eliminar_aseguradora, name='eliminar_emisor'),
+  path('get_emisor/<int:pk>/', views.get_emisor, name='get_emisor'),
+  
+  #Pagos Asistente
+  path('pagos_asistentes/', views.list_costos, name='pagos_asistentes'),
+  path('crear_pago/', views.costos_por_asistente, name='crear_pago'),
+  path('actualizar_pago/<int:pk>/', views.update_costo, name='actualizar_pago'),
+  path('eliminar_pago/<int:pk>/', views.eliminar_costo, name='eliminar_pago'),
+  
+  #Costo de servicios
+  path('costos_servicios/', views.list_servicio, name='list_servicio'),
+  path('crear_servicio/', views.costos_por_servicio, name='costos_por_servicio'),
+  path('actualizar/<int:pk>/', views.update_costo, name='update_costo'),
+  path('eliminar/<int:pk>/', views.eliminar_costo, name='eliminar_costo'),
 ]
+

@@ -71,11 +71,11 @@
             <li class="{% if 'button' in segment %}active{% endif %}"><a href="{% url 'listar_aseguradoras' %}"
                 class="">
                 Aseguradoras</a></li>
-            <li class="{% if 'badges' in segment %}active{% endif %}"><a href="{% url 'bc_badges' %}"
+            <li class="{% if 'badges' in segment %}active{% endif %}"><a href="{% url 'list_emisores' %}"
                 class="">Emisores</a></li>
             <li class="{% if 'breadcrumbs_&_pagination' in segment %}active{% endif %}"><a
-                href="{% url 'bc_breadcrumb_pagination' %}" class="">Precios de asistencia</a></li>
-            <li class="{% if 'collapse' in segment %}active{% endif %}"><a href="{% url 'icon_feather' %}"
+                href="{% url 'pagos_asistentes' %}" class="">Precios de asistencia</a></li>
+            <li class="{% if 'collapse' in segment %}active{% endif %}"><a href="{% url 'list_servicio' %}"
                 class="">Costos por servicios</a></li>
           </ul>
         </li>

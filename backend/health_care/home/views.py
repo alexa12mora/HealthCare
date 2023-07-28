@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect
 from admin_datta.forms import RegistrationForm, LoginForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetConfirmView, PasswordResetView
@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
 from .forms import MedicoForm, CostosPorAsistenteForm, AsistentesForm, EmisorForm, AseguradorasForm, CostosDeOperacionesForm, serviciosForm, FacturasForm, FacturasAsistentesForm, PagosAsistentesForm, PerfilesDeAccesoForm
-
+from django_jquery_datatables.utils import JqueryDatatable
 
 def index(request):
   print("Hola")
@@ -248,7 +248,6 @@ def create_insurer(request):
 
 def update_insurer(request, pk):
     aseguradora = get_object_or_404(Aseguradoras, pk=pk)
-
     if request.method == 'POST':
         form = AseguradorasForm(request.POST, instance=aseguradora)
         if form.is_valid():
@@ -260,7 +259,6 @@ def update_insurer(request, pk):
     context = {
         'form': form,
     }
-
     return render(request, 'medical_reports/insurers/update_insurer.html', context)
 
 def eliminar_aseguradora(request, pk):
@@ -283,3 +281,177 @@ def list_insurers(request):
         'form': form,  # Incluye el formulario en el contexto
     }
     return render(request, 'medical_reports/insurers/list_insurers.html', context)
+  
+  
+ #Emisores
+ 
+def emitters(request):
+    emisores = Emisor.objects.all()  # Obtener todos los Emisores
+    if request.method == 'POST':
+        form = EmisorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('list_emisores')
+    else:
+        form = EmisorForm()
+    context = {
+        'emisores': emisores,
+        'segment': 'emisores',
+        'form': form,
+        'action': 'Actualizar',
+    }
+    print(form.errors)
+    return render(request, 'medical_reports/emitters/list_emitters.html', context)
+
+def list_emitters(request):
+    emisores = Emisor.objects.all()  # Obtener todos los Emisores
+    form = EmisorForm()  # Crea una instancia del formulario vacío
+    context = {
+        'segment': 'Lista_de_emisores',
+        'emisores': emisores,
+        'form': form,  # Incluye el formulario en el contexto
+    }
+    return render(request, 'medical_reports/emitters/list_emitters.html', context)
+
+
+def update_emitters(request, pk):
+    emisor = get_object_or_404(Emisor, pk=pk)
+    if request.method == 'POST':
+        form = EmisorForm(request.POST, instance=emisor)
+        if form.is_valid():
+            form.save()
+            return redirect('list_emisores')
+    else:
+        form = AseguradorasForm(instance=emisor)
+
+    context = {
+        'form': form,
+        'action': 'Actualizar',
+    }
+
+    return render(request, 'medical_reports/emitters/list_emitters.html', context)
+
+def eliminar_aseguradora(request, pk):
+    emisor = get_object_or_404(Emisor, pk=pk)
+    if request.method == 'POST':
+        emisor.delete()
+        # Redireccionar a la página que muestra la lista actualizada de aseguradoras
+        return redirect('list_emisores')
+
+    # Si la petición no es POST, simplemente redireccionamos a la lista de aseguradoras
+    return redirect('list_emisores')
+  
+  
+def get_emisor(request, pk):
+    emisor = get_object_or_404(Emisor, pk=pk)
+    context = {
+        'NombreBanco': emisor.NombreBanco,
+    }
+    return render(request, 'medical_reports/emitters/list_emitters.html', context)
+  
+  
+#Pago Asistentes 
+def costos_por_asistente(request):
+    costos = CostosPorAsistente.objects.all()
+    if request.method == 'POST':
+        form = CostosPorAsistenteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('pagos_asistentes')
+    else:
+        form = CostosPorAsistenteForm()
+    context = {
+        'costos': costos,
+        'form': form,
+        'segment': 'costos',
+    }
+    return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
+
+def list_costos(request):
+    costos = CostosPorAsistente.objects.all()
+    form = CostosPorAsistenteForm()
+    context = {
+        'segment': 'Lista_costos',
+        'costos': costos,
+        'form': form,
+    }
+    return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
+
+def update_costo(request, pk):
+    costo = get_object_or_404(CostosPorAsistente, pk=pk)
+    if request.method == 'POST':
+        form = CostosPorAsistenteForm(request.POST, instance=costo)
+        if form.is_valid():
+            form.save()
+            return redirect('pagos_asistentes')
+    else:
+        form = CostosPorAsistenteForm(instance=costo)
+
+    context = {
+        'form': form,
+        'action': 'Actualizar',
+    }
+
+    return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
+
+def eliminar_costo(request, pk):
+    costo = get_object_or_404(CostosPorAsistente, pk=pk)
+    if request.method == 'POST':
+        costo.delete()
+        return redirect('pagos_asistentes')
+
+    return redirect('pagos_asistentes')
+
+
+#Costos por servicio(operaciones)
+def costos_por_servicio(request):
+    costos = CostosDeOperaciones.objects.all()
+    if request.method == 'POST':
+        form = CostosDeOperacionesForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('list_servicio')
+    else:
+        form = CostosDeOperacionesForm()
+    context = {
+        'costos': costos,
+        'form': form,
+        'segment': 'costos',
+    }
+    return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
+
+def list_servicio(request):
+    costos = CostosDeOperaciones.objects.all()
+    form = CostosDeOperacionesForm()
+    context = {
+        'segment': 'Lista_de_costos',
+        'costos': costos,
+        'form': form,
+    }
+    return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
+
+def update_costo(request, pk):
+    costo = get_object_or_404(CostosDeOperaciones, pk=pk)
+    if request.method == 'POST':
+        form = CostosDeOperacionesForm(request.POST, instance=costo)
+        if form.is_valid():
+            form.save()
+            return redirect('list_servicio')
+    else:
+        form = CostosDeOperacionesForm(instance=costo)
+
+    context = {
+        'form': form,
+        'action': 'Actualizar',
+    }
+
+    return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
+
+def eliminar_costo(request, pk):
+    costo = get_object_or_404(CostosDeOperaciones, pk=pk)
+    if request.method == 'POST':
+        costo.delete()
+        return redirect('list_servicio')
+
+    return redirect('list_servicio')
+

@@ -22,7 +22,6 @@ class Asistentes(models.Model):
     Nombre = models.CharField(max_length=100)
     correo = models.CharField(max_length=100)
     CodCostoPorAsistente = models.ForeignKey(CostosPorAsistente, on_delete=models.CASCADE)
-
     def __str__(self):
         return self.Nombre
 
