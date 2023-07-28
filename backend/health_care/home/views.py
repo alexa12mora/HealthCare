@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render, redirect
 from admin_datta.forms import RegistrationForm, LoginForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetConfirmView, PasswordResetView
@@ -204,7 +205,10 @@ def medico_create(request):
     return render(request, 'medical_reports/medico_form.html', {'form': form})
 
 def medico_update(request, codMedico):
-    medico = get_object_or_404(Medico, codMedico=codMedico)
+    try:
+        medico = Medico.objects.get(codMedico=codMedico)
+    except Medico.DoesNotExist:
+        raise Http404
     if request.method == 'POST':
         form = MedicoForm(request.POST, instance=medico)
         if form.is_valid():
@@ -242,7 +246,33 @@ def create_insurer(request):
     print(form.errors)
     return render(request, 'medical_reports/insurers/list_insurers.html', context)
 
-from .forms import AseguradorasForm  # Importa el formulario
+def update_insurer(request, pk):
+    aseguradora = get_object_or_404(Aseguradoras, pk=pk)
+
+    if request.method == 'POST':
+        form = AseguradorasForm(request.POST, instance=aseguradora)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_aseguradoras')
+    else:
+        form = AseguradorasForm(instance=aseguradora)
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'medical_reports/insurers/update_insurer.html', context)
+
+def eliminar_aseguradora(request, pk):
+    aseguradora = get_object_or_404(Aseguradoras, pk=pk)
+
+    if request.method == 'POST':
+        aseguradora.delete()
+        # Redireccionar a la página que muestra la lista actualizada de aseguradoras
+        return redirect('listar_aseguradoras')
+
+    # Si la petición no es POST, simplemente redireccionamos a la lista de aseguradoras
+    return redirect('listar_aseguradoras')
 
 def list_insurers(request):
     insurers = Aseguradoras.objects.all()

@@ -59,4 +59,6 @@ urlpatterns = [
   #Aseguradoras
   path('agregar/aseguradora/', views.create_insurer, name='agregar_aseguradora'),
   path('listar/aseguradoras/', views.list_insurers, name='listar_aseguradoras'),
+  path('actualizar/<int:pk>/', views.update_insurer, name='actualizar_aseguradora'),
+  path('eliminar_aseguradora/<int:pk>/', views.eliminar_aseguradora, name='eliminar_aseguradora'),
 ]
