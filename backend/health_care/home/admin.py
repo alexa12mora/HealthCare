@@ -1,15 +1,14 @@
 from django.contrib import admin
+from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
 
-from django.apps import apps
-from django.contrib import admin
-
-# Register your models here.
-
-app_models = apps.get_app_config('home').get_models()
-for model in app_models:
-    try:    
-
-        admin.site.register(model)
-
-    except Exception:
-        pass
+admin.site.register(Medico)
+admin.site.register(CostosPorAsistente)
+admin.site.register(Asistentes)
+admin.site.register(Emisor)
+admin.site.register(Aseguradoras)
+admin.site.register(CostosDeOperaciones)
+admin.site.register(servicios)
+admin.site.register(Facturas)
+admin.site.register(FacturasAsistentes)
+admin.site.register(PagosAsistentes)
+admin.site.register(PerfilesDeAcceso)

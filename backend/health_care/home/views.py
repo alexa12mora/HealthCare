@@ -7,6 +7,10 @@ from django.contrib.auth.models import User
 from .forms import UserForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
+from .forms import MedicoForm, CostosPorAsistenteForm, AsistentesForm, EmisorForm, AseguradorasForm, CostosDeOperacionesForm, serviciosForm, FacturasForm, FacturasAsistentesForm, PagosAsistentesForm, PerfilesDeAccesoForm
+
 
 def index(request):
   print("Hola")
@@ -171,3 +175,81 @@ def sample_page(request):
     'segment': 'sample_page',
   }
   return render(request, 'pages/sample-page.html', context)
+
+
+@login_required(login_url='/accounts/login/')
+def services(request):
+  context = {
+    'segment': 'sample_page',
+  }
+  return render(request, 'pages/sample-page.html', context)
+
+# Vistas para el modelo Medico
+def medico_list(request):
+    medicos = Medico.objects.all()
+    return render(request, 'medical_reports/medico_list.html', {'medicos': medicos})
+
+def medico_detail(request, codMedico):
+    medico = get_object_or_404(Medico, codMedico=codMedico)
+    return render(request, 'medical_reports/medico_detail.html', {'medico': medico})
+
+def medico_create(request):
+    if request.method == 'POST':
+        form = MedicoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('medico_list')
+    else:
+        form = MedicoForm()
+    return render(request, 'medical_reports/medico_form.html', {'form': form})
+
+def medico_update(request, codMedico):
+    medico = get_object_or_404(Medico, codMedico=codMedico)
+    if request.method == 'POST':
+        form = MedicoForm(request.POST, instance=medico)
+        if form.is_valid():
+            form.save()
+            return redirect('medico_list')
+    else:
+        form = MedicoForm(instance=medico)
+    return render(request, 'medical_reports/medico_form.html', {'form': form})
+
+def medico_delete(request, codMedico):
+    medico = get_object_or_404(Medico, codMedico=codMedico)
+    if request.method == 'POST':
+        medico.delete()
+        return redirect('medico_list')
+    return render(request, 'medical_reports/medico_confirm_delete.html', {'medico': medico})
+  
+  # Vistas para las aseguradoras
+    
+def create_insurer(request):
+    insurers = Aseguradoras.objects.all()  # Definimos la variable insurers fuera del bloque if
+    if request.method == 'POST':
+        form = AseguradorasForm(request.POST)
+        if form.is_valid():
+            print("si")
+            form.save()
+            return redirect('listar_aseguradoras')
+    else:
+        print("no")
+        form = AseguradorasForm()
+    context = {
+        'insurers': insurers,
+        'segment': 'add_insurer',
+        'form': form,
+    }
+    print(form.errors)
+    return render(request, 'medical_reports/insurers/list_insurers.html', context)
+
+from .forms import AseguradorasForm  # Importa el formulario
+
+def list_insurers(request):
+    insurers = Aseguradoras.objects.all()
+    form = AseguradorasForm()  # Crea una instancia del formulario vacío
+    context = {
+        'segment': 'Lista_de_aseguradoras',
+        'insurers': insurers,
+        'form': form,  # Incluye el formulario en el contexto
+    }
+    return render(request, 'medical_reports/insurers/list_insurers.html', context)

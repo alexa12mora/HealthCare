@@ -1,0 +1,110 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Carga de jQuery -->
+
+<!-- [ Main Content ] start -->
+<!--[ Recent Patients ] start-->
+<div class="col-xl-12 col-md-6">
+    <div class="card Recent-Users">
+        <div class="card-header">
+            <h5>Aseguradoras</h5>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal"
+                data-target="#exampleModalCenter" style="background-color: #21734F;">Agregar
+                <i class="feather icon-plus-square"></i>
+            </button>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Registro</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="needs-validation" novalidate method="post"
+                            action="{% url 'agregar_aseguradora' %}">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="validationCustom01">Nombre de la aseguradora</label>
+                                    {{ form.NombreAseguradora }}
+                                    <div class="invalid-feedback">
+                                        Requerido
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" style="background-color: #21734F;">Save
+                                    changes</button>
+                            </div>
+                        </form>
+
+
+                        <script>
+                            // Example starter JavaScript for disabling form submissions if there are invalid fields
+                            (function () {
+                                'use strict';
+                                window.addEventListener('load', function () {
+                                    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                                    var forms = document.getElementsByClassName('needs-validation');
+                                    // Loop over them and prevent submission
+                                    var validation = Array.prototype.filter.call(forms, function (form) {
+                                        form.addEventListener('submit', function (event) {
+                                            if (form.checkValidity() === false) {
+                                                event.preventDefault();
+                                                event.stopPropagation();
+                                            }
+                                            form.classList.add('was-validated');
+                                        }, false);
+                                    });
+                                }, false);
+                            })();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block px-0 py-3">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Codigo de aseguradora</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aseguradoras in insurers %}
+                        <tr class="unread">
+
+                            <td>
+                                <p class="m-0">{{ aseguradoras.CodAseguradora }}</p>
+                            </td>
+                            <td>
+                                <p class="m-0">{{ aseguradoras.NombreAseguradora }}</p>
+                            </td>
+                            <td>
+                                <a href="#!" class="label theme-bg2 text-white f-12"> <i
+                                        class="feather icon-trash-2"></i></a>
+                                <a href="#!" class="label theme-bg text-white f-12"><i
+                                        class="feather icon-edit"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

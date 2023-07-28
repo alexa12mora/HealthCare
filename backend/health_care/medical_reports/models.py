@@ -1,147 +1,111 @@
 from django.db import models
 
-class Doctor(models.Model):
-    codDoctor = models.AutoField(primary_key=True)
-    Name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
+# class Medico(models.Model):
+#     codMedico = models.AutoField(primary_key=True)
+#     Nombre = models.CharField(max_length=100)
+#     correo = models.CharField(max_length=100)
 
-    def __str__(self) -> str:
-        return self.Name
+#     def __str__(self):
+#         return self.Nombre
+
+# class CostosPorAsistente(models.Model):
+#     CodCostoPorAsistente = models.AutoField(primary_key=True)
+#     TipoAsistente = models.CharField(max_length=100)
+#     MontoCosto = models.DecimalField(max_digits=10, decimal_places=2)
+
+#     def __str__(self):
+#         return self.TipoAsistente
+
+
+# class Asistentes(models.Model):
+#     CodAsistente = models.AutoField(primary_key=True)
+#     Nombre = models.CharField(max_length=100)
+#     correo = models.CharField(max_length=100)
+#     CodCostoPorAsistente = models.ForeignKey(CostosPorAsistente, on_delete=models.CASCADE)
+
+#     def __str__(self):
+#         return self.Nombre
+
+
+# class Emisor(models.Model):
+#     CodBanco = models.AutoField(primary_key=True)
+#     NombreBanco = models.CharField(max_length=100)
+
+#     def __str__(self):
+#         return self.NombreBanco
+
+
+# class Aseguradoras(models.Model):
+#     CodAseguradora = models.AutoField(primary_key=True)
+#     NombreAseguradora = models.CharField(max_length=100)
+
+#     def __str__(self):
+#         return self.NombreAseguradora
+
+# class CostosDeOperaciones(models.Model):
+#     CodCostoOperacion = models.AutoField(primary_key=True)
+#     NombreOperacion = models.CharField(max_length=100)
+#     MontoCosto = models.DecimalField(max_digits=10, decimal_places=2)
+
+#     def __str__(self):
+#         return self.NombreOperacion
     
-    class Meta:
-        db_table = 'Doctor'
+# class servicios(models.Model):
+#     CodProcedimiento = models.AutoField(primary_key=True)
+#     Fecha = models.DateField()
+#     TipoCirugia = models.CharField(max_length=100)
+#     Hospital = models.CharField(max_length=100)
+#     NombrePaciente = models.CharField(max_length=100)
+#     MontoTotal = models.DecimalField(max_digits=10, decimal_places=2)
+#     MedioPago = models.CharField(max_length=20)
+#     CodAseguradora = models.ForeignKey(Aseguradoras, on_delete=models.CASCADE)
+#     CodBanco = models.ForeignKey(Emisor, on_delete=models.CASCADE)
+#     EstadoPago = models.CharField(max_length=20)
+#     codMedico = models.ForeignKey(Medico, on_delete=models.CASCADE)
+#     CodCostoOperacion = models.ForeignKey(CostosDeOperaciones, on_delete=models.CASCADE)
+#     CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)  # En lugar de CodProcedimiento
+#     DescripcionProcedimiento = models.CharField(max_length=200)
+#     numFactura = models.CharField(max_length=20)
 
-class Assistants(models.Model):
-    codAssistant = models.AutoField(primary_key=True)
-    Name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    
-    def __str__(self) -> str:
-        return self.Name
-    
-    class Meta:
-        db_table = 'Assistants'
+#     def __str__(self):
+#         return f"Procedimiento {self.CodProcedimiento}"
 
-class Patients(models.Model):
-    PatientID = models.AutoField(primary_key=True)
-    PatientName = models.CharField(max_length=100)
 
-    def __str__(self) -> str:
-        return self.PatientName
-    
-    class Meta:
-        db_table = 'Patients'
+# class Facturas(models.Model):
+#     NumFactura = models.AutoField(primary_key=True)
+#     FechaPago = models.DateField()
+#     CodProcedimiento = models.ForeignKey(servicios, on_delete=models.CASCADE)
 
-class Banks(models.Model):
-    BankID = models.AutoField(primary_key=True)
-    BankName = models.CharField(max_length=100)
+#     def __str__(self):
+#         return f"Factura {self.NumFactura}"
 
-    def __str__(self) -> str:
-        return self.BankName
-    
-    class Meta:
-        db_table = 'Banks'
 
-class Insurers(models.Model):
-    InsurerID = models.AutoField(primary_key=True)
-    InsurerName = models.CharField(max_length=100)
+# class FacturasAsistentes(models.Model):
+#     NumFacturaAsistente = models.AutoField(primary_key=True)
+#     FechaEmision = models.DateField()
+#     CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
+#     CodProcedimiento = models.ForeignKey(servicios, on_delete=models.CASCADE)  # En lugar de CodAsistente
+#     descFactura = models.CharField(max_length=100)
 
-    def __str__(self) -> str:
-        return self.InsurerName
-    
-    class Meta:
-        db_table = 'Insurers'
+#     def __str__(self):
+#         return f"FacturaAsistente {self.NumFacturaAsistente}"
 
-class Procedures(models.Model):
-    ProcedureID = models.AutoField(primary_key=True)
-    Name = models.CharField(max_length=100)
-    ProcedureCost = models.DecimalField(max_digits=10, decimal_places=2)
-    InsurerID = models.ForeignKey(Insurers, on_delete=models.CASCADE)
-    BankID = models.ForeignKey(Banks, on_delete=models.CASCADE)
-    SurgeryType = models.CharField(max_length=100)
 
-    def __str__(self) -> str:
-        return self.Name
-    
-    class Meta:
-        db_table = 'Procedures'
+# class PagosAsistentes(models.Model):
+#     CodOperacion = models.ForeignKey(servicios, on_delete=models.CASCADE)
+#     CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
+#     MontoPagado = models.DecimalField(max_digits=10, decimal_places=2)
+#     FechaPago = models.DateField()
 
-class AssistantCosts(models.Model):
-    CostID = models.AutoField(primary_key=True)
-    AssistantType = models.CharField(max_length=100)
-    CostAmount = models.DecimalField(max_digits=10, decimal_places=2)
+#     def __str__(self):
+#         return f"PagoAsistente {self.CodOperacion} - {self.CodAsistente}"
 
-    class Meta:
-        db_table = 'AssistantCosts'
 
-class OperationCosts(models.Model):
-    CostID = models.AutoField(primary_key=True)
-    OperationName = models.CharField(max_length=100)
-    CostAmount = models.DecimalField(max_digits=10, decimal_places=2)
+# class PerfilesDeAcceso(models.Model):
+#     NombreUsuario = models.CharField(max_length=100, primary_key=True)
+#     Password = models.CharField(max_length=100)
+#     TipoUsuario = models.CharField(max_length=1, choices=[('M', 'Medico'), ('A', 'Asistente'), ('S', 'Otro')])
+#     NivelDeAcceso = models.IntegerField()
 
-    def __str__(self) -> str:
-        return self.OperationName
-    
-    class Meta:
-        db_table = 'OperationCosts'
-
-class ProcedureOperations(models.Model):
-    OperationID = models.AutoField(primary_key=True)
-    DoctorID = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    PatientID = models.ForeignKey(Patients, on_delete=models.CASCADE)
-    Date = models.DateField()
-    ProcedureID = models.ForeignKey(Procedures, on_delete=models.CASCADE)
-    OperationType = models.CharField(max_length=2)
-    AssistantCostID = models.ForeignKey(AssistantCosts, on_delete=models.CASCADE)
-    OperationCostID = models.ForeignKey(OperationCosts, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'ProcedureOperations'
-
-class AccessProfiles(models.Model):
-    UserName = models.CharField(max_length=100, primary_key=True)
-    Password = models.CharField(max_length=100)
-    UserType = models.CharField(max_length=1, choices=[('D', 'Doctor'), ('A', 'Assistant'), ('S', 'Secretary')])
-    UserID = models.IntegerField(null=True, blank=True)
-    AccessLevel = models.IntegerField()
-    DoctorID = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True, blank=True)
-    
-    def __str__(self) -> str:
-        return self.UserName
-    
-    class Meta:
-        db_table = 'AccessProfiles'
-
-class Invoices(models.Model):
-    InvoiceNumber = models.AutoField(primary_key=True)
-    PaymentDate = models.DateField()
-    Amount = models.DecimalField(max_digits=10, decimal_places=2)
-    PatientID = models.ForeignKey(Patients, on_delete=models.CASCADE)
-    PaymentStatus = models.CharField(max_length=20)
-
-    class Meta:
-        db_table = 'Invoices'
-
-class AssistantInvoices(models.Model):
-    InvoiceAssistantID = models.AutoField(primary_key=True)
-    IssuanceDate = models.DateField()
-    AssistantID = models.ForeignKey(Assistants, on_delete=models.CASCADE)
-    TotalAmount = models.DecimalField(max_digits=10, decimal_places=2)
-
-    class Meta:
-        db_table = 'AssistantInvoices'
-
-class AssistantPayments(models.Model):
-    OperationID = models.ForeignKey(ProcedureOperations, on_delete=models.CASCADE)
-    AssistantID = models.ForeignKey(Assistants, on_delete=models.CASCADE)
-    PaidAmount = models.DecimalField(max_digits=10, decimal_places=2)
-    PaymentDate = models.DateField()
-
-    class Meta:
-        db_table = 'AssistantPayments'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['OperationID', 'AssistantID'],
-                name='assistant_payment_pk',
-            )
-        ]
+#     def __str__(self):
+#         return self.NombreUsuario

@@ -49,4 +49,14 @@ urlpatterns = [
   #
   path('profile/', views.profile, name='profile'),
   path('sample-page/', views.sample_page, name='sample_page'),
+  path('services/', views.profile, name='services'),
+  # Medico
+  path('medico/', views.medico_list, name='medico_list'),
+  path('medico/create/', views.medico_create, name='medico_create'),
+  path('medico/<int:codMedico>/', views.medico_detail, name='medico_detail'),
+  path('medico/<int:codMedico>/update/', views.medico_update, name='medico_update'),
+  path('medico/<int:codMedico>/delete/', views.medico_delete, name='medico_delete'),
+  #Aseguradoras
+  path('agregar/aseguradora/', views.create_insurer, name='agregar_aseguradora'),
+  path('listar/aseguradoras/', views.list_insurers, name='listar_aseguradoras'),
 ]

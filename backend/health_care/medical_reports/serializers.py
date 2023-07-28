@@ -1,67 +1,57 @@
 from rest_framework import serializers
-from .models import Doctor, Assistants, Patients, Banks, Insurers, Procedures, AssistantCosts, OperationCosts, ProcedureOperations, AccessProfiles, Invoices, AssistantInvoices, AssistantPayments
+# from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
 
-class DoctorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Doctor
-        fields = '__all__'
+# class MedicoSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Medico
+#         fields = '__all__'
 
-class AssistantsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Assistants
-        fields = '__all__'
+# class CostosPorAsistenteSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CostosPorAsistente
+#         fields = '__all__'
 
-class PatientsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Patients
-        fields = '__all__'
+# class AsistentesSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Asistentes
+#         fields = '__all__'
 
-class BanksSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Banks
-        fields = '__all__'
+# class EmisorSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Emisor
+#         fields = '__all__'
 
-class InsurersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Insurers
-        fields = '__all__'
+# class AseguradorasSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Aseguradoras
+#         fields = '__all__'
 
-class ProceduresSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Procedures
-        fields = '__all__'
+# class CostosDeOperacionesSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CostosDeOperaciones
+#         fields = '__all__'
 
-class AssistantCostsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AssistantCosts
-        fields = '__all__'
+# class serviciosSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = servicios
+#         fields = '__all__'
 
-class OperationCostsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OperationCosts
-        fields = '__all__'
+# class FacturasSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Facturas
+#         fields = '__all__'
 
-class ProcedureOperationsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProcedureOperations
-        fields = '__all__'
+# class FacturasAsistentesSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = FacturasAsistentes
+#         fields = '__all__'
 
-class AccessProfilesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AccessProfiles
-        fields = '__all__'
+# class PagosAsistentesSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PagosAsistentes
+#         fields = '__all__'
 
-class InvoicesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Invoices
-        fields = '__all__'
-
-class AssistantInvoicesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AssistantInvoices
-        fields = '__all__'
-
-class AssistantPaymentsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AssistantPayments
-        fields = '__all__'
+# class PerfilesDeAccesoSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PerfilesDeAcceso
+#         fields = '__all__'

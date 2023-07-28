@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "medical_reports",
+    'crispy_forms',
+    'crispy_bootstrap4',
+    'admin_volt.apps.AdminVoltConfig',
+    'bootstrap4',
     "drf_spectacular",
     "home",
     'django_dyn_dt',             # <-- NEW: Dynamic_DT
@@ -65,8 +69,13 @@ MIDDLEWARE = [
 ROOT_URLCONF = "health_care.urls"
 
 CSRF_COOKIE_NAME = 'csrftoken'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+LOGIN_REDIRECT_URL = '/'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 HOME_TEMPLATES      = os.path.join(BASE_DIR, 'templates') 
 TEMPLATE_DIR_DATATB = os.path.join(BASE_DIR, "django_dyn_dt/templates") 
@@ -83,6 +92,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            'libraries': {  # Agrega esta línea para cargar la etiqueta de formulario Crispy Forms
+                'crispy_forms_tags': 'crispy_forms.templatetags.crispy_forms_tags',
+            },
         },
     },
 ]
@@ -111,7 +123,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
-    
+    'BOOTSTRAP_CSS_URL': '/static/css/bootstrap.min.css'
 }
 
 

@@ -1,55 +1,47 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import Doctor, Assistants, Patients, Banks, Insurers, Procedures, AssistantCosts, OperationCosts, ProcedureOperations, AccessProfiles, Invoices, AssistantInvoices, AssistantPayments
-from .serializers import DoctorSerializer, AssistantsSerializer, PatientsSerializer, BanksSerializer, InsurersSerializer, ProceduresSerializer, AssistantCostsSerializer, OperationCostsSerializer, ProcedureOperationsSerializer, AccessProfilesSerializer, InvoicesSerializer, AssistantInvoicesSerializer, AssistantPaymentsSerializer
+# from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
+# from .serializers import MedicoSerializer, CostosPorAsistenteSerializer, AsistentesSerializer, EmisorSerializer, AseguradorasSerializer, CostosDeOperacionesSerializer, serviciosSerializer, FacturasSerializer, FacturasAsistentesSerializer, PagosAsistentesSerializer, PerfilesDeAccesoSerializer
 
-class DoctorViewSet(ModelViewSet):
-    queryset = Doctor.objects.all()
-    serializer_class = DoctorSerializer
+# class MedicoViewSet(ModelViewSet):
+#     queryset = Medico.objects.all()
+#     serializer_class = MedicoSerializer
 
-class AssistantsViewSet(ModelViewSet):
-    queryset = Assistants.objects.all()
-    serializer_class = AssistantsSerializer
+# class CostosPorAsistenteViewSet(ModelViewSet):
+#     queryset = CostosPorAsistente.objects.all()
+#     serializer_class = CostosPorAsistenteSerializer
 
-class PatientsViewSet(ModelViewSet):
-    queryset = Patients.objects.all()
-    serializer_class = PatientsSerializer
+# class AsistentesViewSet(ModelViewSet):
+#     queryset = Asistentes.objects.all()
+#     serializer_class = AsistentesSerializer
 
-class BanksViewSet(ModelViewSet):
-    queryset = Banks.objects.all()
-    serializer_class = BanksSerializer
+# class EmisorViewSet(ModelViewSet):
+#     queryset = Emisor.objects.all()
+#     serializer_class = EmisorSerializer
 
-class InsurersViewSet(ModelViewSet):
-    queryset = Insurers.objects.all()
-    serializer_class = InsurersSerializer
+# class AseguradorasViewSet(ModelViewSet):
+#     queryset = Aseguradoras.objects.all()
+#     serializer_class = AseguradorasSerializer
 
-class ProceduresViewSet(ModelViewSet):
-    queryset = Procedures.objects.all()
-    serializer_class = ProceduresSerializer
+# class CostosDeOperacionesViewSet(ModelViewSet):
+#     queryset = CostosDeOperaciones.objects.all()
+#     serializer_class = CostosDeOperacionesSerializer
 
-class AssistantCostsViewSet(ModelViewSet):
-    queryset = AssistantCosts.objects.all()
-    serializer_class = AssistantCostsSerializer
+# class serviciosViewSet(ModelViewSet):
+#     queryset = servicios.objects.all()
+#     serializer_class = serviciosSerializer
 
-class OperationCostsViewSet(ModelViewSet):
-    queryset = OperationCosts.objects.all()
-    serializer_class = OperationCostsSerializer
+# class FacturasViewSet(ModelViewSet):
+#     queryset = Facturas.objects.all()
+#     serializer_class = FacturasSerializer
 
-class ProcedureOperationsViewSet(ModelViewSet):
-    queryset = ProcedureOperations.objects.all()
-    serializer_class = ProcedureOperationsSerializer
+# class FacturasAsistentesViewSet(ModelViewSet):
+#     queryset = FacturasAsistentes.objects.all()
+#     serializer_class = FacturasAsistentesSerializer
 
-class AccessProfilesViewSet(ModelViewSet):
-    queryset = AccessProfiles.objects.all()
-    serializer_class = AccessProfilesSerializer
+# class PagosAsistentesViewSet(ModelViewSet):
+#     queryset = PagosAsistentes.objects.all()
+#     serializer_class = PagosAsistentesSerializer
 
-class InvoicesViewSet(ModelViewSet):
-    queryset = Invoices.objects.all()
-    serializer_class = InvoicesSerializer
-
-class AssistantInvoicesViewSet(ModelViewSet):
-    queryset = AssistantInvoices.objects.all()
-    serializer_class = AssistantInvoicesSerializer
-
-class AssistantPaymentsViewSet(ModelViewSet):
-    queryset = AssistantPayments.objects.all()
-    serializer_class = AssistantPaymentsSerializer
+# class PerfilesDeAccesoViewSet(ModelViewSet):
+#     queryset = PerfilesDeAcceso.objects.all()
+#     serializer_class = PerfilesDeAccesoSerializer
