@@ -11,7 +11,6 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
 from .forms import MedicoForm, CostosPorAsistenteForm, AsistentesForm, EmisorForm, AseguradorasForm, CostosDeOperacionesForm, serviciosForm, FacturasForm, FacturasAsistentesForm, PagosAsistentesForm, PerfilesDeAccesoForm
-from django_jquery_datatables.utils import JqueryDatatable
 
 def index(request):
   print("Hola")

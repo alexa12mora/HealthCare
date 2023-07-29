@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "medical_reports",
     'crispy_forms',
     'crispy_bootstrap4',
-    'ajax_datatable',
     #'admin_volt.apps.AdminVoltConfig',
     'bootstrap4',
     "drf_spectacular",
