@@ -16,7 +16,9 @@
                 {% csrf_token %}
 
                 <div class="mb-4">
-                    <i class="feather icon-user-plus auth-icon"></i>
+                    <i class="auth-icon">
+                        <img src="{% static 'assets/images/SURGYicongreen.ico' %}" alt="Logo" style="max-width: 16%; ">
+                    </i>
                 </div>
                 <h3 class="mb-4">Registro</h3>
                 {% for field in form %}

@@ -19,9 +19,10 @@
             <form method="post" class="card-body text-center">
                 {% csrf_token %}
                 <div class="mb-4">
-                    <i class="feather icon-unlock auth-icon"></i>
+                    <i class="auth-icon">
+                        <img src="{% static 'assets/images/SURGYicon.ico' %}" alt="Logo" style="max-width: 60%; ">
+                    </i>
                 </div>
-                <h3 class="mb-4">Login</h3>
                 {% if form.non_field_errors %}
                 {% for error in form.non_field_errors %}
                 <span class="text-danger d-block my-3">{{ error }}</span>

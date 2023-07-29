@@ -2,37 +2,37 @@
 {% load static %}
 
 {% block breadcrumbs %}{% endblock breadcrumbs %}
-
 {% block content %}
-  <!-- [ Main Content ] start -->
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="card">
-        <div class="card-header">
-          <h5>Actualizar mi información</h5>
-        </div>
-        <div class="card-block">
-          <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="{{ user_form.first_name.id_for_label }}">Nombre</label>
-              {{ user_form.first_name }} 
-            </div>
-            <div class="form-group">
-              <label for="{{ user_form.last_name.id_for_label }}">Apellidos</label>
-              {{ user_form.last_name }}
-            </div>
-            <div class="form-group">
-              <label for="{{ user_form.email.id_for_label }}">Correo</label>
-              {{ user_form.email }}
-              <small id="{{ user_form.email.auto_id }}Help" class="form-text text-muted">Nunca compartiremos su correo electrónico con nadie más.</small>
-            </div>
-            <!-- Add more fields as needed -->
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-          </form>
-        </div>
+<!-- [ Main Content ] start -->
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Actualizar mi información</h5>
+      </div>
+      <div class="card-block">
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="{{ user_form.first_name.id_for_label }}">Nombre</label>
+            {{ user_form.first_name }}
+          </div>
+          <div class="form-group">
+            <label for="{{ user_form.last_name.id_for_label }}">Apellidos</label>
+            {{ user_form.last_name }}
+          </div>
+          <div class="form-group">
+            <label for="{{ user_form.email.id_for_label }}">Correo</label>
+            {{ user_form.email }}
+            <small id="{{ user_form.email.auto_id }}Help" class="form-text text-muted">Nunca compartiremos su correo
+              electrónico con nadie más.</small>
+          </div>
+          <!-- Add more fields as needed -->
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </form>
       </div>
     </div>
   </div>
-  <!-- [ Main Content ] end -->
+</div>
+<!-- [ Main Content ] end -->
 {% endblock content %}

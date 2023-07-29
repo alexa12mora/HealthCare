@@ -2,7 +2,6 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'assets/css/datatables.min.css' %}">
 <script src="{% static 'assets/js/datatables.min.js' %}"></script>
-{% load crispy_forms_tags %}
 {% block content %}
 <!-- Carga de jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -16,7 +15,7 @@
 <div class="col-xl-12 col-md-6">
     <div class="card Recent-Users">
         <div class="card-header">
-            <h5>Lista de costos por tipo de asistencia a</h5>
+            <h5>Lista de costos por tipo de asistencia</h5>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal"
                 data-target="#exampleModalCenter" style="background-color: #21734F;">Agregar
@@ -102,6 +101,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
+
             </div>
         </div>
     </div>
@@ -162,7 +162,11 @@
 </script>
 <script>
     $(document).ready(function () {
-        $('#miTabla').DataTable();
+        $('#miTabla').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+            }
+        });
     });
 </script>
 

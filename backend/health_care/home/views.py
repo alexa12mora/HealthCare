@@ -1,6 +1,6 @@
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect
-from admin_datta.forms import RegistrationForm, LoginForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm
+#from admin_datta.forms import RegistrationForm, LoginForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetConfirmView, PasswordResetView
 from django.views.generic import CreateView
 from django.contrib.auth import logout
@@ -131,23 +131,24 @@ class UserRegistrationView(CreateView):
         if form.cleaned_data['user_type'] == 'medico':
             Medico.objects.create(codMedico=self.object.id, Nombre=self.object.username, correo=self.object.email)
         return response
+      
 class UserLoginView(LoginView):
   template_name = 'accounts/auth-signin.html'
-  form_class = LoginForm
+  form_class = CustomLoginForm
   def get_success_url(self):
         return '/'
 
 class UserPasswordResetView(PasswordResetView):
   template_name = 'accounts/auth-reset-password.html'
-  form_class = UserPasswordResetForm
+  form_class = CustomUserPasswordResetForm
 
 class UserPasswrodResetConfirmView(PasswordResetConfirmView):
   template_name = 'accounts/auth-password-reset-confirm.html'
-  form_class = UserSetPasswordForm
+  form_class = CustomUserSetPasswordForm
 
 class UserPasswordChangeView(PasswordChangeView):
   template_name = 'accounts/auth-change-password.html'
-  form_class = UserPasswordChangeForm
+  form_class = CustomUserPasswordChangeForm
 
 def logout_view(request):
   logout(request)

@@ -4,6 +4,7 @@ from django import forms
 from .models import *
 from admin_datta.forms import RegistrationForm
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UsernameField, PasswordResetForm, SetPasswordForm
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -14,36 +15,70 @@ class UserForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
-
-class CustomRegistrationForm(RegistrationForm):
+        
+class CustomLoginForm(AuthenticationForm):
+    username = UsernameField(label=_("Your Username"), widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Nombre de usuario"}))
+    password = forms.CharField(
+      label=_("Your Password"),
+      strip=False,
+      widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Contraseña"}),
+  )
+    
+class CustomRegistrationForm(UserCreationForm):
     password1 = forms.CharField(
-      label=_("Password"),
-      widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
+        label=_("Password"),
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}),
     )
     password2 = forms.CharField(
-      label=_("Confirm Password"),
-      widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}),
+        label=_("Confirm Password"),
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmar Contraseña'}),
     )
     USER_TYPE_CHOICES = (
         ('medico', 'Médico'),
         ('secretaria', 'Secretaria')
     )
-    user_type = forms.ChoiceField(choices=USER_TYPE_CHOICES)
+    user_type = forms.ChoiceField(choices=USER_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    
     class Meta:
         model = User
-        fields = ('username', 'email', )
-
+        fields = ('username', 'email',)
         widgets = {
-        'username': forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Username'
-        }),
-        'email': forms.EmailInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Email'
-        })
-    }
-
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nombre de usuario'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Correo electrónico'
+            })
+        }
+        
+class CustomUserPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Correo electrónico'
+    }))
+   
+ 
+class CustomUserSetPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
+        'class': 'form-control', 'placeholder': 'Nueva contraseña'
+    }), label="New Password")
+    new_password2 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
+        'class': 'form-control', 'placeholder': 'Confirmar nueva contraseña'
+    }), label="Confirm New Password")
+        
+class CustomUserPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
+        'class': 'form-control', 'placeholder': 'Contraseña anterior'
+    }), label='Old Password')
+    new_password1 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
+        'class': 'form-control', 'placeholder': 'Nueva contraseña'
+    }), label="New Password")
+    new_password2 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
+        'class': 'form-control', 'placeholder': 'Confirmar nueva contraseña'
+    }), label="Confirm New Password")        
+    
 class MedicoForm(forms.ModelForm):
     class Meta:
         model = Medico
