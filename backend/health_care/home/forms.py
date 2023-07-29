@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django import forms
-from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
+from .models import *
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -118,14 +118,14 @@ class PagosAsistentesForm(forms.ModelForm):
             'FechaPago': forms.DateInput(attrs={'class': 'form-control'}),
         }
 
-class PerfilesDeAccesoForm(forms.ModelForm):
-    class Meta:
-        model = PerfilesDeAcceso
-        fields = ['NombreUsuario', 'Password', 'TipoUsuario', 'NivelDeAcceso']
-        widgets = {
-            'NombreUsuario': forms.TextInput(attrs={'class': 'form-control'}),
-            'Password': forms.PasswordInput(attrs={'class': 'form-control'}),
-            'TipoUsuario': forms.Select(attrs={'class': 'form-control'}),
-            'NivelDeAcceso': forms.NumberInput(attrs={'class': 'form-control'}),
-        }
+# class PerfilesDeAccesoForm(forms.ModelForm):
+#     class Meta:
+#         model = PerfilesDeAcceso
+#         fields = ['NombreUsuario', 'Password', 'TipoUsuario', 'NivelDeAcceso']
+#         widgets = {
+#             'NombreUsuario': forms.TextInput(attrs={'class': 'form-control'}),
+#             'Password': forms.PasswordInput(attrs={'class': 'form-control'}),
+#             'TipoUsuario': forms.Select(attrs={'class': 'form-control'}),
+#             'NivelDeAcceso': forms.NumberInput(attrs={'class': 'form-control'}),
+#         }
 

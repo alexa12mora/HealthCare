@@ -9,8 +9,8 @@ from .forms import UserForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
-from .forms import MedicoForm, CostosPorAsistenteForm, AsistentesForm, EmisorForm, AseguradorasForm, CostosDeOperacionesForm, serviciosForm, FacturasForm, FacturasAsistentesForm, PagosAsistentesForm, PerfilesDeAccesoForm
+from .models import *
+from .forms import *
 
 def index(request):
   print("Hola")
@@ -122,10 +122,15 @@ def google_maps(request):
 
 # Authentication
 class UserRegistrationView(CreateView):
-  template_name = 'accounts/auth-signup.html'
-  form_class = RegistrationForm
-  success_url = '/accounts/login/'
+    template_name = 'accounts/auth-signup.html'
+    form_class = RegistrationForm
+    success_url = '/accounts/login/'
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if form.cleaned_data['user_type'] == 'medico':
+            Medico.objects.create(codMedico=self.object.id, Nombre=self.object.username, correo=self.object.email)
+        return response
 class UserLoginView(LoginView):
   template_name = 'accounts/auth-signin.html'
   form_class = LoginForm

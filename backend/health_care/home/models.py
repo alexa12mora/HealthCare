@@ -100,11 +100,11 @@ class PagosAsistentes(models.Model):
         return f"PagoAsistente {self.CodOperacion} - {self.CodAsistente}"
 
 
-class PerfilesDeAcceso(models.Model):
-    NombreUsuario = models.CharField(max_length=100, primary_key=True)
-    Password = models.CharField(max_length=100)
-    TipoUsuario = models.CharField(max_length=1, choices=[('M', 'Medico'), ('A', 'Asistente'), ('S', 'Otro')])
-    NivelDeAcceso = models.IntegerField()
+# class PerfilesDeAcceso(models.Model):
+#     NombreUsuario = models.CharField(max_length=100, primary_key=True)
+#     Password = models.CharField(max_length=100)
+#     TipoUsuario = models.CharField(max_length=1, choices=[('M', 'Medico'), ('A', 'Asistente'), ('S', 'Otro')])
+#     NivelDeAcceso = models.IntegerField()
 
-    def __str__(self):
-        return self.NombreUsuario
+#     def __str__(self):
+#         return self.NombreUsuario

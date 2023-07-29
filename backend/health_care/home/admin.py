@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Medico, CostosPorAsistente, Asistentes, Emisor, Aseguradoras, CostosDeOperaciones, servicios, Facturas, FacturasAsistentes, PagosAsistentes, PerfilesDeAcceso
+from .models import *
 
 admin.site.register(Medico)
 admin.site.register(CostosPorAsistente)
@@ -11,4 +11,4 @@ admin.site.register(servicios)
 admin.site.register(Facturas)
 admin.site.register(FacturasAsistentes)
 admin.site.register(PagosAsistentes)
-admin.site.register(PerfilesDeAcceso)
+
