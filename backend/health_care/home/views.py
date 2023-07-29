@@ -123,7 +123,7 @@ def google_maps(request):
 # Authentication
 class UserRegistrationView(CreateView):
     template_name = 'accounts/auth-signup.html'
-    form_class = RegistrationForm
+    form_class = CustomRegistrationForm
     success_url = '/accounts/login/'
 
     def form_valid(self, form):

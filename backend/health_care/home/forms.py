@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.models import User
 from django import forms
 from .models import *
+from admin_datta.forms import RegistrationForm
+from django.utils.translation import gettext_lazy as _
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -12,6 +14,35 @@ class UserForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
+
+class CustomRegistrationForm(RegistrationForm):
+    password1 = forms.CharField(
+      label=_("Password"),
+      widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
+    )
+    password2 = forms.CharField(
+      label=_("Confirm Password"),
+      widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}),
+    )
+    USER_TYPE_CHOICES = (
+        ('medico', 'Médico'),
+        ('secretaria', 'Secretaria')
+    )
+    user_type = forms.ChoiceField(choices=USER_TYPE_CHOICES)
+    class Meta:
+        model = User
+        fields = ('username', 'email', )
+
+        widgets = {
+        'username': forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Username'
+        }),
+        'email': forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Email'
+        })
+    }
 
 class MedicoForm(forms.ModelForm):
     class Meta:
