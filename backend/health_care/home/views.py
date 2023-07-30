@@ -572,12 +572,15 @@ def create_servicio(request):
     else:
         form = serviciosForm()
         formset = AsistentesFormSet()
+        print(form.errors)
+        print(formset.errors)
 
     context = {
         'segment': 'servicios',
         'form': form,
         'formset': formset,
     }
+
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
   
 @login_required(login_url='/accounts/login/')
@@ -610,3 +613,7 @@ def delete_servicio(request, pk):
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
 
 
+def obtener_monto_costo(request, cod_costo_operacion_id):
+    costo_operacion = CostosDeOperaciones.objects.get(pk=cod_costo_operacion_id)
+    monto_costo = costo_operacion.MontoCosto
+    return JsonResponse({'monto': str(monto_costo)})

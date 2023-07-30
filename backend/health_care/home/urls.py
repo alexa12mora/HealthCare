@@ -92,5 +92,6 @@ urlpatterns = [
   path('servicios/create/', views.create_servicio, name='create_servicio'),
   path('servicios/<int:pk>/update/', views.update_servicio, name='update_servicio'),
   path('servicios/<int:pk>/delete/', views.delete_servicio, name='delete_servicio'),
+  path('obtener_monto_costo/<int:cod_costo_operacion_id>/', views.obtener_monto_costo, name='obtener_monto_costo'),
 ]
 

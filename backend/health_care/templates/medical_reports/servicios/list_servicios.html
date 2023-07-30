@@ -1,96 +1,194 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
-
 
 <!-- CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<form enctype="multipart/form-data" class="container" method="post" id="servicio_form">
+
+
+<!-- [ Main Content ] start -->
+<form method="post" class="row g-3 needs-validation" novalidate>
     {% csrf_token %}
-    <!-- main form start - detalles del servicio -->
-    <div class="card">
-        <div class="card-header card-header-secondary">
-            <h4 class="card-title">Agregar Servicio</h4>
-        </div>
-        {% for field in form %}
-        <div class="form-group card-body">
-            <label>{{field.label}}</label>
-            {% if field.field.required %}
-            <span style="color: red;" class="required">*</span>
-            {% endif %}
-            {{field}}
-            {% for error in field.errors %}
-            <p style="color: red">{{ error }}</p>
-            {% endfor %}
-        </div>
-        {% endfor %}
-    </div>
-    <!-- main form end - detalles del servicio -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Nuevo servicio</h5>
+                </div>
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="validationCustom01" class="form-label">Fecha</label>
+                            {{ form.Fecha }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationCustom02" class="form-label">Tipo de servicio</label>
+                            {{ form.CodCostoOperacion }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationCustom02" class="form-label">Médico principal</label>
+                            {{ form.codMedico }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="validationCustom02" class="form-label">Nombre del paciente</label>
+                            {{ form.NombrePaciente }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="validationCustom02" class="form-label">Medio de pago</label>
+                            {{ form.MedioPago }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
 
-    <!-- formset para agregar asistentes -->
-
-    {{ formset.management_form }}
-    <script type="text/html" id="asistentes-template">
-        <div class="card-body" id="asistentes-__prefix__">
-            {% for field in formset.empty_form %}
-            <div class="form-group">
-                <label>{{ field.label }}</label>
-                {{ field }}
-                {% for error in field.errors %}
-                <p style="color: red">{{ error }}</p>
-                {% endfor %}
+                        <div class="col-md-6">
+                            <label for="validationCustom02" class="form-label">Hospital</label>
+                            {{ form.CodAseguradora }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="validationCustom02" class="form-label">Emisor</label>
+                            {{ form.CodBanco }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="validationCustom02" class="form-label">Monto total</label>
+                            {{ form.MontoTotal }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="validationCustom02" class="form-label">Estado de pago</label>
+                            {{ form.EstadoPago }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="validationCustom02" class="form-label">Número de factura</label>
+                            {{ form.numFactura }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="submit" value="Guardar" class="btn btn-primary" style="margin-top: 10px;">
+                        </div>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeAsistente(__prefix__);">Eliminar</button>
         </div>
-    </script>
-
-    <div class="card mt-4">
-        <div class="card-header card-header-secondary">
-            <h4 class="card-title">Agregar Asistentes</h4>
-        </div>
-        <div class="card-body" id="asistentes-formset">
-            {% for form in formset %}
-            <div class="form-group">
-                <label>{{ form.asistente.label }}</label>
-                {{ form.asistente }}
-                {% for error in form.asistente.errors %}
-                <p style="color: red">{{ error }}</p>
-                {% endfor %}
-                <button type="button" class="btn btn-danger btn-sm"
-                    onclick="removeAsistente('{{ forloop.counter0 }}');">Eliminar</button>
+        <div class="col-md-6">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Registro de asistentes al servicio</h5>
+                </div>
+                <table class="table">
+                    {{ formset.management_form }}
+                    {% for form in formset %}
+                    {% if forloop.first %}
+                    <thead>
+                        <tr>
+                            <th>Nombre del asistente</th>
+                            <th>Correo</th>
+                            <th>Tipo</th>
+                            <th>Borrar</th>
+                        </tr>
+                    </thead>
+                    {% endif %}
+                    <tr class="{% cycle 'row1' 'row2' %} formset_row">
+                        {% for field in form.visible_fields %}
+                        <td>
+                            {# Include the hidden fields in the form #}
+                            {% if forloop.first %}
+                            {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                            {% endfor %}
+                            {% endif %}
+                            {{ field.errors.as_ul }}
+                            {{ field }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
-            {% endfor %}
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addAsistente();">Agregar Asistente</button>
         </div>
-    </div>
-    <!-- formset para agregar asistentes -->
-
-    <div class="form-group mt-4">
-        <button type="submit" class="btn btn-secondary btn-block">Guardar</button>
     </div>
 </form>
+<style>
+    .formset-add-button {
+        margin: 10px 10px;
+    }
 
+    .formset-delete-button {
+        padding: 10px 15px;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    function addAsistente() {
-        const formsetDiv = document.getElementById('asistentes-formset');
-        const formsetTemplate = document.getElementById('asistentes-template').innerHTML;
-        const formsetPrefix = '__prefix__';
-        const nextIndex = formsetDiv.childElementCount;
-        const formsetHTML = formsetTemplate.replace(new RegExp(formsetPrefix, 'g'), nextIndex);
-        formsetDiv.insertAdjacentHTML('beforeend', formsetHTML);
-    }
+    $(document).ready(function () {
+        $('.formset_row').formset({
+            addText: 'Agregar',
+            deleteText: '<i class="fa fa-trash"></i>',
+            prefix: 'asistentes_set',
+            addCssClass: 'btn btn-primary formset-add-button',
+        });
+    });
+    //   
+    document.getElementById('id_CodCostoOperacion').addEventListener('change', function () {
+        const selectCostoOperacion = this;
+        const selectedOption = selectCostoOperacion.options[selectCostoOperacion.selectedIndex];
+        const codCostoOperacionId = selectedOption.value;
+        fetch(`/obtener_monto_costo/${codCostoOperacionId}/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('id_MontoTotal').value = data.monto;
+            })
+            .catch(error => {
+                console.error('Error al obtener el monto del costo de operación:', error);
+            });
+    });
 
-    function removeAsistente(index) {
-        const formsetDiv = document.getElementById('asistentes-formset');
-        const formsetId = `asistentes-${index}`;
-        const formsetElement = document.getElementById(formsetId);
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict'
 
-        if (formsetElement) {
-            formsetDiv.removeChild(formsetElement);
-        }
-    }
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
 </script>
 {% endblock content %}

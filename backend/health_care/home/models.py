@@ -30,10 +30,17 @@ class Aseguradoras(models.Model):
     def __str__(self):
         return self.NombreAseguradora
     
+class CostosDeOperaciones(models.Model):
+    CodCostoOperacion = models.AutoField(primary_key=True)
+    NombreOperacion = models.CharField(max_length=100)
+    MontoCosto = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.NombreOperacion  
+     
 class servicios(models.Model):
     CodProcedimiento = models.AutoField(primary_key=True)
     Fecha = models.DateField()
-    TipoCirugia = models.CharField(max_length=100)
     NombrePaciente = models.CharField(max_length=100)
     MontoTotal = models.DecimalField(max_digits=10, decimal_places=2)
     MedioPago = models.CharField(max_length=20)
@@ -43,10 +50,11 @@ class servicios(models.Model):
     codMedico = models.ForeignKey(Medico, on_delete=models.CASCADE)
     DescripcionProcedimiento = models.CharField(max_length=200)
     numFactura = models.CharField(max_length=20)
-
+    CodCostoOperacion = models.ForeignKey(CostosDeOperaciones, on_delete=models.CASCADE,default=1)
+    
     def __str__(self):
         return f"Procedimiento {self.CodProcedimiento}"
-    
+   
 class Asistentes(models.Model):
     CodAsistente = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=100)
@@ -57,20 +65,11 @@ class Asistentes(models.Model):
     def __str__(self):
         return self.Nombre
 
-
-class CostosDeOperaciones(models.Model):
-    CodCostoOperacion = models.AutoField(primary_key=True)
-    NombreOperacion = models.CharField(max_length=100)
-    MontoCosto = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return self.NombreOperacion
     
 class Facturas(models.Model):
     NumFactura = models.AutoField(primary_key=True)
     FechaPago = models.DateField()
     CodProcedimiento = models.ForeignKey(servicios, on_delete=models.CASCADE)
-
     def __str__(self):
         return f"Factura {self.NumFactura}"
 
