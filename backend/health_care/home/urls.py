@@ -80,5 +80,17 @@ urlpatterns = [
   path('crear_servicio/', views.costos_por_servicio, name='costos_por_servicio'),
   path('actualizar/<int:pk>/', views.update_costo, name='update_costo'),
   path('eliminar/<int:pk>/', views.eliminar_costo, name='eliminar_costo'),
+  
+  #asistentes
+  path('asistentes/', views.list_asistentes, name='asistentes_list'),
+  path('asistentes/create/', views.create_asistente, name='asistente_create'),
+  path('asistentes/<int:pk>/update/', views.update_asistente, name='asistente_update'),
+  path('asistentes/<int:pk>/delete/', views.delete_asistente, name='asistente_delete'),
+  
+  #Servicios
+  path('servicios/', views.list_servicios, name='list_servicios'),
+  path('servicios/create/', views.create_servicio, name='create_servicio'),
+  path('servicios/<int:pk>/update/', views.update_servicio, name='update_servicio'),
+  path('servicios/<int:pk>/delete/', views.delete_servicio, name='delete_servicio'),
 ]
 

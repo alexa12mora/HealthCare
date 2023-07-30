@@ -191,14 +191,20 @@ def services(request):
   return render(request, 'pages/sample-page.html', context)
 
 # Vistas para el modelo Medico
+
+@login_required(login_url='/accounts/login/')
 def medico_list(request):
     medicos = Medico.objects.all()
     return render(request, 'medical_reports/medico_list.html', {'medicos': medicos})
 
+
+@login_required(login_url='/accounts/login/')
 def medico_detail(request, codMedico):
     medico = get_object_or_404(Medico, codMedico=codMedico)
     return render(request, 'medical_reports/medico_detail.html', {'medico': medico})
 
+
+@login_required(login_url='/accounts/login/')
 def medico_create(request):
     if request.method == 'POST':
         form = MedicoForm(request.POST)
@@ -209,6 +215,8 @@ def medico_create(request):
         form = MedicoForm()
     return render(request, 'medical_reports/medico_form.html', {'form': form})
 
+
+@login_required(login_url='/accounts/login/')
 def medico_update(request, codMedico):
     try:
         medico = Medico.objects.get(codMedico=codMedico)
@@ -223,6 +231,7 @@ def medico_update(request, codMedico):
         form = MedicoForm(instance=medico)
     return render(request, 'medical_reports/medico_form.html', {'form': form})
 
+@login_required(login_url='/accounts/login/')
 def medico_delete(request, codMedico):
     medico = get_object_or_404(Medico, codMedico=codMedico)
     if request.method == 'POST':
@@ -231,7 +240,8 @@ def medico_delete(request, codMedico):
     return render(request, 'medical_reports/medico_confirm_delete.html', {'medico': medico})
   
   # Vistas para las aseguradoras
-    
+
+@login_required(login_url='/accounts/login/')    
 def create_insurer(request):
     insurers = Aseguradoras.objects.all()  # Definimos la variable insurers fuera del bloque if
     if request.method == 'POST':
@@ -251,6 +261,7 @@ def create_insurer(request):
     print(form.errors)
     return render(request, 'medical_reports/insurers/list_insurers.html', context)
 
+@login_required(login_url='/accounts/login/')
 def update_insurer(request, pk):
     aseguradora = get_object_or_404(Aseguradoras, pk=pk)
     if request.method == 'POST':
@@ -266,6 +277,7 @@ def update_insurer(request, pk):
     }
     return render(request, 'medical_reports/insurers/update_insurer.html', context)
 
+@login_required(login_url='/accounts/login/')
 def eliminar_aseguradora(request, pk):
     aseguradora = get_object_or_404(Aseguradoras, pk=pk)
 
@@ -276,7 +288,8 @@ def eliminar_aseguradora(request, pk):
 
     # Si la petición no es POST, simplemente redireccionamos a la lista de aseguradoras
     return redirect('listar_aseguradoras')
-
+  
+@login_required(login_url='/accounts/login/')
 def list_insurers(request):
     insurers = Aseguradoras.objects.all()
     form = AseguradorasForm()  # Crea una instancia del formulario vacío
@@ -289,7 +302,7 @@ def list_insurers(request):
   
   
  #Emisores
- 
+@login_required(login_url='/accounts/login/')
 def emitters(request):
     emisores = Emisor.objects.all()  # Obtener todos los Emisores
     if request.method == 'POST':
@@ -307,7 +320,9 @@ def emitters(request):
     }
     print(form.errors)
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
-
+  
+  
+@login_required(login_url='/accounts/login/')
 def list_emitters(request):
     emisores = Emisor.objects.all()  # Obtener todos los Emisores
     form = EmisorForm()  # Crea una instancia del formulario vacío
@@ -318,7 +333,7 @@ def list_emitters(request):
     }
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
 
-
+@login_required(login_url='/accounts/login/')
 def update_emitters(request, pk):
     emisor = get_object_or_404(Emisor, pk=pk)
     if request.method == 'POST':
@@ -336,6 +351,8 @@ def update_emitters(request, pk):
 
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
 
+
+@login_required(login_url='/accounts/login/')
 def eliminar_aseguradora(request, pk):
     emisor = get_object_or_404(Emisor, pk=pk)
     if request.method == 'POST':
@@ -346,7 +363,8 @@ def eliminar_aseguradora(request, pk):
     # Si la petición no es POST, simplemente redireccionamos a la lista de aseguradoras
     return redirect('list_emisores')
   
-  
+
+@login_required(login_url='/accounts/login/')  
 def get_emisor(request, pk):
     emisor = get_object_or_404(Emisor, pk=pk)
     context = {
@@ -356,6 +374,8 @@ def get_emisor(request, pk):
   
   
 #Pago Asistentes 
+
+@login_required(login_url='/accounts/login/')
 def costos_por_asistente(request):
     costos = CostosPorAsistente.objects.all()
     if request.method == 'POST':
@@ -372,6 +392,7 @@ def costos_por_asistente(request):
     }
     return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
 
+@login_required(login_url='/accounts/login/')
 def list_costos(request):
     costos = CostosPorAsistente.objects.all()
     form = CostosPorAsistenteForm()
@@ -381,7 +402,9 @@ def list_costos(request):
         'form': form,
     }
     return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
-
+  
+  
+@login_required(login_url='/accounts/login/')
 def update_costo(request, pk):
     costo = get_object_or_404(CostosPorAsistente, pk=pk)
     if request.method == 'POST':
@@ -399,6 +422,8 @@ def update_costo(request, pk):
 
     return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
 
+
+@login_required(login_url='/accounts/login/')
 def eliminar_costo(request, pk):
     costo = get_object_or_404(CostosPorAsistente, pk=pk)
     if request.method == 'POST':
@@ -409,6 +434,7 @@ def eliminar_costo(request, pk):
 
 
 #Costos por servicio(operaciones)
+@login_required(login_url='/accounts/login/')
 def costos_por_servicio(request):
     costos = CostosDeOperaciones.objects.all()
     if request.method == 'POST':
@@ -425,6 +451,7 @@ def costos_por_servicio(request):
     }
     return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
 
+@login_required(login_url='/accounts/login/')
 def list_servicio(request):
     costos = CostosDeOperaciones.objects.all()
     form = CostosDeOperacionesForm()
@@ -435,6 +462,7 @@ def list_servicio(request):
     }
     return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
 
+@login_required(login_url='/accounts/login/')
 def update_costo(request, pk):
     costo = get_object_or_404(CostosDeOperaciones, pk=pk)
     if request.method == 'POST':
@@ -452,6 +480,7 @@ def update_costo(request, pk):
 
     return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
 
+@login_required(login_url='/accounts/login/')
 def eliminar_costo(request, pk):
     costo = get_object_or_404(CostosDeOperaciones, pk=pk)
     if request.method == 'POST':
@@ -459,4 +488,125 @@ def eliminar_costo(request, pk):
         return redirect('list_servicio')
 
     return redirect('list_servicio')
+  
+
+#asistentes
+@login_required(login_url='/accounts/login/')
+def list_asistentes(request):
+    asistentes = Asistentes.objects.all()
+    form = AsistentesForm()
+    context = {
+        'segment': 'asistentes',
+        'asistentes': asistentes,
+        'form': form,
+    }
+    return render(request, 'asistentes_list.html', context)
+  
+@login_required(login_url='/accounts/login/')
+def create_asistente(request):
+    if request.method == 'POST':
+        form = AsistentesForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('list_asistentes')
+    else:
+        form = AsistentesForm()
+    context = {
+        'segment': 'asistentes',
+        'form': form,
+    }
+    return render(request, 'asistente_form.html', context)
+  
+@login_required(login_url='/accounts/login/')
+def update_asistente(request, pk):
+    asistente = get_object_or_404(Asistentes, pk=pk)
+    if request.method == 'POST':
+        form = AsistentesForm(request.POST, instance=asistente)
+        if form.is_valid():
+            form.save()
+            return redirect('list_asistentes')
+    else:
+        form = AsistentesForm(instance=asistente)
+    context = {
+        'segment': 'asistentes',
+        'form': form,
+    }
+    return render(request, 'asistente_form.html', context)
+  
+  
+@login_required(login_url='/accounts/login/')
+def delete_asistente(request, pk):
+    asistente = get_object_or_404(Asistentes, pk=pk)
+    if request.method == 'POST':
+        asistente.delete()
+        return redirect('list_asistentes')
+    context = {
+        'segment': 'asistentes',
+        'asistente': asistente,
+    }
+    return render(request, 'asistente_confirm_delete.html', context)
+  
+  
+  #servicios
+@login_required(login_url='/accounts/login/')
+def list_servicios(request):
+    servicios_list = servicios.objects.all()
+    form = serviciosForm()
+    context = {
+        'segment': 'servicios',
+        'servicios_list': servicios_list,
+        'form': form,
+    }
+    return render(request, 'medical_reports/servicios/list_servicios.html', context)
+  
+@login_required(login_url='/accounts/login/')
+def create_servicio(request):
+    if request.method == 'POST':
+        form = serviciosForm(request.POST)
+        formset = AsistentesFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            servicio = form.save()
+            formset.instance = servicio
+            formset.save()
+            return redirect('list_servicios')
+    else:
+        form = serviciosForm()
+        formset = AsistentesFormSet()
+
+    context = {
+        'segment': 'servicios',
+        'form': form,
+        'formset': formset,
+    }
+    return render(request, 'medical_reports/servicios/list_servicios.html', context)
+  
+@login_required(login_url='/accounts/login/')
+def update_servicio(request, pk):
+    servicio = get_object_or_404(servicios, pk=pk)
+    if request.method == 'POST':
+        form = serviciosForm(request.POST, instance=servicio)
+        if form.is_valid():
+            form.save()
+            return redirect('list_servicios')
+    else:
+        form = serviciosForm(instance=servicio)
+    context = {
+        'segment': 'servicios',
+        'form': form,
+        'servicio': servicio,
+    }
+    return render(request, 'medical_reports/servicios/list_servicios.html', context)
+  
+@login_required(login_url='/accounts/login/')
+def delete_servicio(request, pk):
+    servicio = get_object_or_404(servicios, pk=pk)
+    if request.method == 'POST':
+        servicio.delete()
+        return redirect('list_servicios')
+    context = {
+        'segment': 'servicios',
+        'servicio': servicio,
+    }
+    return render(request, 'medical_reports/servicios/list_servicios.html', context)
+
 

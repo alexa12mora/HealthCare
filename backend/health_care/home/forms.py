@@ -1,3 +1,4 @@
+from datetime import date
 from django import forms
 from django.contrib.auth.models import User
 from django import forms
@@ -107,6 +108,18 @@ class AsistentesForm(forms.ModelForm):
             'CodCostoPorAsistente': forms.Select(attrs={'class': 'form-control'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(AsistentesForm, self).__init__(*args, **kwargs)
+        self.fields['CodCostoPorAsistente'].queryset = CostosPorAsistente.objects.all()
+
+AsistentesFormSet = forms.inlineformset_factory(
+    servicios,
+    Asistentes,
+    form=AsistentesForm,
+    extra=1,
+    can_delete=True,
+    can_delete_extra=True
+)    
 class EmisorForm(forms.ModelForm):
     class Meta:
         model = Emisor
@@ -133,25 +146,32 @@ class CostosDeOperacionesForm(forms.ModelForm):
         }
 
 class serviciosForm(forms.ModelForm):
+    CodAseguradora = forms.ModelChoiceField(queryset=None, widget=forms.Select(attrs={'class': 'form-control'}))
+    CodBanco = forms.ModelChoiceField(queryset=None, widget=forms.Select(attrs={'class': 'form-control'}))
+    codMedico = forms.ModelChoiceField(queryset=None, widget=forms.Select(attrs={'class': 'form-control'}))
+    CodCostoOperacion = forms.ModelChoiceField(queryset=None, widget=forms.Select(attrs={'class': 'form-control'}))
     class Meta:
         model = servicios
-        fields = ['Fecha', 'TipoCirugia', 'Hospital', 'NombrePaciente', 'MontoTotal', 'MedioPago', 'CodAseguradora', 'CodBanco', 'EstadoPago', 'codMedico', 'CodCostoOperacion', 'CodAsistente', 'DescripcionProcedimiento', 'numFactura']
+        fields = ['Fecha', 'TipoCirugia', 'NombrePaciente', 'MontoTotal', 'MedioPago', 'CodAseguradora', 'CodBanco', 'EstadoPago', 'codMedico', 'CodCostoOperacion', 'DescripcionProcedimiento', 'numFactura']
         widgets = {
             'Fecha': forms.DateInput(attrs={'class': 'form-control'}),
             'TipoCirugia': forms.TextInput(attrs={'class': 'form-control'}),
-            'Hospital': forms.TextInput(attrs={'class': 'form-control'}),
             'NombrePaciente': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoTotal': forms.NumberInput(attrs={'class': 'form-control'}),
             'MedioPago': forms.TextInput(attrs={'class': 'form-control'}),
-            'CodAseguradora': forms.Select(attrs={'class': 'form-control'}),
-            'CodBanco': forms.Select(attrs={'class': 'form-control'}),
             'EstadoPago': forms.TextInput(attrs={'class': 'form-control'}),
-            'codMedico': forms.Select(attrs={'class': 'form-control'}),
-            'CodCostoOperacion': forms.Select(attrs={'class': 'form-control'}),
-            'CodAsistente': forms.Select(attrs={'class': 'form-control'}),
             'DescripcionProcedimiento': forms.TextInput(attrs={'class': 'form-control'}),
             'numFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(serviciosForm, self).__init__(*args, **kwargs)
+        self.fields['CodAseguradora'].queryset = Aseguradoras.objects.all()
+        self.fields['CodBanco'].queryset = Emisor.objects.all()
+        self.fields['codMedico'].queryset = Medico.objects.all()
+        self.fields['CodCostoOperacion'].queryset = CostosDeOperaciones.objects.all()
+        fecha_actual = date.today().strftime('%Y-%m-%d')
+        self.fields['Fecha'].initial = fecha_actual
 
 class FacturasForm(forms.ModelForm):
     class Meta:
