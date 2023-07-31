@@ -56,17 +56,17 @@ urlpatterns = [
   path('medico/<int:codMedico>/', views.medico_detail, name='medico_detail'),
   path('medico/<int:codMedico>/update/', views.medico_update, name='medico_update'),
   path('medico/<int:codMedico>/delete/', views.medico_delete, name='medico_delete'),
-  #Aseguradoras
+  # Aseguradoras
   path('agregar/aseguradora/', views.create_insurer, name='agregar_aseguradora'),
   path('listar/aseguradoras/', views.list_insurers, name='listar_aseguradoras'),
-  path('actualizar/<int:pk>/', views.update_insurer, name='actualizar_aseguradora'),
-  path('eliminar_aseguradora/<int:pk>/', views.eliminar_aseguradora, name='eliminar_aseguradora'),
-  
-  #Emisores
+  path('actualizar/aseguradora/<int:pk>/', views.update_insurer, name='actualizar_aseguradora'),
+  path('eliminar/aseguradora/<int:pk>/', views.eliminar_aseguradora, name='eliminar_aseguradora'),
+
+  # Emisores
   path('listar/emisores/', views.list_emitters, name='list_emisores'),
   path('agregar/emisores/', views.emitters, name='create_emisores'),
-  path('actualizar/<int:pk>/', views.update_insurer, name='actualizar_emisor'),
-  path('eliminar/emisores/<int:pk>/', views.eliminar_aseguradora, name='eliminar_emisor'),
+  path('actualizar/emisor/<int:pk>/', views.update_emitters, name='actualizar_emisor'),
+  path('eliminar/emisores/<int:pk>/', views.eliminar_emisor, name='eliminar_emisor'),
   path('get_emisor/<int:pk>/', views.get_emisor, name='get_emisor'),
   
   #Pagos Asistente

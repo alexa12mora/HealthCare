@@ -191,7 +191,6 @@ def services(request):
   return render(request, 'pages/sample-page.html', context)
 
 # Vistas para el modelo Medico
-
 @login_required(login_url='/accounts/login/')
 def medico_list(request):
     medicos = Medico.objects.all()
@@ -240,7 +239,6 @@ def medico_delete(request, codMedico):
     return render(request, 'medical_reports/medico_confirm_delete.html', {'medico': medico})
   
   # Vistas para las aseguradoras
-
 @login_required(login_url='/accounts/login/')    
 def create_insurer(request):
     insurers = Aseguradoras.objects.all()  # Definimos la variable insurers fuera del bloque if
@@ -353,7 +351,7 @@ def update_emitters(request, pk):
 
 
 @login_required(login_url='/accounts/login/')
-def eliminar_aseguradora(request, pk):
+def eliminar_emisor(request, pk):
     emisor = get_object_or_404(Emisor, pk=pk)
     if request.method == 'POST':
         emisor.delete()
