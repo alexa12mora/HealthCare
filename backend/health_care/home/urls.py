@@ -56,42 +56,42 @@ urlpatterns = [
   path('medico/<int:codMedico>/', views.medico_detail, name='medico_detail'),
   path('medico/<int:codMedico>/update/', views.medico_update, name='medico_update'),
   path('medico/<int:codMedico>/delete/', views.medico_delete, name='medico_delete'),
-  #Aseguradoras
+  # Aseguradoras
   path('agregar/aseguradora/', views.create_insurer, name='agregar_aseguradora'),
   path('listar/aseguradoras/', views.list_insurers, name='listar_aseguradoras'),
-  path('actualizar/<int:pk>/', views.update_insurer, name='actualizar_aseguradora'),
-  path('eliminar_aseguradora/<int:pk>/', views.eliminar_aseguradora, name='eliminar_aseguradora'),
-  
-  #Emisores
+  path('actualizar/aseguradora/<int:pk>/', views.update_insurer, name='actualizar_aseguradora'),
+  path('eliminar/aseguradora/<int:pk>/', views.eliminar_aseguradora, name='eliminar_aseguradora'),
+
+  # Emisores
   path('listar/emisores/', views.list_emitters, name='list_emisores'),
   path('agregar/emisores/', views.emitters, name='create_emisores'),
-  path('actualizar/<int:pk>/', views.update_insurer, name='actualizar_emisor'),
-  path('eliminar/emisores/<int:pk>/', views.eliminar_aseguradora, name='eliminar_emisor'),
+  path('actualizar/emisor/<int:pk>/', views.update_emitters, name='actualizar_emisor'),
+  path('eliminar/emisores/<int:pk>/', views.eliminar_emisor, name='eliminar_emisor'),
   path('get_emisor/<int:pk>/', views.get_emisor, name='get_emisor'),
   
   #Pagos Asistente
-  path('pagos_asistentes/', views.list_costos, name='pagos_asistentes'),
-  path('crear_pago/', views.costos_por_asistente, name='crear_pago'),
-  path('actualizar_pago/<int:pk>/', views.update_costo, name='actualizar_pago'),
-  path('eliminar_pago/<int:pk>/', views.eliminar_costo, name='eliminar_pago'),
+  path('pagos_asistentes/', views.list_costos_asistentes, name='pagos_asistentes'),
+  path('crear_pago/', views.create_costos_asistente, name='crear_pago'),
+  path('actualizar_pago/<int:pk>/', views.update_costos_asistentes, name='actualizar_pago'),
+  path('eliminar_pago/<int:pk>/', views.eliminar_costos_asistentes, name='eliminar_pago'),
   
   #Costo de servicios
-  path('costos_servicios/', views.list_servicio, name='list_servicio'),
-  path('crear_servicio/', views.costos_por_servicio, name='costos_por_servicio'),
-  path('actualizar/<int:pk>/', views.update_costo, name='update_costo'),
-  path('eliminar/<int:pk>/', views.eliminar_costo, name='eliminar_costo'),
+  path('costos_servicios/', views.list_costos_por_servicio, name='list_servicio'),
+  path('crear_servicio/', views.create_costos_por_servicio, name='costos_por_servicio'),
+  path('actualizar/costo/<int:pk>/', views.update_costos_por_servicio, name='update_costo'),
+  path('eliminar/<int:pk>/', views.eliminar_costos_por_servicio, name='eliminar_costo'),
   
   #asistentes
   path('asistentes/', views.list_asistentes, name='asistentes_list'),
   path('asistentes/create/', views.create_asistente, name='asistente_create'),
-  path('asistentes/<int:pk>/update/', views.update_asistente, name='asistente_update'),
-  path('asistentes/<int:pk>/delete/', views.delete_asistente, name='asistente_delete'),
+  path('actualizar/asistentes/<int:pk>/', views.update_asistente, name='asistente_update'),
+  path('asistentes/<int:pk>/', views.delete_asistente, name='asistente_delete'),
   
   #Servicios
   path('servicios/', views.list_servicios, name='list_servicios'),
   path('servicios/create/', views.create_servicio, name='create_servicio'),
   path('servicios/<int:pk>/update/', views.update_servicio, name='update_servicio'),
   path('servicios/<int:pk>/delete/', views.delete_servicio, name='delete_servicio'),
-  path('obtener_monto_costo/<int:cod_costo_operacion_id>/', views.obtener_monto_costo, name='obtener_monto_costo'),
+  path('obtener_monto_costo/<int:cod_costo_operacion_id>/', views.obtener_monto_costo_servicios, name='obtener_monto_costo'),
 ]
 

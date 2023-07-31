@@ -85,7 +85,7 @@
                                 <p class="m-0">{{ aseguradoras.TipoAsistente }}</p>
                             </td>
                             <td>
-                                <p class="m-0">{{ aseguradoras.MontoCosto }}</p>
+                                <p class="m-0">$ {{ aseguradoras.MontoCosto }}</p>
                             </td>
                             <td>
                                 <a href="javascript:void(0);" class="label theme-bg2 text-white f-12"
@@ -137,7 +137,7 @@
     // Restablecer el formulario al cerrar el modal
     $('#exampleModalCenter').on('hidden.bs.modal', function () {
         $('#update-id').val('');
-        $('#exampleModalCenter form').attr('action', '{% url "agregar_aseguradora" %}');
+        $('#exampleModalCenter form').attr('action', '{% url "actualizar_pago" 0 %}');
         $('#exampleModalCenter .modal-title').text('Registro');
     });
 

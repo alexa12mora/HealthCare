@@ -56,14 +56,21 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <label for="validationCustom02" class="form-label">Hospital</label>
                             {{ form.CodAseguradora }}
                             <div class="invalid-feedback">
                                 Campo es requerido
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
+                            <label for="validationCustom02" class="form-label">Descripción del procedimiento</label>
+                            {{ form.DescripcionProcedimiento  }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-12">
                             <label for="validationCustom02" class="form-label">Emisor</label>
                             {{ form.CodBanco }}
                             <div class="invalid-feedback">
@@ -168,7 +175,7 @@
             .catch(error => {
                 console.error('Error al obtener el monto del costo de operación:', error);
             });
-    });
+    }, { passive: false });
 
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {

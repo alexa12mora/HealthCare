@@ -353,7 +353,7 @@ def update_emitters(request, pk):
 
 
 @login_required(login_url='/accounts/login/')
-def eliminar_aseguradora(request, pk):
+def eliminar_emisor(request, pk):
     emisor = get_object_or_404(Emisor, pk=pk)
     if request.method == 'POST':
         emisor.delete()
@@ -372,11 +372,9 @@ def get_emisor(request, pk):
     }
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
   
-  
 #Pago Asistentes 
-
 @login_required(login_url='/accounts/login/')
-def costos_por_asistente(request):
+def create_costos_asistente(request):
     costos = CostosPorAsistente.objects.all()
     if request.method == 'POST':
         form = CostosPorAsistenteForm(request.POST)
@@ -393,7 +391,7 @@ def costos_por_asistente(request):
     return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
 
 @login_required(login_url='/accounts/login/')
-def list_costos(request):
+def list_costos_asistentes(request):
     costos = CostosPorAsistente.objects.all()
     form = CostosPorAsistenteForm()
     context = {
@@ -405,7 +403,7 @@ def list_costos(request):
   
   
 @login_required(login_url='/accounts/login/')
-def update_costo(request, pk):
+def update_costos_asistentes(request, pk):
     costo = get_object_or_404(CostosPorAsistente, pk=pk)
     if request.method == 'POST':
         form = CostosPorAsistenteForm(request.POST, instance=costo)
@@ -424,18 +422,19 @@ def update_costo(request, pk):
 
 
 @login_required(login_url='/accounts/login/')
-def eliminar_costo(request, pk):
+def eliminar_costos_asistentes(request, pk):
     costo = get_object_or_404(CostosPorAsistente, pk=pk)
     if request.method == 'POST':
         costo.delete()
+        print("Si")
         return redirect('pagos_asistentes')
-
+    print("NO")
     return redirect('pagos_asistentes')
 
 
 #Costos por servicio(operaciones)
 @login_required(login_url='/accounts/login/')
-def costos_por_servicio(request):
+def create_costos_por_servicio(request):
     costos = CostosDeOperaciones.objects.all()
     if request.method == 'POST':
         form = CostosDeOperacionesForm(request.POST)
@@ -452,7 +451,7 @@ def costos_por_servicio(request):
     return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
 
 @login_required(login_url='/accounts/login/')
-def list_servicio(request):
+def list_costos_por_servicio(request):
     costos = CostosDeOperaciones.objects.all()
     form = CostosDeOperacionesForm()
     context = {
@@ -463,7 +462,7 @@ def list_servicio(request):
     return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
 
 @login_required(login_url='/accounts/login/')
-def update_costo(request, pk):
+def update_costos_por_servicio(request, pk):
     costo = get_object_or_404(CostosDeOperaciones, pk=pk)
     if request.method == 'POST':
         form = CostosDeOperacionesForm(request.POST, instance=costo)
@@ -478,10 +477,10 @@ def update_costo(request, pk):
         'action': 'Actualizar',
     }
 
-    return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
+    return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
 
 @login_required(login_url='/accounts/login/')
-def eliminar_costo(request, pk):
+def eliminar_costos_por_servicio(request, pk):
     costo = get_object_or_404(CostosDeOperaciones, pk=pk)
     if request.method == 'POST':
         costo.delete()
@@ -551,11 +550,13 @@ def delete_asistente(request, pk):
 @login_required(login_url='/accounts/login/')
 def list_servicios(request):
     servicios_list = servicios.objects.all()
+    formset = AsistentesFormSet(request.POST)
     form = serviciosForm()
     context = {
         'segment': 'servicios',
         'servicios_list': servicios_list,
         'form': form,
+        'formset': formset,
     }
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
   
@@ -564,11 +565,15 @@ def create_servicio(request):
     if request.method == 'POST':
         form = serviciosForm(request.POST)
         formset = AsistentesFormSet(request.POST)
+        print('Hola')
+        print(form.errors)
+        print(formset.errors)
         if form.is_valid() and formset.is_valid():
+            print('Llegue aqui')
             servicio = form.save()
             formset.instance = servicio
             formset.save()
-            return redirect('list_servicios')
+            return redirect('create_servicio')
     else:
         form = serviciosForm()
         formset = AsistentesFormSet()
@@ -613,7 +618,7 @@ def delete_servicio(request, pk):
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
 
 
-def obtener_monto_costo(request, cod_costo_operacion_id):
+def obtener_monto_costo_servicios(request, cod_costo_operacion_id):
     costo_operacion = CostosDeOperaciones.objects.get(pk=cod_costo_operacion_id)
     monto_costo = costo_operacion.MontoCosto
     return JsonResponse({'monto': str(monto_costo)})
