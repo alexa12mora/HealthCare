@@ -89,9 +89,15 @@ urlpatterns = [
   
   #Servicios
   path('servicios/', views.list_servicios, name='list_servicios'),
-  path('servicios/create/', views.create_servicio, name='create_servicio'),
-  path('servicios/<int:pk>/update/', views.update_servicio, name='update_servicio'),
-  path('servicios/<int:pk>/delete/', views.delete_servicio, name='delete_servicio'),
+  path('servicios/registro/', views.create_servicio, name='create_servicio'),
+  path('servicios/actualizar/<int:pk>', views.update_servicio, name='update_servicio'),
+  path('servicios/eliminar/<int:pk>', views.delete_servicio, name='delete_servicio'),
   path('obtener_monto_costo/<int:cod_costo_operacion_id>/', views.obtener_monto_costo_servicios, name='obtener_monto_costo'),
+  
+  # Aseguradoras
+  path('agregar/hospital/', views.create_hospital, name='create_hospital'),
+  path('listar/hospitales/', views.list_hospital, name='list_hospital'),
+  path('actualizar/hospital/<int:pk>/', views.update_hospital, name='update_hospital'),
+  path('eliminar/hospital/<int:pk>/', views.eliminar_hospital, name='eliminar_hospital'),
 ]
 

@@ -14,8 +14,8 @@
 <div class="col-xl-12 col-md-6">
     <div class="card Recent-Users">
         <div class="card-header">
-            <h5>Aseguradoras</h5>
-
+            <h5>Hospitales</h5>
+            <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal"
                 data-target="#exampleModalCenter" style="background-color: #21734F;">Agregar
                 <i class="feather icon-plus-square"></i>
@@ -34,13 +34,13 @@
                     </div>
                     <div class="modal-body">
                         <form id="update-form" class="needs-validation" novalidate method="post"
-                            action="{% url 'agregar_aseguradora' %}">
+                            action="{% url 'create_hospital' %}">
                             {% csrf_token %}
                             <input type="hidden" id="update-id" name="id" value="">
                             <div class="form-row">
                                 <div class="col-md-12 mb-3">
-                                    <label for="validationCustom01">Nombre de la aseguradora</label>
-                                    {{ form.NombreAseguradora }}
+                                    <label for="validationCustom01">Nombre del Hospital</label>
+                                    {{ form.NombreHospital }}
                                     <div class="invalid-feedback">
                                         Requerido
                                     </div>
@@ -61,19 +61,19 @@
                 <table class="table table-hover" id="miTabla">
                     <thead>
                         <tr>
-                            <th scope="col">Codigo de aseguradora</th>
+                            <th scope="col">Codigo del hospital</th>
                             <th scope="col">Nombre</th>
                             <th scope="col">Accion</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for aseguradoras in insurers %}
+                        {% for aseguradoras in hospital %}
                         <tr class="unread" id="row-{{ aseguradoras.pk }}">
                             <td>
-                                <p class="m-0">{{ aseguradoras.CodAseguradora }}</p>
+                                <p class="m-0">{{ aseguradoras.CodHospital }}</p>
                             </td>
                             <td>
-                                <p class="m-0">{{ aseguradoras.NombreAseguradora }}</p>
+                                <p class="m-0">{{ aseguradoras.NombreHospital }}</p>
                             </td>
                             <td>
                                 <a href="javascript:void(0);" class="label theme-bg2 text-white f-12"
@@ -81,7 +81,7 @@
                                     <i class="feather icon-trash-2"></i>
                                 </a>
                                 <a href="javascript:void(0);" class="label theme-bg text-white f-12"
-                                    onclick="openUpdateModal('{{ aseguradoras.pk }}', '{{ aseguradoras.NombreAseguradora }}')">
+                                    onclick="openUpdateModal('{{ aseguradoras.pk }}', '{{ aseguradoras.NombreHospital }}')">
                                     <i class="feather icon-edit"></i>
                                 </a>
                             </td>
@@ -98,7 +98,7 @@
     function openUpdateModal(id, nombreAseguradora) {
         $('#exampleModalCenter').modal('show');
         $('#exampleModalCenter .modal-title').text('Actualizar Registro');
-        $('#exampleModalCenter form').attr('action', '{% url "actualizar_aseguradora" 0 %}'.replace('0', id));
+        $('#exampleModalCenter form').attr('action', '{% url "update_hospital" 0 %}'.replace('0', id));
         $('#id_nombreAseguradora').val(nombreAseguradora);
         $('#update-id').val(id);
     }
@@ -107,7 +107,7 @@
         // Solicitar al servidor eliminar la aseguradora con el ID proporcionado
         $.ajax({
             type: "POST",
-            url: "{% url 'eliminar_aseguradora' 0 %}".replace('0', id),
+            url: "{% url 'eliminar_hospital' 0 %}".replace('0', id),
             data: {
                 csrfmiddlewaretoken: '{{ csrf_token }}',
             },
@@ -124,7 +124,7 @@
     // Restablecer el formulario al cerrar el modal
     $('#exampleModalCenter').on('hidden.bs.modal', function () {
         $('#update-id').val('');
-        $('#exampleModalCenter form').attr('action', '{% url "agregar_aseguradora" %}');
+        $('#exampleModalCenter form').attr('action', '{% url "create_hospital" %}');
         $('#exampleModalCenter .modal-title').text('Registro');
     });
 

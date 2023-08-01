@@ -239,8 +239,8 @@ def medico_delete(request, codMedico):
         return redirect('medico_list')
     return render(request, 'medical_reports/medico_confirm_delete.html', {'medico': medico})
   
-  # Vistas para las aseguradoras
 
+# Vistas para las aseguradoras
 @login_required(login_url='/accounts/login/')    
 def create_insurer(request):
     insurers = Aseguradoras.objects.all()  # Definimos la variable insurers fuera del bloque if
@@ -280,7 +280,6 @@ def update_insurer(request, pk):
 @login_required(login_url='/accounts/login/')
 def eliminar_aseguradora(request, pk):
     aseguradora = get_object_or_404(Aseguradoras, pk=pk)
-
     if request.method == 'POST':
         aseguradora.delete()
         # Redireccionar a la página que muestra la lista actualizada de aseguradoras
@@ -300,7 +299,65 @@ def list_insurers(request):
     }
     return render(request, 'medical_reports/insurers/list_insurers.html', context)
   
+ 
+ 
+ 
+# Vistas para los hospitales
+@login_required(login_url='/accounts/login/')    
+def create_hospital(request):
+    hospitals = Hospitales.objects.all()  # Definimos la variable insurers fuera del bloque if
+    if request.method == 'POST':
+        form = HospitalesForm(request.POST)
+        if form.is_valid():
+            print("si")
+            form.save()
+            return redirect('list_hospital')
+    else:
+        print("no")
+        form = HospitalesForm()
+    context = {
+        'hospitals': hospitals,
+        'segment': 'Agregar_hospital',
+        'form': form,
+    }
+    print(form.errors)
+    return render(request, 'medical_reports/hospitals/list_hospitals.html', context)
+
+@login_required(login_url='/accounts/login/')
+def update_hospital(request, pk):
+    hospital = get_object_or_404(Hospitales, pk=pk)
+    if request.method == 'POST':
+        form = HospitalesForm(request.POST, instance=hospital)
+        if form.is_valid():
+            form.save()
+            return redirect('list_hospital')
+    else:
+        form = HospitalesForm(instance=hospital)
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'medical_reports/hospitals/list_hospitals.html', context)
+
+@login_required(login_url='/accounts/login/')
+def eliminar_hospital(request, pk):
+    hospital = get_object_or_404(Hospitales, pk=pk)
+    if request.method == 'POST':
+        hospital.delete()
+        return redirect('list_hospital')
+    return redirect('list_hospital')
   
+@login_required(login_url='/accounts/login/')
+def list_hospital(request):
+    hospital = Hospitales.objects.all()
+    form = HospitalesForm()  
+    context = {
+        'segment': 'Lista_de_hospitales',
+        'hospital': hospital,
+        'form': form, 
+    }
+    return render(request, 'medical_reports/hospitals/list_hospitals.html', context)
+   
  #Emisores
 @login_required(login_url='/accounts/login/')
 def emitters(request):
@@ -573,7 +630,7 @@ def create_servicio(request):
             servicio = form.save()
             formset.instance = servicio
             formset.save()
-            return redirect('create_servicio')
+            return redirect('list_servicios')
     else:
         form = serviciosForm()
         formset = AsistentesFormSet()
@@ -586,24 +643,34 @@ def create_servicio(request):
         'formset': formset,
     }
 
-    return render(request, 'medical_reports/servicios/list_servicios.html', context)
+    return render(request, 'medical_reports/servicios/crear_servicio.html', context)
   
 @login_required(login_url='/accounts/login/')
 def update_servicio(request, pk):
     servicio = get_object_or_404(servicios, pk=pk)
+
     if request.method == 'POST':
         form = serviciosForm(request.POST, instance=servicio)
-        if form.is_valid():
+        formset = AsistentesFormSet(request.POST, instance=servicio)
+
+        if form.is_valid() and formset.is_valid():
             form.save()
+            formset.save()
             return redirect('list_servicios')
     else:
         form = serviciosForm(instance=servicio)
+        # Obtener los asistentes asociados al servicio (si los hay)
+        asistentes = servicio.asistentes_set.all()
+        # Inicializar el formset con los datos de los asistentes (si los hay)
+        formset = AsistentesFormSet(instance=servicio, queryset=asistentes)
+
     context = {
         'segment': 'servicios',
         'form': form,
         'servicio': servicio,
+        'formset': formset,
     }
-    return render(request, 'medical_reports/servicios/list_servicios.html', context)
+    return render(request, 'medical_reports/servicios/crear_servicio.html', context)
   
 @login_required(login_url='/accounts/login/')
 def delete_servicio(request, pk):

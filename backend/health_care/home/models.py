@@ -22,14 +22,20 @@ class Emisor(models.Model):
     def __str__(self):
         return self.NombreBanco
 
-
 class Aseguradoras(models.Model):
     CodAseguradora = models.AutoField(primary_key=True)
     NombreAseguradora = models.CharField(max_length=100)
 
     def __str__(self):
         return self.NombreAseguradora
-    
+
+class Hospitales(models.Model):
+    CodHospital = models.AutoField(primary_key=True)
+    NombreHospital = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.NombreHospital
+        
 class CostosDeOperaciones(models.Model):
     CodCostoOperacion = models.AutoField(primary_key=True)
     NombreOperacion = models.CharField(max_length=100)
@@ -45,6 +51,7 @@ class servicios(models.Model):
     MontoTotal = models.DecimalField(max_digits=10, decimal_places=2)
     MedioPago = models.CharField(max_length=20)
     CodAseguradora = models.ForeignKey(Aseguradoras, on_delete=models.CASCADE)
+    CodHospital = models.ForeignKey(Hospitales, on_delete=models.CASCADE,default=1)
     CodBanco = models.ForeignKey(Emisor, on_delete=models.CASCADE)
     EstadoPago = models.CharField(max_length=20)
     codMedico = models.ForeignKey(Medico, on_delete=models.CASCADE)
