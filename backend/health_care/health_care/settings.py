@@ -47,15 +47,15 @@ INSTALLED_APPS = [
     'bootstrap4',
     "drf_spectacular",
     "home",
-    'django_dyn_dt',             # <-- NEW: Dynamic_DT
-
-    # Tooling API-GEN
-    'django_api_gen',            # Django API GENERATOR  # <-- NEW
-    'rest_framework',            # Include DRF           # <-- NEW 
-    'rest_framework.authtoken',  # Include DRF Auth      # <-- NEW   
+    'django_dyn_dt',
+    'django_api_gen',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_tenants' 
 ]
 
 MIDDLEWARE = [
+    'django_tenants.middleware.main.TenantMainMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -107,7 +107,7 @@ WSGI_APPLICATION = "health_care.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django_tenants.postgresql_backend',
         'NAME': 'healthcare',
         'USER': 'admin_hcare',
         'PASSWORD': 'admin123',
@@ -115,6 +115,26 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+TENANT_MODEL = "home.Zona"
+TENANT_APPS = [
+    'home',
+]
+SHARED_APPS = [
+    'django_tenants',
+    'django.contrib.contenttypes',
+    'home',
+    'django.contrib.auth',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+]
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
+TENANT_DOMAIN_MODEL = "home.Dominio"
 
 REST_FRAMEWORK = {
     # YOUR SETTINGS

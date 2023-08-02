@@ -1,4 +1,13 @@
 from django.db import models
+from django_tenants.models import TenantMixin, DomainMixin
+
+class Zona(TenantMixin):
+    name = models.CharField(max_length=100)
+    created_on = models.DateField(auto_now_add=True)
+    auto_create_schema = True
+
+class Dominio(DomainMixin):
+    pass
 
 class Medico(models.Model):
     codMedico = models.AutoField(primary_key=True)
@@ -15,6 +24,7 @@ class CostosPorAsistente(models.Model):
 
     def __str__(self):
         return self.TipoAsistente
+
 class Emisor(models.Model):
     CodBanco = models.AutoField(primary_key=True)
     NombreBanco = models.CharField(max_length=100)
