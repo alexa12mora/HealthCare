@@ -622,25 +622,28 @@ def create_servicio(request):
     if request.method == 'POST':
         form = serviciosForm(request.POST)
         formset = AsistentesFormSet(request.POST)
-        print('Hola')
-        print(form.errors)
-        print(formset.errors)
+        factura_form = FacturasForm(request.POST)
+
         if form.is_valid() and formset.is_valid():
-            print('Llegue aqui')
             servicio = form.save()
             formset.instance = servicio
             formset.save()
+            if form.cleaned_data['MedioPago'] == 'Credito':
+                if factura_form.is_valid():
+                    factura = factura_form.save(commit=False)
+                    factura.CodProcedimiento = servicio
+                    factura.save()
             return redirect('list_servicios')
     else:
         form = serviciosForm()
         formset = AsistentesFormSet()
-        print(form.errors)
-        print(formset.errors)
+        factura_form = FacturasForm()
 
     context = {
         'segment': 'servicios',
         'form': form,
         'formset': formset,
+        'factura_form': factura_form,
     }
 
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
@@ -648,27 +651,30 @@ def create_servicio(request):
 @login_required(login_url='/accounts/login/')
 def update_servicio(request, pk):
     servicio = get_object_or_404(servicios, pk=pk)
-
     if request.method == 'POST':
         form = serviciosForm(request.POST, instance=servicio)
         formset = AsistentesFormSet(request.POST, instance=servicio)
-
+        factura_form = FacturasForm(request.POST)
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
+            if form.cleaned_data['MedioPago'] == 'Credito':
+                if factura_form.is_valid():
+                    factura = factura_form.save(commit=False)
+                    factura.CodProcedimiento = servicio
+                    factura.save()
             return redirect('list_servicios')
     else:
         form = serviciosForm(instance=servicio)
-        # Obtener los asistentes asociados al servicio (si los hay)
         asistentes = servicio.asistentes_set.all()
-        # Inicializar el formset con los datos de los asistentes (si los hay)
         formset = AsistentesFormSet(instance=servicio, queryset=asistentes)
-
+        factura_form = FacturasForm(instance=servicio.facturas_set.first()) 
     context = {
         'segment': 'servicios',
         'form': form,
         'servicio': servicio,
         'formset': formset,
+        'factura_form': factura_form, 
     }
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
   

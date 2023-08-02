@@ -181,15 +181,40 @@ class serviciosForm(forms.ModelForm):
         super(serviciosForm, self).__init__(*args, **kwargs)
         fecha_actual = date.today().strftime('%Y-%m-%d')
         self.fields['Fecha'].initial = fecha_actual
+    def clean(self):
+        cleaned_data = super().clean()
+        medio_pago = cleaned_data.get("MedioPago")
+        if medio_pago == "Credito":
+            num_factura = cleaned_data.get("numFactura")
+            if num_factura:
+                raise forms.ValidationError("Los servicios de crédito no deben tener número de factura.")
+        else:
+            cleaned_data["numFactura"] = None
+        return cleaned_data    
+    
 
 class FacturasForm(forms.ModelForm):
     class Meta:
         model = Facturas
-        fields = ['FechaPago', 'CodProcedimiento']
+        fields = ['FechaPago', 'NumeroFactura', 'CodProcedimiento']
         widgets = {
             'FechaPago': forms.DateInput(attrs={'class': 'form-control'}),
+            'NumeroFactura': forms.TextInput(attrs={'class': 'form-control'}),
             'CodProcedimiento': forms.Select(attrs={'class': 'form-control'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_pago = cleaned_data.get("FechaPago")
+        if fecha_pago is None:
+            cleaned_data['FechaPago'] = None
+
+        numero_factura = cleaned_data.get("NumeroFactura")
+        if not numero_factura:
+            cleaned_data['NumeroFactura'] = None
+
+        return cleaned_data
+
 
 class FacturasAsistentesForm(forms.ModelForm):
     class Meta:

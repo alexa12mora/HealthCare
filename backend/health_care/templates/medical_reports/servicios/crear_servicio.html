@@ -18,9 +18,16 @@
                 <div class="card-header">
                     <h5>Nuevo servicio</h5>
                     <div class="float-right">
-                        <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 16%; "
+                        <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 17%; "
                             class="float-right">
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Datos generales del servicio</h5>
                 </div>
                 <div class="card-body ">
                     <div class="row">
@@ -80,14 +87,14 @@
                                 Campo es requerido
                             </div>
                         </div>
+
                         <div class="col-md-6">
-                            <label for="validationCustom02" class="form-label">Monto total</label>
+                            <label for="validationCustom02" class="form-label"> $ Monto total</label>
                             {{ form.MontoTotal }}
                             <div class="invalid-feedback">
                                 Campo es requerido
                             </div>
                         </div>
-
                         <div class="col-md-6">
                             <label for="validationCustom02" class="form-label">Número de factura de Médico</label>
                             {{ form.numFactura }}
@@ -119,7 +126,7 @@
         <div class="col-md-12">
             <div class="card Recent-Users">
                 <div class="card-header">
-                    <h5>Registro de asistentes al servicio</h5>
+                    <h5>Asociar asistentes al servicio</h5>
                 </div>
                 <table class="table">
                     {{ formset.management_form }}
@@ -150,6 +157,56 @@
                     </tr>
                     {% endfor %}
                 </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Factura por aseguradora</h5>
+                </div>
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="validationCustom01" class="form-label">Fecha de pago por la aseguradora</label>
+                            {{ factura_form.FechaPago }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="validationCustom02" class="form-label">Número de factura</label>
+                            {{ factura_form.NumeroFactura }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Fatura por asistentes</h5>
+                </div>
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="validationCustom01" class="form-label">Fecha</label>
+                            {{ form.Fecha }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="validationCustom02" class="form-label">Tipo de servicio</label>
+                            {{ form.CodCostoOperacion }}
+                            <div class="invalid-feedback">
+                                Campo es requerido
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

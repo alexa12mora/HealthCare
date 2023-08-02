@@ -61,6 +61,7 @@ class servicios(models.Model):
     
     def __str__(self):
         return f"Procedimiento {self.CodProcedimiento}"
+    
    
 class Asistentes(models.Model):
     CodAsistente = models.AutoField(primary_key=True)
@@ -75,7 +76,8 @@ class Asistentes(models.Model):
     
 class Facturas(models.Model):
     NumFactura = models.AutoField(primary_key=True)
-    FechaPago = models.DateField()
+    FechaPago = models.DateField(null=True, blank=True)
+    NumeroFactura = models.CharField(max_length=100,blank=True)
     CodProcedimiento = models.ForeignKey(servicios, on_delete=models.CASCADE)
     def __str__(self):
         return f"Factura {self.NumFactura}"
