@@ -1,13 +1,42 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 class Medico(models.Model):
     codMedico = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     Nombre = models.CharField(max_length=100)
+    Apellidos = models.CharField(max_length=100)
     correo = models.CharField(max_length=100)
+
+    def save(self, *args, **kwargs):
+        self.user.first_name = self.Nombre
+        self.user.last_name = self.Apellidos
+        self.user.email = self.correo
+        self.user.save()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.Nombre
 
+
+class Secretaria(models.Model):
+    codSecretaria = models.AutoField(primary_key=True)
+    Apellidos = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    Nombre = models.CharField(max_length=100)
+    correo = models.CharField(max_length=100)
+    
+    def save(self, *args, **kwargs):
+        self.user.first_name = self.Nombre
+        self.user.last_name = self.Apellidos
+        self.user.email = self.correo
+        self.user.save()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.Nombre
+
+    
 class CostosPorAsistente(models.Model):
     CodCostoPorAsistente = models.AutoField(primary_key=True)
     TipoAsistente = models.CharField(max_length=100)
