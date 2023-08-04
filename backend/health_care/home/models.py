@@ -55,7 +55,6 @@ class servicios(models.Model):
     CodBanco = models.ForeignKey(Emisor, on_delete=models.CASCADE)
     EstadoPago = models.CharField(max_length=20)
     codMedico = models.ForeignKey(Medico, on_delete=models.CASCADE)
-    DescripcionProcedimiento = models.CharField(max_length=200)
     numFactura = models.CharField(max_length=20)
     CodCostoOperacion = models.ForeignKey(CostosDeOperaciones, on_delete=models.CASCADE,default=1)
     
@@ -85,10 +84,9 @@ class Facturas(models.Model):
 
 class FacturasAsistentes(models.Model):
     NumFacturaAsistente = models.AutoField(primary_key=True)
-    FechaEmision = models.DateField()
+    FechaEmision = models.DateField(null=True, blank=True)
     CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
-    CodProcedimiento = models.ForeignKey(servicios, on_delete=models.CASCADE)  # En lugar de CodAsistente
-    descFactura = models.CharField(max_length=100)
+    descFactura = models.CharField(max_length=100,blank=True)
 
     def __str__(self):
         return f"FacturaAsistente {self.NumFacturaAsistente}"
@@ -103,12 +101,3 @@ class PagosAsistentes(models.Model):
     def __str__(self):
         return f"PagoAsistente {self.CodOperacion} - {self.CodAsistente}"
 
-
-# class PerfilesDeAcceso(models.Model):
-#     NombreUsuario = models.CharField(max_length=100, primary_key=True)
-#     Password = models.CharField(max_length=100)
-#     TipoUsuario = models.CharField(max_length=1, choices=[('M', 'Medico'), ('A', 'Asistente'), ('S', 'Otro')])
-#     NivelDeAcceso = models.IntegerField()
-
-#     def __str__(self):
-#         return self.NombreUsuario

@@ -59,28 +59,28 @@
                                 Campo es requerido
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label for="validationCustom02" class="form-label">Forma de pago</label>
                             {{ form.MedioPago }}
                             <div class="invalid-feedback">
                                 Campo es requerido
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label for="validationCustom02" class="form-label">Hospital</label>
                             {{ form.CodHospital }}
                             <div class="invalid-feedback">
                                 Campo es requerido
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label for="validationCustom02" class="form-label">Emisor</label>
                             {{ form.CodBanco }}
                             <div class="invalid-feedback">
                                 Campo es requerido
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label for="validationCustom02" class="form-label">Aseguradora</label>
                             {{ form.CodAseguradora }}
                             <div class="invalid-feedback">
@@ -102,23 +102,6 @@
                                 Campo es requerido
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <label for="validationCustom02" class="form-label">Estado de pago</label>
-                            {{ form.EstadoPago }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <label for="validationCustom02" class="form-label">Descripción del procedimiento</label>
-                            {{ form.DescripcionProcedimiento }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <input type="submit" value="Guardar" class="btn btn-success" style="margin-top: 10px;">
-                        </div>
                     </div>
                 </div>
             </div>
@@ -128,38 +111,41 @@
                 <div class="card-header">
                     <h5>Asociar asistentes al servicio</h5>
                 </div>
-                <table class="table">
-                    {{ formset.management_form }}
-                    {% for form in formset %}
-                    {% if forloop.first %}
-                    <thead>
-                        <tr>
-                            <th>Nombre del asistente</th>
-                            <th>Correo</th>
-                            <th>Tipo</th>
-                            <th>Borrar</th>
-                        </tr>
-                    </thead>
-                    {% endif %}
-                    <tr class="{% cycle 'row1' 'row2' %} formset_row">
-                        {% for field in form.visible_fields %}
-                        <td>
-                            {# Include the hidden fields in the form #}
-                            {% if forloop.first %}
-                            {% for hidden in form.hidden_fields %}
-                            {{ hidden }}
+                <div class="col-md-12">
+                    <table class="table" id="miTabla">
+                        {{ formset.management_form }}
+                        {% for form in formset %}
+                        {% if forloop.first %}
+                        <thead>
+                            <tr>
+                                <th>Nombre del asistente</th>
+                                <th>Correo</th>
+                                <th>Tipo</th>
+                                <th>Borrar</th>
+                            </tr>
+                        </thead>
+                        {% endif %}
+                        <tr class="{% cycle 'row1' 'row2' %} formset_row">
+                            {% for field in form.visible_fields %}
+                            <td>
+                                {# Include the hidden fields in the form #}
+                                {% if forloop.first %}
+                                {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                                {% endfor %}
+                                {% endif %}
+                                {{ field.errors.as_ul }}
+                                {{ field }}
+                            </td>
                             {% endfor %}
-                            {% endif %}
-                            {{ field.errors.as_ul }}
-                            {{ field }}
-                        </td>
+                        </tr>
                         {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </table>
+                    </table>
+                </div>
             </div>
         </div>
-        <div class="col-md-6">
+
+        <div class="col-md-12" id="facturaForm">
             <div class="card Recent-Users">
                 <div class="card-header">
                     <h5>Factura por aseguradora</h5>
@@ -167,7 +153,8 @@
                 <div class="card-body ">
                     <div class="row">
                         <div class="col-md-6">
-                            <label for="validationCustom01" class="form-label">Fecha de pago por la aseguradora</label>
+                            <label for="validationCustom01" class="form-label">Fecha de pago por la
+                                aseguradora</label>
                             {{ factura_form.FechaPago }}
                             <div class="invalid-feedback">
                                 Campo es requerido
@@ -184,27 +171,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="card Recent-Users">
                 <div class="card-header">
-                    <h5>Fatura por asistentes</h5>
-                </div>
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="validationCustom01" class="form-label">Fecha</label>
-                            {{ form.Fecha }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="validationCustom02" class="form-label">Tipo de servicio</label>
-                            {{ form.CodCostoOperacion }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
+                    <div class="float-left">
+                        <input type="submit" value="Guardar" class="btn btn-success" style="margin-top: 10px;">
                     </div>
                 </div>
             </div>
@@ -230,7 +201,6 @@
             addCssClass: 'btn btn-success formset-add-button',
         });
     });
-    //   
     document.getElementById('id_CodCostoOperacion').addEventListener('change', function () {
         const selectCostoOperacion = this;
         const selectedOption = selectCostoOperacion.options[selectCostoOperacion.selectedIndex];
@@ -265,5 +235,28 @@
                 }, false)
             })
     })()
+</script>
+<script>
+    // Función para mostrar u ocultar el formulario de Factura por aseguradora
+    function toggleFacturaForm() {
+        const medioPagoSelect = document.getElementById('id_MedioPago');
+        const facturaForm = document.getElementById('facturaForm');
+
+        if (medioPagoSelect.value === 'Contado') {
+            facturaForm.style.display = 'none';
+        } else {
+            facturaForm.style.display = 'block';
+        }
+    }
+
+    // Ejecutar la función al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleFacturaForm();
+    });
+
+    // Ejecutar la función cuando cambie el valor del campo "Medio de pago"
+    document.getElementById('id_MedioPago').addEventListener('change', function () {
+        toggleFacturaForm();
+    });
 </script>
 {% endblock content %}

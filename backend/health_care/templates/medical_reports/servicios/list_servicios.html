@@ -15,9 +15,15 @@
     <div class="card Recent-Users">
         <div class="card-header">
             <div class="float-left">
-                <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 13%; "
+                <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 25%; "
                     class="float-left">
             </div>
+        </div>
+    </div>
+</div>
+<div class="col-xl-12 col-md-6">
+    <div class="card Recent-Users">
+        <div class="card-header">
             <div class="float-right">
                 <a href="{% url 'create_servicio' %}" class="btn btn-success btn-sm float-right">
                     Agregar nuevo servicios
@@ -31,12 +37,9 @@
                         <thead>
                             <tr>
                                 <th scope="col">FECHA</th>
-                                <th scope="col">TIPO DE CIRUGIA</th>
+                                <th scope="col">TIPO SERVICIO</th>
                                 <th scope="col">HOSPITAL</th>
-                                <th scope="col">MONTO TOTAL $</th>
                                 <th scope="col">FORMA DE PAGO</th>
-                                <th scope="col">ASEGURADORA</th>
-                                <th scope="col">BANCO</th>
                                 <th scope="col">ESTADO DE PAGO</th>
                                 <th scope="col">ACCIONES</th>
                             </tr>
@@ -54,16 +57,7 @@
                                     <p class="m-0">{{ servicios.CodHospital }}</p>
                                 </td>
                                 <td>
-                                    <p class="m-0">{{ servicios.MontoTotal }}</p>
-                                </td>
-                                <td>
                                     <p class="m-0">{{ servicios.MedioPago }}</p>
-                                </td>
-                                <td>
-                                    <p class="m-0">{{ servicios.CodAseguradora }}</p>
-                                </td>
-                                <td>
-                                    <p class="m-0">{{ servicios.CodBanco }}</p>
                                 </td>
                                 <td>
                                     <p class="m-0">{{ servicios.EstadoPago }}</p>
@@ -72,11 +66,6 @@
                                     <a href="javascript:void(0);" class="label theme-bg2 text-white f-12"
                                         onclick="deleteservices('{{ servicios.pk }}')">
                                         <i class="feather icon-trash-2"></i>
-                                    </a>
-
-                                    <a href="{% url 'update_servicio' servicios.pk %}"
-                                        class="label theme-bg text-white f-12">
-                                        <i class="feather icon-edit"></i>
                                     </a>
                                     <a href="{% url 'update_servicio' servicios.pk %}"
                                         class="label theme-bg text-white f-12">

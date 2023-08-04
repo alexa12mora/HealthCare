@@ -163,34 +163,27 @@ class serviciosForm(forms.ModelForm):
     codMedico = forms.ModelChoiceField(queryset=Medico.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     CodCostoOperacion = forms.ModelChoiceField(queryset=CostosDeOperaciones.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     MedioPago = forms.ChoiceField(choices=(('', 'Seleccione'), ('Contado', 'Contado'), ('Credito', 'Crédito')), widget=forms.Select(attrs={'class': 'form-control'}))
-    EstadoPago = forms.ChoiceField(choices=(('', 'Seleccione'), ('Pagada', 'Pagada'), ('Pendiente', 'Pendiente')), widget=forms.Select(attrs={'class': 'form-control'}))
+    EstadoPago = forms.ChoiceField(
+        choices=(('', 'Seleccione'), ('Pagada', 'Pagada'), ('Pendiente', 'Pendiente')),
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     CodHospital = forms.ModelChoiceField(queryset=Hospitales.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     
     class Meta:
         model = servicios
-        fields = ['Fecha', 'NombrePaciente', 'MontoTotal', 'MedioPago', 'CodAseguradora', 'CodBanco','CodHospital', 'EstadoPago', 'codMedico', 'CodCostoOperacion', 'DescripcionProcedimiento', 'numFactura']
+        fields = ['Fecha', 'NombrePaciente', 'MontoTotal', 'MedioPago', 'CodAseguradora', 'CodBanco','CodHospital', 'EstadoPago', 'codMedico', 'CodCostoOperacion', 'numFactura']
         widgets = {
             'Fecha': forms.DateInput(attrs={'class': 'form-control'}),
             'NombrePaciente': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoTotal': forms.NumberInput(attrs={'class': 'form-control'}),
-            'DescripcionProcedimiento': forms.TextInput(attrs={'class': 'form-control'}),
             'numFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
         
     def __init__(self, *args, **kwargs):
         super(serviciosForm, self).__init__(*args, **kwargs)
         fecha_actual = date.today().strftime('%Y-%m-%d')
-        self.fields['Fecha'].initial = fecha_actual
-    def clean(self):
-        cleaned_data = super().clean()
-        medio_pago = cleaned_data.get("MedioPago")
-        if medio_pago == "Credito":
-            num_factura = cleaned_data.get("numFactura")
-            if num_factura:
-                raise forms.ValidationError("Los servicios de crédito no deben tener número de factura.")
-        else:
-            cleaned_data["numFactura"] = None
-        return cleaned_data    
+        self.fields['Fecha'].initial = fecha_actual  
     
 
 class FacturasForm(forms.ModelForm):
@@ -208,24 +201,32 @@ class FacturasForm(forms.ModelForm):
         fecha_pago = cleaned_data.get("FechaPago")
         if fecha_pago is None:
             cleaned_data['FechaPago'] = None
-
-        numero_factura = cleaned_data.get("NumeroFactura")
-        if not numero_factura:
-            cleaned_data['NumeroFactura'] = None
-
-        return cleaned_data
-
-
+    
 class FacturasAsistentesForm(forms.ModelForm):
     class Meta:
         model = FacturasAsistentes
-        fields = ['FechaEmision', 'CodAsistente', 'CodProcedimiento', 'descFactura']
+        fields = ['FechaEmision', 'CodAsistente', 'descFactura']
         widgets = {
             'FechaEmision': forms.DateInput(attrs={'class': 'form-control'}),
             'CodAsistente': forms.Select(attrs={'class': 'form-control'}),
-            'CodProcedimiento': forms.Select(attrs={'class': 'form-control'}),
             'descFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_emision = cleaned_data.get("FechaEmision")
+        if fecha_emision is None:
+            cleaned_data['FechaEmision'] = None
+
+        cod_asistente = cleaned_data.get("CodAsistente")
+        if not cod_asistente:
+            cleaned_data['CodAsistente'] = None
+
+        desc_factura = cleaned_data.get("descFactura")
+        if not desc_factura:
+            cleaned_data['descFactura'] = None
+
+        return cleaned_data
 
 class PagosAsistentesForm(forms.ModelForm):
     class Meta:
