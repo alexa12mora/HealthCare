@@ -616,26 +616,27 @@ def list_servicios(request):
     }
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
 
+#servicios
+@login_required(login_url='/accounts/login/')
 def create_servicio(request):
     if request.method == 'POST':
         form = serviciosForm(request.POST)
         formset = AsistentesFormSet(request.POST)
-        factura_form = FacturasForm(request.POST)  # Mover la creación del formulario de facturas aquí
+        factura_form = FacturasForm(request.POST)
         if form.is_valid() and formset.is_valid() and factura_form.is_valid():
             servicio = form.save(commit=False)
             servicio.EstadoPago = 'Pendiente'
             servicio.save()
             formset.instance = servicio
             formset.save()
-
             if form.cleaned_data['MedioPago'] == 'Credito':
-                factura_form.instance = servicio  # Establecer la instancia de servicio para el formulario de facturas
-                factura_form.save()
+                factura = factura_form.save(commit=False)
+                factura.CodProcedimiento = servicio
+                factura.save()
+                print("Si se salva el form de factura")
             elif form.cleaned_data['MedioPago'] == 'Contado':
                 print("es de contado")
-                # Si es pago de contado, no creamos una factura asociada
                 pass
-
             return redirect('list_servicios')
         else:
             print("Errores en alguno de los formularios:")
@@ -655,29 +656,27 @@ def create_servicio(request):
     }
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
 
-
-
 @login_required(login_url='/accounts/login/')
 def update_servicio(request, pk):
     servicio = get_object_or_404(servicios, pk=pk)
-    factura_form = None  # Inicializar factura_form con None
+    factura_form = None
 
     if request.method == 'POST':
         form = serviciosForm(request.POST, instance=servicio)
         formset = AsistentesFormSet(request.POST, instance=servicio)
         if form.is_valid() and formset.is_valid():
-            form.save()
+            servicio = form.save(commit=False)
+            servicio.EstadoPago = 'Pendiente'  # Establecer el valor del campo EstadoPago
+            servicio.save()
             formset.save()
             if servicio.MedioPago == 'Credito':
                 factura_form = FacturasForm(request.POST, instance=servicio.facturas_set.first())
                 if factura_form.is_valid():
                     factura = factura_form.save(commit=False)
                     factura.CodProcedimiento = servicio
-                    print("se va guardar")
                     factura.save()
                 else:
-                    print(factura_form.errors)
-                    print(" no entro")     
+                    print(factura_form.errors)  
             return redirect('list_servicios')
         else:
             print("entro al else")
@@ -688,7 +687,6 @@ def update_servicio(request, pk):
         asistentes = servicio.asistentes_set.all()
         formset = AsistentesFormSet(instance=servicio, queryset=asistentes)
 
-        # Si el medio de pago es 'Credito', inicializamos el formulario de facturas con la primera factura asociada.
         if servicio.MedioPago == 'Credito':
             factura_form = FacturasForm(instance=servicio.facturas_set.first())
 
@@ -700,6 +698,7 @@ def update_servicio(request, pk):
         'factura_form': factura_form,
     }
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
+
   
 @login_required(login_url='/accounts/login/')
 def delete_servicio(request, pk):

@@ -189,11 +189,10 @@ class serviciosForm(forms.ModelForm):
 class FacturasForm(forms.ModelForm):
     class Meta:
         model = Facturas
-        fields = ['FechaPago', 'NumeroFactura', 'CodProcedimiento']
+        fields = ['FechaPago', 'NumeroFactura']
         widgets = {
             'FechaPago': forms.DateInput(attrs={'class': 'form-control'}),
             'NumeroFactura': forms.TextInput(attrs={'class': 'form-control'}),
-            'CodProcedimiento': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def clean(self):
