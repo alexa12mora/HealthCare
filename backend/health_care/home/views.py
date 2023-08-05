@@ -686,7 +686,6 @@ def update_servicio(request, pk):
         form = serviciosForm(instance=servicio)
         asistentes = servicio.asistentes_set.all()
         formset = AsistentesFormSet(instance=servicio, queryset=asistentes)
-
         if servicio.MedioPago == 'Credito':
             factura_form = FacturasForm(instance=servicio.facturas_set.first())
 
