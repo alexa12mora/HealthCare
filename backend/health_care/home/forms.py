@@ -204,10 +204,9 @@ class FacturasForm(forms.ModelForm):
 class FacturasAsistentesForm(forms.ModelForm):
     class Meta:
         model = FacturasAsistentes
-        fields = ['FechaEmision', 'CodAsistente', 'descFactura']
+        fields = ['FechaEmision','descFactura']
         widgets = {
             'FechaEmision': forms.DateInput(attrs={'class': 'form-control'}),
-            'CodAsistente': forms.Select(attrs={'class': 'form-control'}),
             'descFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
@@ -216,10 +215,6 @@ class FacturasAsistentesForm(forms.ModelForm):
         fecha_emision = cleaned_data.get("FechaEmision")
         if fecha_emision is None:
             cleaned_data['FechaEmision'] = None
-
-        cod_asistente = cleaned_data.get("CodAsistente")
-        if not cod_asistente:
-            cleaned_data['CodAsistente'] = None
 
         desc_factura = cleaned_data.get("descFactura")
         if not desc_factura:

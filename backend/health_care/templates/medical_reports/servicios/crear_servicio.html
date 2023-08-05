@@ -121,6 +121,9 @@
                                 <th>Nombre del asistente</th>
                                 <th>Correo</th>
                                 <th>Tipo</th>
+                                {% if servicio %}
+                                <th>Factura</th>
+                                {% endif %}
                                 <th>Borrar</th>
                             </tr>
                         </thead>
@@ -138,6 +141,10 @@
                                 {{ field }}
                             </td>
                             {% endfor %}
+                            <!-- Add a new column with a button -->
+                            {% if servicio %}
+                            <td><button type="button" class="btn btn-primary">Actualizar</button></td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </table>
@@ -201,6 +208,8 @@
             addCssClass: 'btn btn-success formset-add-button',
         });
     });
+
+
     document.getElementById('id_CodCostoOperacion').addEventListener('change', function () {
         const selectCostoOperacion = this;
         const selectedOption = selectCostoOperacion.options[selectCostoOperacion.selectedIndex];
