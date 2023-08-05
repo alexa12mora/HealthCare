@@ -128,14 +128,25 @@ class UserRegistrationView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        self.object.is_active = False
+        self.object.save()
         if form.cleaned_data['user_type'] == 'medico':
             Medico.objects.create(codMedico=self.object.id, Nombre=self.object.username, correo=self.object.email)
         return response
       
 class UserLoginView(LoginView):
-  template_name = 'accounts/auth-signin.html'
-  form_class = CustomLoginForm
-  def get_success_url(self):
+    template_name = 'accounts/auth-signin.html'
+    form_class = CustomLoginForm
+
+    def form_invalid(self, form):
+        if self.request.POST.get('username'):
+            username = self.request.POST.get('username')
+            user = User.objects.filter(username=username).first()
+            if user and not user.is_active:
+                form.add_error(None, 'El usuario no está activo.')
+        return super().form_invalid(form)
+
+    def get_success_url(self):
         return '/'
 
 class UserPasswordResetView(PasswordResetView):
