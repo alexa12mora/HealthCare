@@ -132,6 +132,8 @@ class UserRegistrationView(CreateView):
         self.object.save()
         if form.cleaned_data['user_type'] == 'medico':
             Medico.objects.create(codMedico=self.object.id, Nombre=self.object.username, correo=self.object.email)
+        else: 
+            Secreataria.objects.create(codSecretaria=self.object.id,Nombre=self.object.username, correo=self.object.email)
         return response
       
 class UserLoginView(LoginView):

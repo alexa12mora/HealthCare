@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "medical_reports",
     'crispy_forms',
     'crispy_bootstrap4',
     #'admin_volt.apps.AdminVoltConfig',

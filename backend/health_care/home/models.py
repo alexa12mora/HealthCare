@@ -7,6 +7,14 @@ class Medico(models.Model):
 
     def __str__(self):
         return self.Nombre
+    
+class Secreataria(models.Model):
+    codSecretaria = models.AutoField(primary_key=True)
+    Nombre = models.CharField(max_length=100)
+    correo = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.Nombre
 
 class CostosPorAsistente(models.Model):
     CodCostoPorAsistente = models.AutoField(primary_key=True)
