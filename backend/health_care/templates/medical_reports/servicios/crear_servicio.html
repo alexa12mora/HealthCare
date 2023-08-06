@@ -112,42 +112,89 @@
                     <h5>Asociar asistentes al servicio</h5>
                 </div>
                 <div class="col-md-12">
-                    <table class="table" id="miTabla">
-                        {{ formset.management_form }}
-                        {% for form in formset %}
-                        {% if forloop.first %}
-                        <thead>
-                            <tr>
-                                <th>Nombre del asistente</th>
-                                <th>Correo</th>
-                                <th>Tipo</th>
-                                {% if servicio %}
-                                <th>Factura</th>
-                                {% endif %}
-                                <th>Borrar</th>
-                            </tr>
-                        </thead>
-                        {% endif %}
-                        <tr class="{% cycle 'row1' 'row2' %} formset_row">
-                            {% for field in form.visible_fields %}
-                            <td>
-                                {# Include the hidden fields in the form #}
-                                {% if forloop.first %}
-                                {% for hidden in form.hidden_fields %}
-                                {{ hidden }}
+                    <div class="table-responsive">
+                        <table class="table" id="miTabla" data-is-update="{{ is_update|yesno:" true,false" }}">
+                            {{ formset.management_form }}
+                            <thead>
+                                <tr>
+                                    <th>Nombre del asistente</th>
+                                    <th>Correo</th>
+                                    <th>Tipo</th>
+                                    <!-- En tu plantilla -->
+                                    {% if is_update %}
+                                    <th colspan="2">Factura asistente</th>
+                                    {% endif %}
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for form in formset %}
+                                <tr class="{% cycle 'row1' 'row2' %} formset_row">
+                                    {% for field in form.visible_fields %}
+                                    <td>
+                                        {# Include the hidden fields in the form #}
+                                        {% if forloop.first %}
+                                        {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                        {% endfor %}
+                                        {% endif %}
+                                        {{ field.errors.as_ul }}
+                                        {{ field }}
+                                    </td>
+                                    {% endfor %}
+                                    {% if is_update %}
+                                    <td colspan="2">
+                                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                            data-bs-target="#modalFactura{{ form.instance.id }}"><i
+                                                class="feather icon-edit"></i></button>
+                                        <!-- Modales para cada factura de asistente -->
+                                        {% for factura in facturasasistentes %}
+                                        <div class="modal fade" id="modalFactura{{ factura.id }}" tabindex="-1"
+                                            aria-labelledby="modalFactura{{ factura.id }}Label" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="modalFactura{{ factura.id }}Label">
+                                                            Detalles de la factura para {{ factura.asistente.Nombre }}
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form>
+                                                            <div class="mb-3">
+                                                                <label for="exampleInputEmail1" class="form-label">Email
+                                                                    address</label>
+                                                                {{ factura.descFactura }}
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="exampleInputPassword1"
+                                                                    class="form-label">Password</label>
+                                                                {{ factura.FechaEmision }}
+                                                            </div>
+
+                                                            <button type="submit"
+                                                                class="btn btn-primary">Submit</button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Cerrar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </td>
+                                    {% endif %}
+                                    {% if is_update %}
+                                    <td></td>
+                                    {% endif %}
+                                </tr>
                                 {% endfor %}
-                                {% endif %}
-                                {{ field.errors.as_ul }}
-                                {{ field }}
-                            </td>
-                            {% endfor %}
-                            <!-- Add a new column with a button -->
-                            {% if servicio %}
-                            <td><button type="button" class="btn btn-primary">Actualizar</button></td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -195,12 +242,23 @@
     }
 
     .formset-delete-button {
-        padding: 10px 15px;
+        margin: 10px 15px;
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     $(document).ready(function () {
+        var isUpdate = $('#miTabla').data('is-update') === 'true';
+        // Mostrar u ocultar botones según is_update
+        if (isUpdate) {
+            $('.delete-button, .formset-add-button').hide();
+            $('.formset_row td:nth-last-child(2)').attr('colspan', '3');
+        } else {
+            $('.delete-button, .formset-add-button').show();
+            $('.formset_row td:nth-last-child(2)').removeAttr('colspan');
+        }
+
         $('.formset_row').formset({
             addText: 'Agregar',
             deleteText: '<i class="fa fa-trash"></i>',
@@ -208,7 +266,6 @@
             addCssClass: 'btn btn-success formset-add-button',
         });
     });
-
 
     document.getElementById('id_CodCostoOperacion').addEventListener('change', function () {
         const selectCostoOperacion = this;

@@ -667,6 +667,8 @@ def create_servicio(request):
         'form': form,
         'formset': formset,
         'factura_form': factura_form,
+        'is_update': False,
+        
     }
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
 
@@ -686,7 +688,6 @@ def update_servicio(request, pk):
             formset.save()
             for asistente in servicio.asistentes_set.all():
                 factura_asistente = asistente.facturasasistentes_set.first()
-                # Update the factura_asistente instance as needed
                 factura_asistente.save()
             if servicio.MedioPago == 'Credito':
                 factura_form = FacturasForm(request.POST, instance=servicio.facturas_set.first())
@@ -707,6 +708,10 @@ def update_servicio(request, pk):
         formset = AsistentesFormSet(instance=servicio, queryset=asistentes)
         if servicio.MedioPago == 'Credito':
             factura_form = FacturasForm(instance=servicio.facturas_set.first())
+        facturas_asistentes_forms = []
+        for factura_asistente in facturasasistentes:
+          facturas_asistentes_form = FacturasAsistentesForm(instance=factura_asistente)
+          facturas_asistentes_forms.append(facturas_asistentes_form)
 
     context = {
         'segment': 'servicios',
@@ -714,6 +719,9 @@ def update_servicio(request, pk):
         'servicio': servicio,
         'formset': formset,
         'factura_form': factura_form,
+        'is_update': True,
+        'facturasasistentes': facturas_asistentes_forms,
+        
     }
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
 
