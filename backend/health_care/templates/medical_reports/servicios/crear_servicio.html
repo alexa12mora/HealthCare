@@ -144,47 +144,11 @@
                                     {% endfor %}
                                     {% if is_update %}
                                     <td colspan="2">
-                                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                            data-bs-target="#modalFactura{{ form.instance.id }}"><i
-                                                class="feather icon-edit"></i></button>
-                                        <!-- Modales para cada factura de asistente -->
-                                        {% for factura in facturasasistentes %}
-                                        <div class="modal fade" id="modalFactura{{ factura.id }}" tabindex="-1"
-                                            aria-labelledby="modalFactura{{ factura.id }}Label" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="modalFactura{{ factura.id }}Label">
-                                                            Detalles de la factura para {{ factura.asistente.Nombre }}
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form>
-                                                            <div class="mb-3">
-                                                                <label for="exampleInputEmail1" class="form-label">Email
-                                                                    address</label>
-                                                                {{ factura.descFactura }}
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="exampleInputPassword1"
-                                                                    class="form-label">Password</label>
-                                                                {{ factura.FechaEmision }}
-                                                            </div>
+                                        {% if servicio.pk and form.instance.pk %}
+                                        <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
+                                            class="btn btn-link"><i class="feather icon-edit"></i></a>
+                                        {% endif %}
 
-                                                            <button type="submit"
-                                                                class="btn btn-primary">Submit</button>
-                                                        </form>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Cerrar</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% endfor %}
                                     </td>
                                     {% endif %}
                                     {% if is_update %}

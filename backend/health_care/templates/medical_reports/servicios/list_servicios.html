@@ -83,13 +83,22 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('#miTabla').DataTable({
+        var miTabla = $('#miTabla').DataTable({
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
             },
-            responsive: true
+            responsive: true,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]]
+        });
+
+        $('#miTabla_length select').on('change', function () {
+            var selectedValue = $(this).val();
+            if (selectedValue === '5') {
+                miTabla.page.len(5).draw();
+            }
         });
     });
+
 
     function deleteservices(id) {
         // Solicitar al servidor eliminar el servicio con el ID proporcionado

@@ -99,5 +99,8 @@ urlpatterns = [
   path('listar/hospitales/', views.list_hospital, name='list_hospital'),
   path('actualizar/hospital/<int:pk>/', views.update_hospital, name='update_hospital'),
   path('eliminar/hospital/<int:pk>/', views.eliminar_hospital, name='eliminar_hospital'),
+  
+  # Facturas Asistentes
+  path('update_factura/<int:servicio_id>/<int:asistente_id>/', views.actualizar_factura, name='actulizar_factura'),
 ]
 
