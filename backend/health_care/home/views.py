@@ -704,6 +704,7 @@ def update_servicio(request, pk):
     else:
         form = serviciosForm(instance=servicio)
         asistentes = servicio.asistentes_set.all()
+        facturasis = FacturasAsistentes.objects.all()
         formset = AsistentesFormSet(instance=servicio, queryset=asistentes)
         if servicio.MedioPago == 'Credito':
             factura_form = FacturasForm(instance=servicio.facturas_set.first())       
@@ -715,13 +716,11 @@ def update_servicio(request, pk):
         'formset': formset,
         'factura_form': factura_form,
         'is_update': True,
+        "facturasis":facturasis,
         
     }
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
 
-
-
-  
 @login_required(login_url='/accounts/login/')
 def delete_servicio(request, pk):
     servicio = get_object_or_404(servicios, pk=pk)
@@ -751,15 +750,12 @@ def actualizar_factura(request, servicio_id, asistente_id):
         form = FacturasAsistentesForm(request.POST, instance=factura_asistente)
        
         if form.is_valid():
-            print("entro")
             factura_asistente = form.save(commit=False)
             factura_asistente.CodAsistente = asistente
+            factura_asistente.estado = True 
             factura_asistente.save()
-            return redirect('update_servicio', pk=servicio.pk)
-        else:
-             print("Noentro")
-             print()
-            
+
+        return redirect('update_servicio', pk=servicio.pk)
     else:
         form = FacturasAsistentesForm(instance=factura_asistente)
     context = {

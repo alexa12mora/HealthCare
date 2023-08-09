@@ -144,11 +144,20 @@
                                     {% endfor %}
                                     {% if is_update %}
                                     <td colspan="2">
-                                        {% if servicio.pk and form.instance.pk %}
-                                        <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
-                                            class="btn btn-link"><i class="feather icon-edit"></i></a>
-                                        {% endif %}
-
+                                        {% with edit_button_shown=False %}
+                                        {% for fac in facturasis %}
+                                            {% if fac.CodAsistente_id == form.instance.pk and fac.estado == True %}
+                                                <i class="feather icon-check"></i>
+                                            {% else %}
+                                                {% if servicio.pk and form.instance.pk and fac.estado == False and not edit_button_shown %}
+                                                    <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
+                                                        class="btn btn-link"><i class="feather icon-edit"></i></a>
+                                                    {% with edit_button_shown=True %}
+                                                    {% endwith %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% endwith %}
                                     </td>
                                     {% endif %}
                                     {% if is_update %}
@@ -157,6 +166,7 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
+                            
                         </table>
                     </div>
                 </div>
