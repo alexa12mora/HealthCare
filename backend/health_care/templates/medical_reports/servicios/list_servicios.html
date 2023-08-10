@@ -63,13 +63,9 @@
                                     <p class="m-0">{{ servicios.EstadoPago }}</p>
                                 </td>
                                 <td>
-                                    <a href="javascript:void(0);" class="label theme-bg2 text-white f-12"
-                                        onclick="deleteservices('{{ servicios.pk }}')">
-                                        <i class="feather icon-trash-2"></i>
-                                    </a>
                                     <a href="{% url 'update_servicio' servicios.pk %}"
                                         class="label theme-bg text-white f-12">
-                                        <i class="feather icon-edit"></i>
+                                        Actualizar
                                     </a>
                                 </td>
                             </tr>

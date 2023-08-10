@@ -206,16 +206,20 @@ class FacturasAsistentesForm(forms.ModelForm):
         model = FacturasAsistentes
         fields = ['FechaEmision','descFactura']
         widgets = {
-            'FechaEmision': forms.DateInput(attrs={'class': 'form-control'}),
+            'FechaEmision': forms.DateInput(attrs={'class': 'form-control','placeholder': 'Formato: yyyy-mm-dd'}),
             'descFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.estado:
+            for field in self.fields.values():
+                field.disabled = True
     def clean(self):
         cleaned_data = super().clean()
         fecha_emision = cleaned_data.get("FechaEmision")
         if fecha_emision is None:
             cleaned_data['FechaEmision'] = None
-
         desc_factura = cleaned_data.get("descFactura")
         if not desc_factura:
             cleaned_data['descFactura'] = None

@@ -17,31 +17,62 @@
         </div>
     </div>
 </div>
+<div class="alert-container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}"
+        role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
 
 <div class="card">
     <div class="card-header">
         <h5>Actualización de factura asistente</h5>
     </div>
+
+
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
                 <form class="needs-validation" novalidate method="post"
                     action="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=asistente.pk %}">
                     {% csrf_token %}
+
                     <div class="mb-12">
-                        <label for="exampleInputEmail1" class="form-label">Fecha de ingreso</label>
+                        <label for="disabledTextInput" class="form-label">Nombre del asistente</label>
+                        <input type="text" id="disabledTextInput" class="form-control" disabled
+                            value="{{ asistente.Nombre }}">
+                    </div>
+                    <div class="mb-12">
+                        <label for="disabledTextInput" class="form-label">Servicio asociado</label>
+                        <input type="text" id="disabledTextInput" class="form-control" disabled
+                            value="{{ servicio.CodCostoOperacion.NombreOperacion }}">
+                    </div>
+                    <div class="mb-12">
+                        <label for="disabledTextInput" class="form-label">Monto a pagar al asistente</label>
+                        <input type="text" id="disabledTextInput" class="form-control" disabled
+                            value="$ {{ asistente.CodCostoPorAsistente.MontoCosto }}">
+                    </div>
+                    <div class="mb-12">
+                        <label for="exampleInputEmail1" class="form-label">Fecha de ingreso de factura</label>
                         {{ form.FechaEmision }}
                     </div>
+
                     <div class="mb-12">
-                        <label for="exampleInputPassword1" class="form-label">Número de Factura</label>
+                        <label for="validationCustom02" class="form-label">Número de factura</label>
                         {{ form.descFactura }}
+                        <div class="invalid-feedback">
+                            Campo es requerido
+                        </div>
                     </div>
                     <br>
-                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                    <button type="submit" class="btn btn-success">Gurdar factura</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock content %}

@@ -86,6 +86,7 @@ class Facturas(models.Model):
     FechaPago = models.DateField(null=True, blank=True)
     NumeroFactura = models.CharField(max_length=100,blank=True)
     CodProcedimiento = models.ForeignKey(servicios, on_delete=models.CASCADE)
+    estado = models.BooleanField(default=False)
     def __str__(self):
         return f"Factura {self.NumFactura}"
 
@@ -94,7 +95,7 @@ class FacturasAsistentes(models.Model):
     NumFacturaAsistente = models.AutoField(primary_key=True)
     FechaEmision = models.DateField(null=True, blank=True)
     CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
-    descFactura = models.CharField(max_length=100,blank=True)
+    descFactura = models.CharField(null=True,max_length=100,blank=True)
     estado = models.BooleanField(default=False)
 
     def __str__(self):

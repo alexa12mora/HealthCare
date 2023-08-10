@@ -144,20 +144,20 @@
                                     {% endfor %}
                                     {% if is_update %}
                                     <td colspan="2">
-                                        {% with edit_button_shown=False %}
-                                        {% for fac in facturasis %}
-                                            {% if fac.CodAsistente_id == form.instance.pk and fac.estado == True %}
-                                                <i class="feather icon-check"></i>
-                                            {% else %}
-                                                {% if servicio.pk and form.instance.pk and fac.estado == False and not edit_button_shown %}
-                                                    <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
-                                                        class="btn btn-link"><i class="feather icon-edit"></i></a>
-                                                    {% with edit_button_shown=True %}
-                                                    {% endwith %}
-                                                {% endif %}
-                                            {% endif %}
+
+                                        {% for factura in facturasis %}
+                                        {% if factura.CodAsistente.pk == form.instance.pk %}
+                                        {% if factura.estado == True %}
+                                        <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
+                                            class="btn btn-link"><i class="feather icon-check"
+                                                style="color: #21734F;"></i><i class="feather icon-eye"></i></a>
+
+                                        {% else %}
+                                        <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
+                                            class="btn btn-link"><i class="feather icon-edit"></i></a>
+                                        {% endif %}
+                                        {% endif %}
                                         {% endfor %}
-                                        {% endwith %}
                                     </td>
                                     {% endif %}
                                     {% if is_update %}
@@ -166,7 +166,7 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
-                            
+
                         </table>
                     </div>
                 </div>
