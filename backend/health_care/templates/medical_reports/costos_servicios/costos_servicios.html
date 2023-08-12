@@ -87,12 +87,13 @@
                                 <p class="m-0">{{ aseguradoras.MontoCosto }}</p>
                             </td>
                             <td>
-                                <a href="javascript:void(0);" class="label theme-bg2 text-white f-12"
+                                <a href="javascript:void(0);" class="label text-white f-12 btn-danger btn-like"
                                     onclick="eliminar_pago('{{ aseguradoras.pk }}')">
                                     <i class="feather icon-trash-2"></i>
                                 </a>
-                                <a href="javascript:void(0);" class="label theme-bg text-white f-12"
-                                    onclick="openUpdateModal('{{ aseguradoras.pk }}', '{{ aseguradoras.NombreAseguradora }}')">
+                                <a href="javascript:void(0);" class="label  text-white f-12 btn-primary"
+                                    onclick="openUpdateModal('{{ aseguradoras.pk }}', '{{ aseguradoras.NombreAseguradora }}')"
+                                    style="background-color: #007bff" style="background-color: #C70039">
                                     <i class="feather icon-edit"></i>
                                 </a>
                             </td>
@@ -104,7 +105,34 @@
         </div>
     </div>
 </div>
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
 
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+</style>
 <script>
     function openUpdateModal(id, nombreAseguradora) {
         $('#exampleModalCenter').modal('show');

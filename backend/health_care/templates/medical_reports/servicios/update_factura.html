@@ -32,8 +32,6 @@
     <div class="card-header">
         <h5>Actualización de factura asistente</h5>
     </div>
-
-
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
@@ -68,8 +66,15 @@
                             Campo es requerido
                         </div>
                     </div>
+                    {% if factura_asistente.estado == True %}
+                    <div class="mb-12">
+                        <label for="validationCustom02" class="form-label">Estado de entrega de la factura</label>
+                        <input type="text" id="disabledTextInput" class="form-control" value="Entregada"
+                            disabled="true">
+                    </div>
+                    {% endif %}
                     <br>
-                    <button type="submit" class="btn btn-success">Gurdar factura</button>
+                    <button type="submit" class="btn btn-success">Guardar factura</button>
                 </form>
             </div>
         </div>

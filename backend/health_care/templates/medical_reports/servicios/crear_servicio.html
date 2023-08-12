@@ -149,12 +149,16 @@
                                         {% if factura.CodAsistente.pk == form.instance.pk %}
                                         {% if factura.estado == True %}
                                         <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
-                                            class="btn btn-link"><i class="feather icon-check"
-                                                style="color: #21734F;"></i><i class="feather icon-eye"></i></a>
-
+                                            class="label text-white f-12 btn-danger btn-like"
+                                            style="background-color: #21734F">
+                                            entregada
+                                        </a>
                                         {% else %}
                                         <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
-                                            class="btn btn-link"><i class="feather icon-edit"></i></a>
+                                            class="label text-white f-12 btn-danger btn-like"
+                                            style="background-color: #007bff">
+                                            completar
+                                        </a>
                                         {% endif %}
                                         {% endif %}
                                         {% endfor %}
@@ -217,6 +221,34 @@
 
     .formset-delete-button {
         margin: 10px 15px;
+    }
+</style>
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 6px 12px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

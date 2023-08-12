@@ -641,8 +641,7 @@ def create_servicio(request):
             if form.cleaned_data['MedioPago'] == 'Credito':
                 servicio.EstadoPago = 'Pendiente'
             else:
-                servicio.EstadoPago = 'Pagado'    
-               
+                servicio.EstadoPago = 'Pagado'          
             servicio.save()
             formset.instance = servicio
             asistentes_instances = formset.save()
@@ -691,7 +690,12 @@ def update_servicio(request, pk):
             servicio = form.save(commit=False)
             servicio.EstadoPago = 'Pendiente'  # Establecer el valor del campo EstadoPago
             servicio.save()
-            formset.save()           
+            formset.save()     
+            # Crear facturas para los asistentes
+            asistentes_instances = formset.save(commit=False)
+            for asistente in asistentes_instances:
+                factura_asistente = FacturasAsistentes(CodAsistente=asistente)
+                factura_asistente.save()    
             if servicio.MedioPago == 'Credito':
                 factura_form = FacturasForm(request.POST, instance=servicio.facturas_set.first())
                 if factura_form.is_valid():
@@ -771,11 +775,13 @@ def actualizar_factura(request, servicio_id, asistente_id):
             print(form.errors)
     else:
         form = FacturasAsistentesForm(instance=factura_asistente)
-    
+    print(factura_asistente.estado)
     context = {
+        'segment': 'Actualización de factura por asistente',
         'form': form,
         'servicio': servicio,
         'asistente': asistente,
+        'factura_asistente':factura_asistente,
     }
     return render(request, 'medical_reports/servicios/update_factura.html', context)
 
