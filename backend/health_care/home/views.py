@@ -1,3 +1,4 @@
+import datetime
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect
 #from admin_datta.forms import RegistrationForm, LoginForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm
@@ -10,12 +11,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
+import datetime
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
 from .forms import *
 
 def index(request):
-  print("Hola")
   users = User.objects.all()
-  print(users)
   context = {
     'segment': 'index',
     'users':users,
@@ -618,9 +621,40 @@ def delete_asistente(request, pk):
 #servicios
 @login_required(login_url='/accounts/login/')
 def list_servicios(request):
-    servicios_list = servicios.objects.all()
+    if Medico.objects.filter(correo=request.user.email).exists():
+        medico = Medico.objects.get(correo=request.user.email)
+        servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+        for servicio in servicios_list:
+            servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
+    else:
+        pass
+
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date and end_date:
+        start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+        end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+        servicios_list = servicios_list.filter(Fecha__range=[start_date, end_date])
+
     formset = AsistentesFormSet(request.POST)
     form = serviciosForm()
+
+    # Generar reporte PDF para cada asistente asociado a un servicio
+    for servicio in servicios_list:
+        asistentes = Asistentes.objects.filter(servicio=servicio)
+        for asistente in asistentes:
+            pdf_name = f'Reporte_{asistente.Nombre}.pdf'
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{pdf_name}"'
+
+            p = canvas.Canvas(response, pagesize=letter)
+            p.drawString(100, 750, f'Reporte para: {asistente.Nombre}')
+            # Agregar más contenido al PDF aquí
+
+            p.showPage()
+            p.save()
+
     context = {
         'segment': 'servicios',
         'servicios_list': servicios_list,
@@ -629,7 +663,34 @@ def list_servicios(request):
     }
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
 
-#servicios
+def descargar_reporte(request, pk):
+    asistente = get_object_or_404(Asistentes, pk=pk)
+
+    # Obtener el servicio asociado al asistente
+    servicio = asistente.servicio
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Reporte_{asistente.Nombre}.pdf"'
+
+    p = canvas.Canvas(response, pagesize=letter)
+    p.drawString(100, 750, f'Reporte para: {asistente.Nombre}')
+    p.drawString(100, 730, f'Servicio: Procedimiento {servicio.CodProcedimiento}')
+    p.drawString(100, 710, f'Fecha del servicio: {servicio.Fecha}')
+    p.drawString(100, 690, f'Nombre del paciente: {servicio.NombrePaciente}')
+    p.drawString(100, 670, f'Monto total: {servicio.MontoTotal}')
+    p.drawString(100, 650, f'Medio de pago: {servicio.MedioPago}')
+    p.drawString(100, 630, f'Aseguradora: {servicio.CodAseguradora}')
+    p.drawString(100, 610, f'Hospital: {servicio.CodHospital}')
+    p.drawString(100, 590, f'Médico: {servicio.codMedico}')
+    p.drawString(100, 570, f'Número de factura: {servicio.numFactura}')
+    p.drawString(100, 550, f'Costo de operación: {servicio.CodCostoOperacion}')
+
+
+    p.showPage()
+    p.save()
+
+    return response
+
 @login_required(login_url='/accounts/login/')
 def create_servicio(request):
     if request.method == 'POST':
@@ -658,10 +719,7 @@ def create_servicio(request):
                 pass
             return redirect('list_servicios')
         else:
-            print("Errores en alguno de los formularios:")
-            print(form.errors)
-            print(formset.errors)
-            print(factura_form.errors)
+            pass
     else:
         form = serviciosForm(initial={'EstadoPago': 'Pendiente'})
         formset = AsistentesFormSet()
@@ -677,18 +735,20 @@ def create_servicio(request):
     }
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
 
-
-
 @login_required(login_url='/accounts/login/')
 def update_servicio(request, pk):
     servicio = get_object_or_404(servicios, pk=pk)
     factura_form = None
     if request.method == 'POST':
+        print(request.POST)
         form = serviciosForm(request.POST, instance=servicio)
         formset = AsistentesFormSet(request.POST, instance=servicio)
         if form.is_valid() and formset.is_valid():
             servicio = form.save(commit=False)
-            servicio.EstadoPago = 'Pendiente'  # Establecer el valor del campo EstadoPago
+            if request.POST.get('NumeroFactura'):
+                servicio.EstadoPago = 'Pagado'
+            else:
+                servicio.EstadoPago = 'Pendiente'
             servicio.save()
             formset.save()     
             # Crear facturas para los asistentes
@@ -703,12 +763,10 @@ def update_servicio(request, pk):
                     factura.CodProcedimiento = servicio
                     factura.save()
                 else:
-                    print(factura_form.errors)  
+                    pass
             return redirect('list_servicios')
         else:
-            print("entro al else")
-            print(form.errors)
-            print(formset.errors)
+            pass
     else:
         form = serviciosForm(instance=servicio)
         asistentes = servicio.asistentes_set.all()
@@ -718,8 +776,6 @@ def update_servicio(request, pk):
         facturas_asistentes = FacturasAsistentes.objects.filter(CodAsistente__in=asistentes)
         if servicio.MedioPago == 'Credito':
             factura_form = FacturasForm(instance=servicio.facturas_set.first())       
-    for x in facturas_asistentes:
-        print(x.CodAsistente.pk)
     context = {
         'segment': 'servicios',
         'form': form,

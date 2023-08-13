@@ -31,6 +31,20 @@
             </div>
         </div>
         <div class="card-header">
+            <!-- Agregar el filtro de rango por fechas -->
+            <form class="form-inline" method="GET">
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="start_date" class="sr-only">Fecha inicio</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date">
+                </div>
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="end_date" class="sr-only">Fecha fin</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Filtrar</button>
+            </form>
+        </div>
+        <div class="card-header">
             <div class="card-block px-0 py-3">
                 <div class="table-responsive">
                     <table class="table table-hover" id="miTabla">
@@ -44,33 +58,39 @@
                                 <th scope="col">ACCIONES</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for servicios in servicios_list %}
-                            <tr class="unread">
-                                <td>
-                                    <p class="m-0">{{ servicios.Fecha }}</p>
-                                </td>
-                                <td>
-                                    <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
-                                </td>
-                                <td>
-                                    <p class="m-0">{{ servicios.CodHospital }}</p>
-                                </td>
-                                <td>
-                                    <p class="m-0">{{ servicios.MedioPago }}</p>
-                                </td>
-                                <td>
-                                    <p class="m-0">{{ servicios.EstadoPago }}</p>
-                                </td>
-                                <td>
-                                    <a href="{% url 'update_servicio' servicios.pk %}"
-                                        class="label  text-white f-12 btn-primary" style="background-color: #007bff">
-                                        Actualizar
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+<tbody>
+    {% for servicios in servicios_list %}
+    <tr class="unread">
+        <td>
+            <p class="m-0">{{ servicios.Fecha }}</p>
+        </td>
+        <td>
+            <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
+        </td>
+        <td>
+            <p class="m-0">{{ servicios.CodHospital }}</p>
+        </td>
+        <td>
+            <p class="m-0">{{ servicios.MedioPago }}</p>
+        </td>
+        <td>
+            <p class="m-0">{{ servicios.EstadoPago }}</p>
+        </td>
+        <td>
+            <a href="{% url 'update_servicio' servicios.pk %}"
+                class="label  text-white f-12 btn-primary" style="background-color: #007bff">
+                Actualizar
+            </a>
+            {% for asistente in servicios.asistentes_set.all %}
+                <a href="{% url 'descargar_reporte' asistente.pk %}"
+                    class="label  text-white f-12 btn-success" style="background-color: #28a745">
+                    Descargar Reporte {{ asistente.Nombre }}
+                </a>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
                     </table>
                 </div>
             </div>

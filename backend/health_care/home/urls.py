@@ -93,6 +93,8 @@ urlpatterns = [
   path('servicios/actualizar/<int:pk>', views.update_servicio, name='update_servicio'),
   path('servicios/eliminar/<int:pk>', views.delete_servicio, name='delete_servicio'),
   path('obtener_monto_costo/<int:cod_costo_operacion_id>/', views.obtener_monto_costo_servicios, name='obtener_monto_costo'),
+  path('servicios/descargar_reporte/<int:pk>/', views.descargar_reporte, name='descargar_reporte'),
+  
   
   # Aseguradoras
   path('agregar/hospital/', views.create_hospital, name='create_hospital'),
