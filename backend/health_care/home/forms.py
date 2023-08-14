@@ -184,6 +184,7 @@ class serviciosForm(forms.ModelForm):
         super(serviciosForm, self).__init__(*args, **kwargs)
         fecha_actual = date.today().strftime('%Y-%m-%d')
         self.fields['Fecha'].initial = fecha_actual  
+        self.fields['numFactura'].initial = '0'
     
 
 class FacturasForm(forms.ModelForm):

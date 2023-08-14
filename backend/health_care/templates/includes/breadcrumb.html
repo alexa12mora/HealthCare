@@ -10,7 +10,7 @@
         <ul class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
           {% if parent %}
-            <li class="breadcrumb-item"><a href="javascript:">{{ parent|replace_value:"_" }}</a></li>
+          <li class="breadcrumb-item"><a href="javascript:">{{ parent|replace_value:"_" }}</a></li>
           {% endif %}
           <li class="breadcrumb-item"><a href="javascript:">{{ segment|replace_value:"_" }}</a></li>
         </ul>
