@@ -40,8 +40,8 @@
                                     <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
                                             data-asistente="{{ item.asistente.Nombre }}"></i>
                                     </a>
-                                    <a data-asistente="{{ item.asistente.Nombre }}"><i
-                                            class="far fa-file-pdf text-danger f-20 m-r-8"></i>
+                                    <a href="{% url 'descargar_reporte' item.asistente.pk %}">
+                                        <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
                                     </a>
                                 </div>
                             </div>

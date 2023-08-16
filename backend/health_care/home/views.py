@@ -16,6 +16,13 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 from .forms import *
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from io import BytesIO
+
 
 def index(request):
   users = User.objects.all()
@@ -618,10 +625,54 @@ def delete_asistente(request, pk):
     }
     return render(request, 'asistente_confirm_delete.html', context)
 
-
-
- 
 #servicios
+@login_required(login_url='/accounts/login/')
+def descargar_reporte_pdf(request, pk):
+    asistente = get_object_or_404(Asistentes, pk=pk)
+    servicios_asistente = servicios.objects.filter(asistentes=asistente)
+
+    # Crear un objeto BytesIO para almacenar el contenido del PDF
+    buffer = BytesIO()
+
+    # Crear el documento PDF
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))
+
+    # Crear una lista para almacenar los elementos del PDF
+    elements = []
+
+    # Crear una tabla para los servicios
+    data = []
+    for servicio in servicios_asistente:
+        data.append([servicio.CodCostoOperacion, servicio.Fecha, servicio.MedioPago, servicio.EstadoPago, servicio.MontoTotal])
+
+    table = Table(data, colWidths=[80, 80, 80, 80, 80])
+    
+    # Aplicar estilos a la tabla
+    style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ])
+    table.setStyle(style)
+
+    # Agregar la tabla al PDF
+    elements.append(table)
+
+    # Construir el PDF
+    doc.build(elements)
+
+    # Obtener el contenido del buffer y crear la respuesta HTTP
+    pdf = buffer.getvalue()
+    buffer.close()
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Reporte_{asistente.Nombre}.pdf"'
+    response.write(pdf)
+    return response
+
 @login_required(login_url='/accounts/login/')
 def reporte_por_med_servicios(request):
     if Medico.objects.filter(correo=request.user.email).exists():
@@ -657,11 +708,6 @@ def reporte_por_med_servicios(request):
     }
     return render(request, 'medical_reports/servicios/descargareportes.html', context)
 
-
-
-
-
-
 @login_required(login_url='/accounts/login/')
 def list_servicios_report(request):
     if Medico.objects.filter(correo=request.user.email).exists():
@@ -679,7 +725,7 @@ def list_servicios_report(request):
         servicios_list = servicios_list.filter(Fecha__range=[start_date, end_date])
 
     formset = AsistentesFormSet(request.POST)
-    form = serviciosForm()
+    form = serviciosForm(request.user)
 
     # Generar reporte PDF para cada asistente asociado a un servicio
     for servicio in servicios_list:
@@ -702,19 +748,22 @@ def list_servicios_report(request):
     }
     return render(request, 'medical_reports/servicios/reportes.html', context)
 
-
-
 @login_required(login_url='/accounts/login/')
 def list_servicios(request):
-    if Medico.objects.filter(correo=request.user.email).exists():
-        medico = Medico.objects.get(correo=request.user.email)
-        servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
-        for servicio in servicios_list:
-            servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
-    else:
-        pass
+    is_medico = False
+    servicios_list = []
+
+    if request.user.is_authenticated:
+        if Medico.objects.filter(correo=request.user.email).exists():
+            is_medico = True
+            medico = Medico.objects.get(correo=request.user.email)
+            servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+            for servicio in servicios_list:
+                servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
+
     formset = AsistentesFormSet(request.POST)
-    form = serviciosForm()
+    form = serviciosForm(request.user, is_medico)
+
     context = {
         'segment': 'servicios',
         'servicios_list': servicios_list,

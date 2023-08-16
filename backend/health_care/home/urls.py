@@ -96,6 +96,8 @@ urlpatterns = [
   path('servicios/descargar/reportes/<int:pk>/', views.descargar_reporte, name='descargar_reporte'),
   path('servicios/reportes', views.list_servicios_report, name='reportes'),
   path('servicios/reportes/descarga', views.reporte_por_med_servicios, name='reportes_descarga'),
+  path('servicios/reportes/descargar/<int:pk>/', views.descargar_reporte_pdf, name='descargar_reporte'),
+
   
   
   # Aseguradoras
