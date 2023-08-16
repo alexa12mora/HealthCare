@@ -1,0 +1,193 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+
+<!-- Carga de jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<head>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<div class="row">
+    <div class="col-md-6 col-xl-12">
+        <div class="card daily-appointments">
+            <div class="card-header">
+                <h5>Reporte de servicios para asistentes</h5>
+            </div>
+
+            {% for item in servicios_list %}
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <div class="row">
+                            <div class="col col-lg-10">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse"
+                                        data-target="#{{item.asistente.Nombre}}" aria-expanded="true"
+                                        aria-controls="{{item.asistente.Nombre}}">
+                                        {{ item.asistente.Nombre }}
+                                    </button>
+                                </h5>
+                            </div>
+                            <div class="col col-lg-2">
+                                <div class="col-9">
+                                    <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
+                                            data-asistente="{{ item.asistente.Nombre }}"></i>
+                                    </a>
+                                    <a data-asistente="{{ item.asistente.Nombre }}"><i
+                                            class="far fa-file-pdf text-danger f-20 m-r-8"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="{{item.asistente.Nombre}}" class="collapse" aria-labelledby="headingOne"
+                        data-parent="#accordion">
+
+                        <div class="card">
+
+                            <div class="container mb-5 mt-3">
+                                <div class="container">
+                                    <div class="text-center">
+                                        <img src="{% static 'assets/images/surgy1.2.png' %}" class="rounded" alt="..."
+                                            style="max-width: 35%; ">
+                                    </div>
+                                </div>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-xl-8">
+                                            <ul class="list-unstyled">
+                                                <li class="text-muted">Para: <span style="color:#5d9fc5 ;">
+                                                        {{ item.asistente.Nombre }}</span></li>
+                                                <li class="text-muted">Correo: {{ item.asistente.correo }}</li>
+                                                <li class="text-muted">Total de servicios: </li>
+                                                <li class="text-muted">State, Country</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="row my-2 mx-1 justify-content-center">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead style="background-color:#21734F; ;" class="text-white">
+                                                    <tr>
+                                                        <th scope="col">TIPO SERVICIO</th>
+                                                        <th scope="col">FECHA</th>
+                                                        <th scope="col">FORMA DE PAGO</th>
+                                                        <th scope="col">PAGO POR ASEGURADORA</th>
+                                                        <th scope="col">$ MONTO</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for servicios in item.servicios %}
+                                                    <tr>
+                                                        <td scope="row">{{servicios.CodCostoOperacion}}</td>
+                                                        <td scope="row">{{servicios.Fecha}}</td>
+                                                        <td scope="row">{{servicios.MedioPago}}</td>
+                                                        <td scope="row">{{servicios.EstadoPago}}</td>
+                                                        <td scope="row">
+                                                            ${{item.asistente.CodCostoPorAsistente.MontoCosto}}
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xl-3">
+                                            <p class="text-black float-start"><span class="text-black me-3">
+                                                    Total: </span><span style="font-size: 25px;">$ no esta
+                                                    implementado</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-xl-10">
+                                            <p>no esta implementado</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Incluir la biblioteca printJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.fa-print').click(function () {
+            // Get the corresponding item's name
+            var itemName = $(this).data('asistente');
+
+            // Perform the print action for the item
+            // You can use a library like Print.js to handle the printing functionality
+            // Here's an example of how you can use Print.js:
+            printJS({
+                printable: itemName, // ID of the element you want to print
+                type: 'html',
+                showModal: true,
+                modalMessage: 'Preparando documento...'
+            });
+        });
+
+        $('.fa-file-pdf').click(function () {
+            // Get the corresponding item's name
+            var itemName = $(this).data('asistente');
+
+            // Perform the PDF download action for the item
+            // You can use a library like jsPDF to generate and download the PDF
+            // Here's an example of how you can use jsPDF:
+            var doc = new jsPDF();
+            doc.text('PDF content for ' + itemName, 10, 10);
+            doc.save(itemName + '.pdf');
+        });
+    });
+</script>
+{% endblock content %}

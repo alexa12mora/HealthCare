@@ -2,101 +2,88 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
+
+
+
 <!-- Carga de jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <!-- [ Main Content ] start -->
 <!--[ Recent Patients ] start-->
-<div class="col-xl-12 col-md-6">
-    <div class="card Recent-Users">
-        <div class="card-header">
-            <div class="float-left">
-                <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 25%; "
-                    class="float-left">
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <div class="float-left">
+                        <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 30%; "
+                            class="float-left">
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="col-xl-12 col-md-6">
-    <div class="card Recent-Users">
-        <div class="card-header">
-            <div class="float-right">
-                <a href="{% url 'create_servicio' %}" class="btn btn-success btn-sm float-right">
-                    Agregar nuevo servicios
-                </a>
-            </div>
-        </div>
-        <div class="card-header">
-            <!-- Agregar el filtro de rango por fechas -->
-            <form class="form-inline" method="GET">
-                <div class="form-group mx-sm-3 mb-2">
-                    <label for="start_date" class="sr-only">Fecha inicio</label>
-                    <input type="date" class="form-control" id="start_date" name="start_date">
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <div class="float-right">
+                        <a href="{% url 'reportes' %}" class="btn btn-success " style="background-color: #21734F;">
+                            Generar un nuevo reporte
+                        </a>
+                    </div>
+                    <div class="float-right">
+                        <a href="{% url 'create_servicio' %}" class="btn btn-info">
+                            Agregar un nuevo servicio
+                        </a>
+                    </div>
                 </div>
-                <div class="form-group mx-sm-3 mb-2">
-                    <label for="end_date" class="sr-only">Fecha fin</label>
-                    <input type="date" class="form-control" id="end_date" name="end_date">
-                </div>
-                <button type="submit" class="btn btn-primary mb-2">Filtrar</button>
-            </form>
-        </div>
-        <div class="card-header">
-            <div class="card-block px-0 py-3">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="miTabla">
-                        <thead>
-                            <tr>
-                                <th scope="col">FECHA</th>
-                                <th scope="col">TIPO SERVICIO</th>
-                                <th scope="col">HOSPITAL</th>
-                                <th scope="col">FORMA DE PAGO</th>
-                                <th scope="col">ESTADO DE PAGO</th>
-                                <th scope="col">ACCIONES</th>
-                            </tr>
-                        </thead>
-<tbody>
-    {% for servicios in servicios_list %}
-    <tr class="unread">
-        <td>
-            <p class="m-0">{{ servicios.Fecha }}</p>
-        </td>
-        <td>
-            <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
-        </td>
-        <td>
-            <p class="m-0">{{ servicios.CodHospital }}</p>
-        </td>
-        <td>
-            <p class="m-0">{{ servicios.MedioPago }}</p>
-        </td>
-        <td>
-            <p class="m-0">{{ servicios.EstadoPago }}</p>
-        </td>
-        <td>
-            <a href="{% url 'update_servicio' servicios.pk %}"
-                class="label  text-white f-12 btn-primary" style="background-color: #007bff">
-                Actualizar
-            </a>
-            {% for asistente in servicios.asistentes_set.all %}
-                <a href="{% url 'descargar_reporte' asistente.pk %}"
-                    class="label  text-white f-12 btn-success" style="background-color: #28a745">
-                    Descargar Reporte {{ asistente.Nombre }}
-                </a>
-            {% endfor %}
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
-                    </table>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table " id="miTabla">
+                            <thead>
+                                <tr>
+                                    <th scope="col">FECHA</th>
+                                    <th scope="col">TIPO SERVICIO</th>
+                                    <th scope="col">HOSPITAL</th>
+                                    <th scope="col">FORMA DE PAGO</th>
+                                    <th scope="col">ESTADO DE PAGO</th>
+                                    <th scope="col">ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for servicios in servicios_list %}
+                                <tr class="unread">
+                                    <td>
+                                        <p class="m-0">{{ servicios.Fecha }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="m-0">{{ servicios.CodHospital }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="m-0">{{ servicios.MedioPago }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="m-0">{{ servicios.EstadoPago }}</p>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'update_servicio' servicios.pk %}"
+                                            class="label  text-white f-12 btn-primary"
+                                            style="background-color: #007bff">
+                                            Actualizar
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <style>
     /* Estilos para simular un botón */
     .btn-like {
@@ -126,6 +113,8 @@
     }
 </style>
 
+
+
 <script>
     $(document).ready(function () {
         var miTabla = $('#miTabla').DataTable({
@@ -133,8 +122,9 @@
                 "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
             },
             responsive: true,
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]]
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
         });
+
 
         $('#miTabla_length select').on('change', function () {
             var selectedValue = $(this).val();
@@ -143,7 +133,6 @@
             }
         });
     });
-
 
     function deleteservices(id) {
         // Solicitar al servidor eliminar el servicio con el ID proporcionado

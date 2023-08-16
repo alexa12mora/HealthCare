@@ -1,0 +1,158 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Carga de jQuery -->
+<!-- Carga de jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- CSS -->
+
+
+<div class="col-xl-12 col-md-6">
+    <div class="card Recent-Users">
+        <div class="card-header">
+            <div class="float-left">
+                <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 25%; "
+                    class="float-left">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-xl-12 col-md-6">
+    <div class="card Recent-Users">
+        <div class="card-header">
+            <div class="float-right">
+                <a href="{% url 'reportes_descarga' %}">
+                    <i class="feather icon-file-text"></i>
+                    Reportes de contado y crédito
+                </a>
+            </div>
+        </div>
+        <div class="card card-body">
+            <form>
+                <div class="row">
+                    <div class="col-md-5">
+                        <input type="date" class="form-control" id="start_date" name="start_date">
+                    </div>
+                    <div class="col-md-5">
+
+                        <input type="date" class="form-control" id="end_date" name="end_date">
+                    </div>
+                    <br>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary mb-2">Generar pagos</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-header">
+            <div class="card-block px-0 py-3">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="miTabla">
+                        <thead>
+                            <tr>
+                                <th scope="col">FECHA</th>
+                                <th scope="col">TIPO SERVICIO</th>
+                                <th scope="col">HOSPITAL</th>
+                                <th scope="col">FORMA DE PAGO</th>
+                                <th scope="col">ESTADO DE PAGO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for servicios in servicios_list %}
+                            <tr class="unread">
+                                <td>
+                                    <p class="m-0">{{ servicios.Fecha }}</p>
+                                </td>
+                                <td>
+                                    <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
+                                </td>
+                                <td>
+                                    <p class="m-0">{{ servicios.CodHospital }}</p>
+                                </td>
+                                <td>
+                                    <p class="m-0">{{ servicios.MedioPago }}</p>
+                                </td>
+                                <td>
+                                    <p class="m-0">{{ servicios.EstadoPago }}</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+</style>
+
+
+
+<script>
+    $(document).ready(function () {
+        var miTabla = $('#miTabla').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+            },
+            responsive: true,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+
+        });
+
+
+        $('#miTabla_length select').on('change', function () {
+            var selectedValue = $(this).val();
+            if (selectedValue === '5') {
+                miTabla.page.len(5).draw();
+            }
+        });
+    });
+
+    function deleteservices(id) {
+        // Solicitar al servidor eliminar el servicio con el ID proporcionado
+        $.ajax({
+            type: "POST",
+            url: "{% url 'delete_servicio' 0 %}".replace('0', id),
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function () {
+                $('#row-' + id).remove();
+            },
+            error: function () {
+                alert('Error al eliminar.');
+            },
+        });
+    }
+</script>
+{% endblock content %}

@@ -184,7 +184,7 @@ class serviciosForm(forms.ModelForm):
         super(serviciosForm, self).__init__(*args, **kwargs)
         fecha_actual = date.today().strftime('%Y-%m-%d')
         self.fields['Fecha'].initial = fecha_actual  
-
+        self.fields['numFactura'].initial = '0'
         if user.is_authenticated and Medico.objects.filter(correo=user.email).exists():
             self.fields['codMedico'].queryset = Medico.objects.filter(correo=user.email)
     
@@ -240,14 +240,4 @@ class PagosAsistentesForm(forms.ModelForm):
             'FechaPago': forms.DateInput(attrs={'class': 'form-control'}),
         }
 
-# class PerfilesDeAccesoForm(forms.ModelForm):
-#     class Meta:
-#         model = PerfilesDeAcceso
-#         fields = ['NombreUsuario', 'Password', 'TipoUsuario', 'NivelDeAcceso']
-#         widgets = {
-#             'NombreUsuario': forms.TextInput(attrs={'class': 'form-control'}),
-#             'Password': forms.PasswordInput(attrs={'class': 'form-control'}),
-#             'TipoUsuario': forms.Select(attrs={'class': 'form-control'}),
-#             'NivelDeAcceso': forms.NumberInput(attrs={'class': 'form-control'}),
-#         }
 

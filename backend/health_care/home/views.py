@@ -147,8 +147,9 @@ class UserLoginView(LoginView):
         if self.request.POST.get('username'):
             username = self.request.POST.get('username')
             user = User.objects.filter(username=username).first()
-            if user and not user.is_active:
-                form.add_error(None, 'El usuario no está activo.')
+            if user and not user.is_active:  
+                form.errors.clear()         
+                form.add_error(None, 'Usuario no está activo.')
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -616,11 +617,53 @@ def delete_asistente(request, pk):
         'asistente': asistente,
     }
     return render(request, 'asistente_confirm_delete.html', context)
-  
-  
+
+
+
+ 
 #servicios
 @login_required(login_url='/accounts/login/')
-def list_servicios(request):
+def reporte_por_med_servicios(request):
+    if Medico.objects.filter(correo=request.user.email).exists():
+        medico = Medico.objects.get(correo=request.user.email)
+        servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
+        asistentes_servicios = {}
+        for servicio in servicios_medico:
+            if servicio.MedioPago == 'Credito':
+                factura = Facturas.objects.filter(CodProcedimiento=servicio).first()
+                if factura and factura.estado:
+                    asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
+                    for asistente in asistentes_servicio:
+                        asistente_key = asistente.correo
+                        if asistente_key not in asistentes_servicios:
+                            asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
+                        asistentes_servicios[asistente_key]['servicios'].append(servicio)
+            elif servicio.MedioPago == 'Contado' and servicio.EstadoPago == 'Pagado':
+                asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
+                for asistente in asistentes_servicio:
+                    asistente_key = asistente.correo
+                    if asistente_key not in asistentes_servicios:
+                        asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
+                    asistentes_servicios[asistente_key]['servicios'].append(servicio)
+
+        asistentes_servicios_list = list(asistentes_servicios.values())
+        print(asistentes_servicios_list)
+    else:
+        pass
+
+    context = {
+        'segment': 'reportes',
+        'servicios_list': asistentes_servicios_list,
+    }
+    return render(request, 'medical_reports/servicios/descargareportes.html', context)
+
+
+
+
+
+
+@login_required(login_url='/accounts/login/')
+def list_servicios_report(request):
     if Medico.objects.filter(correo=request.user.email).exists():
         medico = Medico.objects.get(correo=request.user.email)
         servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
@@ -628,10 +671,8 @@ def list_servicios(request):
             servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
     else:
         pass
-
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-
     if start_date and end_date:
         start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
         end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
@@ -647,14 +688,33 @@ def list_servicios(request):
             pdf_name = f'Reporte_{asistente.Nombre}.pdf'
             response = HttpResponse(content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="{pdf_name}"'
-
             p = canvas.Canvas(response, pagesize=letter)
             p.drawString(100, 750, f'Reporte para: {asistente.Nombre}')
             # Agregar más contenido al PDF aquí
-
             p.showPage()
             p.save()
 
+    context = {
+        'segment': 'reportes',
+        'servicios_list': servicios_list,
+        'form': form,
+        'formset': formset,
+    }
+    return render(request, 'medical_reports/servicios/reportes.html', context)
+
+
+
+@login_required(login_url='/accounts/login/')
+def list_servicios(request):
+    if Medico.objects.filter(correo=request.user.email).exists():
+        medico = Medico.objects.get(correo=request.user.email)
+        servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+        for servicio in servicios_list:
+            servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
+    else:
+        pass
+    formset = AsistentesFormSet(request.POST)
+    form = serviciosForm()
     context = {
         'segment': 'servicios',
         'servicios_list': servicios_list,
@@ -663,15 +723,13 @@ def list_servicios(request):
     }
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
 
+
 def descargar_reporte(request, pk):
     asistente = get_object_or_404(Asistentes, pk=pk)
-
     # Obtener el servicio asociado al asistente
     servicio = asistente.servicio
-
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="Reporte_{asistente.Nombre}.pdf"'
-
     p = canvas.Canvas(response, pagesize=letter)
     p.drawString(100, 750, f'Reporte para: {asistente.Nombre}')
     p.drawString(100, 730, f'Servicio: Procedimiento {servicio.CodProcedimiento}')
@@ -684,11 +742,8 @@ def descargar_reporte(request, pk):
     p.drawString(100, 590, f'Médico: {servicio.codMedico}')
     p.drawString(100, 570, f'Número de factura: {servicio.numFactura}')
     p.drawString(100, 550, f'Costo de operación: {servicio.CodCostoOperacion}')
-
-
     p.showPage()
     p.save()
-
     return response
 
 @login_required(login_url='/accounts/login/')
@@ -699,27 +754,36 @@ def create_servicio(request):
         factura_form = FacturasForm(request.POST)
         if form.is_valid() and formset.is_valid() and factura_form.is_valid():
             servicio = form.save(commit=False)
+            
+            # Validar el estado del pago
             if form.cleaned_data['MedioPago'] == 'Credito':
                 servicio.EstadoPago = 'Pendiente'
-            else:
-                servicio.EstadoPago = 'Pagado'          
+            elif form.cleaned_data['MedioPago'] == 'Contado':
+                num_factura = form.cleaned_data['numFactura']
+                if num_factura and num_factura.isdigit() and int(num_factura) > 0:
+                    servicio.EstadoPago = 'Pagado'
+                else:
+                    servicio.EstadoPago = 'Pendiente'
+            
             servicio.save()
+
             formset.instance = servicio
             asistentes_instances = formset.save()
+            
+            # Crear las facturas para cada asistente
             for asistente in asistentes_instances:
                 factura_asistente = FacturasAsistentes(CodAsistente=asistente)
                 factura_asistente.save()
+            
+            # Crear la factura si es pago a crédito
             if form.cleaned_data['MedioPago'] == 'Credito':
                 factura = factura_form.save(commit=False)
                 factura.CodProcedimiento = servicio
                 factura.save()
                 print("Si se salva el form de factura")
-            elif form.cleaned_data['MedioPago'] == 'Contado':
-                print("es de contado")
-                pass
+            
             return redirect('list_servicios')
-        else:
-            pass
+    
     else:
         form = serviciosForm(request.user,initial={'EstadoPago': 'Pendiente'})
         formset = AsistentesFormSet()
@@ -731,18 +795,20 @@ def create_servicio(request):
         'formset': formset,
         'factura_form': factura_form,
         'is_update': False,
-        
     }
+    
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def update_servicio(request, pk):
     servicio = get_object_or_404(servicios, pk=pk)
     factura_form = None
+    
     if request.method == 'POST':
-        print(request.POST)
         form = serviciosForm(request.POST, instance=servicio)
         formset = AsistentesFormSet(request.POST, instance=servicio)
+        
         if form.is_valid() and formset.is_valid():
             servicio = form.save(commit=False)
             if request.POST.get('NumeroFactura'):
@@ -750,32 +816,43 @@ def update_servicio(request, pk):
             else:
                 servicio.EstadoPago = 'Pendiente'
             servicio.save()
-            formset.save()     
+            formset.save()
+            
             # Crear facturas para los asistentes
             asistentes_instances = formset.save(commit=False)
             for asistente in asistentes_instances:
                 factura_asistente = FacturasAsistentes(CodAsistente=asistente)
-                factura_asistente.save()    
+                factura_asistente.save()
+            
             if servicio.MedioPago == 'Credito':
                 factura_form = FacturasForm(request.POST, instance=servicio.facturas_set.first())
                 if factura_form.is_valid():
                     factura = factura_form.save(commit=False)
                     factura.CodProcedimiento = servicio
+                    factura.estado = True
                     factura.save()
+            
+            if form.cleaned_data['MedioPago'] == 'Contado':
+                if form.cleaned_data['numFactura'] != '0':
+                    servicio.EstadoPago = 'Pagado' 
                 else:
-                    pass
+                    servicio.EstadoPago = 'Pendiente'
+                servicio.save()
+
             return redirect('list_servicios')
-        else:
-            pass
+    
     else:
         form = serviciosForm(instance=servicio)
         asistentes = servicio.asistentes_set.all()
         formset = AsistentesFormSet(instance=servicio, queryset=asistentes)
+        
         # Filtrar las facturas de los asistentes asociados al servicio
         asistentes = formset.save(commit=False)
         facturas_asistentes = FacturasAsistentes.objects.filter(CodAsistente__in=asistentes)
+        
         if servicio.MedioPago == 'Credito':
             factura_form = FacturasForm(instance=servicio.facturas_set.first())       
+
     context = {
         'segment': 'servicios',
         'form': form,
@@ -784,9 +861,10 @@ def update_servicio(request, pk):
         'factura_form': factura_form,
         'is_update': True,
         "facturasis":facturas_asistentes,
-        
     }
+    
     return render(request, 'medical_reports/servicios/crear_servicio.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def delete_servicio(request, pk):
