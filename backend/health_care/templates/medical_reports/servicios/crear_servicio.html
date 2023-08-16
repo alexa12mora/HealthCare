@@ -6,21 +6,37 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
+{% block extrastyle %}
 
-<!-- [ Main Content ] start -->
+<style>
+    .iframe-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .parent-fit {
+        flex-grow: 1;
+        border: none;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+    }
+</style>
+
+{% endblock extrastyle %}
 <div class="row">
     <div class="col-md-6 col-xl-12">
         <div class="card daily-appointments">
             <div class="card-header">
                 <h5>Nuevo servicio</h5>
-                <div class="float-right" style="margin-top: -30px;">
-                    <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 17%; "
-                        class="float-right">
-                </div>
+
             </div>
         </div>
     </div>
-    <form method="post" class="" novalidate>
+    <form method="post" class="needs-validation" novalidate>
         {% csrf_token %}
         <div class="col-md-6 col-xl-12">
             <div class="card daily-appointments">
@@ -106,87 +122,73 @@
             </div>
         </div>
 
-
-        <div class="col-md-6 col-xl-12">
-            <div class="card daily-appointments">
-                <div class="card-header">
-                    <h5>Asociar asistentes al servicio</h5>
-                </div>
-                <div class="card-block">
-
-                    <div class="row">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
         <div class="col-md-12">
             <div class="card Recent-Users">
                 <div class="card-header">
                     <h5>Asociar asistentes al servicio</h5>
                 </div>
                 <div class="col-md-12">
-                    <div class="table-responsive">
-                        <table class="table" id="miTabla" data-is-update="{{ is_update|yesno:" true,false" }}">
-                            {{ formset.management_form }}
-                            <thead>
-                                <tr>
-                                    <th>Nombre del asistente</th>
-                                    <th>Correo</th>
-                                    <th>Tipo</th>
-                                    <!-- En tu plantilla -->
-                                    {% if is_update %}
-                                    <th colspan="2">Factura asistente</th>
-                                    {% endif %}
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for form in formset %}
-                                <tr class="{% cycle 'row1' 'row2' %} formset_row">
-                                    {% for field in form.visible_fields %}
-                                    <td>
-                                        {# Include the hidden fields in the form #}
-                                        {% if forloop.first %}
-                                        {% for hidden in form.hidden_fields %}
-                                        {{ hidden }}
-                                        {% endfor %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table" id="miTabla" data-is-update="{{ is_update|yesno:" true,false" }}">
+                                {{ formset.management_form }}
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                        <th>Tipo</th>
+                                        <!-- En tu plantilla -->
+                                        {% if is_update %}
+                                        <th colspan="2">Factura</th>
                                         {% endif %}
-                                        {{ field.errors.as_ul }}
-                                        {{ field }}
-                                    </td>
-                                    {% endfor %}
-                                    {% if is_update %}
-                                    <td colspan="2">
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for form in formset %}
+                                    <tr class="{% cycle 'row1' 'row2' %} formset_row">
+                                        {% for field in form.visible_fields %}
+                                        <td>
+                                            {# Include the hidden fields in the form #}
+                                            {% if forloop.first %}
+                                            {% for hidden in form.hidden_fields %}
+                                            {{ hidden }}
+                                            {% endfor %}
+                                            {% endif %}
+                                            {{ field.errors.as_ul }}
+                                            {{ field }}
+                                        </td>
+                                        {% endfor %}
+                                        {% if is_update %}
+                                        <td colspan="2">
 
-                                        {% for factura in facturasis %}
-                                        {% if factura.CodAsistente.pk == form.instance.pk %}
-                                        {% if factura.estado == True %}
-                                        <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
-                                            class="label text-white f-12 btn-danger btn-like"
-                                            style="background-color: #21734F">
-                                            entregada
-                                        </a>
-                                        {% else %}
-                                        <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
-                                            class="label text-white f-12 btn-danger btn-like"
-                                            style="background-color: #007bff">
-                                            completar
-                                        </a>
+                                            {% for factura in facturasis %}
+                                            {% if factura.CodAsistente.pk == form.instance.pk %}
+                                            {% if factura.estado == True %}
+                                            <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
+                                                class="label text-white f-12 btn-danger btn-like"
+                                                style="background-color: #21734F">
+                                                entregada
+                                            </a>
+                                            {% else %}
+                                            <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
+                                                class="label text-white f-12 btn-danger btn-like"
+                                                style="background-color: #007bff">
+                                                completar
+                                            </a>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}
+                                        </td>
                                         {% endif %}
+                                        {% if is_update %}
+                                        <td></td>
                                         {% endif %}
-                                        {% endfor %}
-                                    </td>
-                                    {% endif %}
-                                    {% if is_update %}
-                                    <td></td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

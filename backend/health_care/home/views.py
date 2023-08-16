@@ -147,8 +147,9 @@ class UserLoginView(LoginView):
         if self.request.POST.get('username'):
             username = self.request.POST.get('username')
             user = User.objects.filter(username=username).first()
-            if user and not user.is_active:
-                form.add_error(None, 'El usuario no está activo.')
+            if user and not user.is_active:  
+                form.errors.clear()         
+                form.add_error(None, 'Usuario no está activo.')
         return super().form_invalid(form)
 
     def get_success_url(self):

@@ -5,10 +5,7 @@
 <!-- Carga de jQuery -->
 <!-- Carga de jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <!-- CSS -->
 
 
@@ -27,9 +24,9 @@
     <div class="card Recent-Users">
         <div class="card-header">
             <div class="float-right">
-
                 <a href="{% url 'reportes_descarga' %}">
-                    <i class="feather icon-file-text"></i> Reporte de servicios de contado y credito
+                    <i class="feather icon-file-text"></i>
+                    Reportes de contado y crédito
                 </a>
             </div>
         </div>
@@ -43,7 +40,8 @@
 
                         <input type="date" class="form-control" id="end_date" name="end_date">
                     </div>
-                    <div class="col-md-s">
+                    <br>
+                    <div class="col-md-2">
                         <button type="submit" class="btn btn-primary mb-2">Generar pagos</button>
                     </div>
                 </div>
