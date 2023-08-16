@@ -160,7 +160,7 @@ from datetime import date
 class serviciosForm(forms.ModelForm):
     CodAseguradora = forms.ModelChoiceField(queryset=Aseguradoras.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     CodBanco = forms.ModelChoiceField(queryset=Emisor.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-    codMedico = forms.ModelChoiceField(queryset=Medico.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    codMedico = forms.ModelChoiceField(queryset=Medico.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
     CodCostoOperacion = forms.ModelChoiceField(queryset=CostosDeOperaciones.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     MedioPago = forms.ChoiceField(choices=(('', 'Seleccione'), ('Contado', 'Contado'), ('Credito', 'Crédito')), widget=forms.Select(attrs={'class': 'form-control'}))
     EstadoPago = forms.ChoiceField(
@@ -180,10 +180,13 @@ class serviciosForm(forms.ModelForm):
             'numFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
         
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(serviciosForm, self).__init__(*args, **kwargs)
         fecha_actual = date.today().strftime('%Y-%m-%d')
         self.fields['Fecha'].initial = fecha_actual  
+
+        if user.is_authenticated and Medico.objects.filter(correo=user.email).exists():
+            self.fields['codMedico'].queryset = Medico.objects.filter(correo=user.email)
     
 
 class FacturasForm(forms.ModelForm):

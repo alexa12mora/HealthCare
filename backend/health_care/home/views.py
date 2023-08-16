@@ -695,7 +695,7 @@ def descargar_reporte(request, pk):
 def create_servicio(request):
     if request.method == 'POST':
         form = serviciosForm(request.POST)
-        formset = AsistentesFormSet(request.POST)
+        formset = AsistentesFormSet(request.user,request.POST)
         factura_form = FacturasForm(request.POST)
         if form.is_valid() and formset.is_valid() and factura_form.is_valid():
             servicio = form.save(commit=False)
@@ -721,7 +721,7 @@ def create_servicio(request):
         else:
             pass
     else:
-        form = serviciosForm(initial={'EstadoPago': 'Pendiente'})
+        form = serviciosForm(request.user,initial={'EstadoPago': 'Pendiente'})
         formset = AsistentesFormSet()
         factura_form = FacturasForm()
 
