@@ -673,6 +673,82 @@ def descargar_reporte_pdf(request, pk):
     response.write(pdf)
     return response
 
+
+
+#reporte de servicios pagados por aseguradora
+@login_required(login_url='/accounts/login/')
+def reporte_por_med_serviciospagados(request):
+    if Medico.objects.filter(correo=request.user.email).exists():
+        medico = Medico.objects.get(correo=request.user.email)
+        servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
+        asistentes_servicios = {}
+        for servicio in servicios_medico:
+            if servicio.MedioPago == 'Credito':
+                factura = Facturas.objects.filter(CodProcedimiento=servicio).first()
+                if factura and factura.estado:
+                    asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
+                    for asistente in asistentes_servicio:
+                        asistente_key = asistente.correo
+                        if asistente_key not in asistentes_servicios:
+                            asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
+                        asistentes_servicios[asistente_key]['servicios'].append(servicio)
+            elif servicio.MedioPago == 'Contado' and servicio.EstadoPago == 'Pagado':
+                asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
+                for asistente in asistentes_servicio:
+                    asistente_key = asistente.correo
+                    if asistente_key not in asistentes_servicios:
+                        asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
+                    asistentes_servicios[asistente_key]['servicios'].append(servicio)
+
+        asistentes_servicios_list = list(asistentes_servicios.values())
+        print(asistentes_servicios_list)
+    else:
+        pass
+
+    context = {
+        'segment': 'reportes',
+        'servicios_list': asistentes_servicios_list,
+        'medico': medico,
+    }
+    return render(request, 'medical_reports/servicios/descargareportespagados.html', context)
+
+#reporte de servicios no pagados por aseguradora
+@login_required(login_url='/accounts/login/')
+def reporte_por_med_servicios_no_pagados(request):
+    if Medico.objects.filter(correo=request.user.email).exists():
+        medico = Medico.objects.get(correo=request.user.email)
+        servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
+        asistentes_servicios = {}
+        for servicio in servicios_medico:
+            if servicio.MedioPago == 'Credito':
+                factura = Facturas.objects.filter(CodProcedimiento=servicio).first()
+                if factura.estado == False:
+                    asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
+                    for asistente in asistentes_servicio:
+                        asistente_key = asistente.correo
+                        if asistente_key not in asistentes_servicios:
+                            asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
+                        asistentes_servicios[asistente_key]['servicios'].append(servicio)
+            elif servicio.MedioPago == 'Contado' and servicio.EstadoPago == 'Pendiente':
+                asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
+                for asistente in asistentes_servicio:
+                    asistente_key = asistente.correo
+                    if asistente_key not in asistentes_servicios:
+                        asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
+                    asistentes_servicios[asistente_key]['servicios'].append(servicio)
+
+        asistentes_servicios_list = list(asistentes_servicios.values())
+        print(asistentes_servicios_list)
+    else:
+        pass
+
+    context = {
+        'segment': 'reportes',
+        'servicios_list': asistentes_servicios_list,
+        'medico': medico,
+    }
+    return render(request, 'medical_reports/servicios/descargareportesnopagados.html', context)
+
 @login_required(login_url='/accounts/login/')
 def reporte_por_med_servicios(request):
     if Medico.objects.filter(correo=request.user.email).exists():
@@ -705,8 +781,9 @@ def reporte_por_med_servicios(request):
     context = {
         'segment': 'reportes',
         'servicios_list': asistentes_servicios_list,
+        'medico': medico,
     }
-    return render(request, 'medical_reports/servicios/descargareportes.html', context)
+    return render(request, 'medical_reports/servicios/descargareportespagados.html', context)
 
 @login_required(login_url='/accounts/login/')
 def list_servicios_report(request):
@@ -726,20 +803,6 @@ def list_servicios_report(request):
 
     formset = AsistentesFormSet(request.POST)
     form = serviciosForm(request.user)
-
-    # Generar reporte PDF para cada asistente asociado a un servicio
-    for servicio in servicios_list:
-        asistentes = Asistentes.objects.filter(servicio=servicio)
-        for asistente in asistentes:
-            pdf_name = f'Reporte_{asistente.Nombre}.pdf'
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{pdf_name}"'
-            p = canvas.Canvas(response, pagesize=letter)
-            p.drawString(100, 750, f'Reporte para: {asistente.Nombre}')
-            # Agregar más contenido al PDF aquí
-            p.showPage()
-            p.save()
-
     context = {
         'segment': 'reportes',
         'servicios_list': servicios_list,
@@ -773,33 +836,12 @@ def list_servicios(request):
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
 
 
-def descargar_reporte(request, pk):
-    asistente = get_object_or_404(Asistentes, pk=pk)
-    # Obtener el servicio asociado al asistente
-    servicio = asistente.servicio
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="Reporte_{asistente.Nombre}.pdf"'
-    p = canvas.Canvas(response, pagesize=letter)
-    p.drawString(100, 750, f'Reporte para: {asistente.Nombre}')
-    p.drawString(100, 730, f'Servicio: Procedimiento {servicio.CodProcedimiento}')
-    p.drawString(100, 710, f'Fecha del servicio: {servicio.Fecha}')
-    p.drawString(100, 690, f'Nombre del paciente: {servicio.NombrePaciente}')
-    p.drawString(100, 670, f'Monto total: {servicio.MontoTotal}')
-    p.drawString(100, 650, f'Medio de pago: {servicio.MedioPago}')
-    p.drawString(100, 630, f'Aseguradora: {servicio.CodAseguradora}')
-    p.drawString(100, 610, f'Hospital: {servicio.CodHospital}')
-    p.drawString(100, 590, f'Médico: {servicio.codMedico}')
-    p.drawString(100, 570, f'Número de factura: {servicio.numFactura}')
-    p.drawString(100, 550, f'Costo de operación: {servicio.CodCostoOperacion}')
-    p.showPage()
-    p.save()
-    return response
 
 @login_required(login_url='/accounts/login/')
 def create_servicio(request):
     if request.method == 'POST':
-        form = serviciosForm(request.POST)
-        formset = AsistentesFormSet(request.user,request.POST)
+        form = serviciosForm(request.user,request.POST)
+        formset = AsistentesFormSet(request.POST)
         factura_form = FacturasForm(request.POST)
         if form.is_valid() and formset.is_valid() and factura_form.is_valid():
             servicio = form.save(commit=False)
@@ -813,13 +855,9 @@ def create_servicio(request):
                     servicio.EstadoPago = 'Pagado'
                 else:
                     servicio.EstadoPago = 'Pendiente'
-            
             servicio.save()
-
             formset.instance = servicio
             asistentes_instances = formset.save()
-            
-            # Crear las facturas para cada asistente
             for asistente in asistentes_instances:
                 factura_asistente = FacturasAsistentes(CodAsistente=asistente)
                 factura_asistente.save()
@@ -855,7 +893,7 @@ def update_servicio(request, pk):
     factura_form = None
     
     if request.method == 'POST':
-        form = serviciosForm(request.POST, instance=servicio)
+        form = serviciosForm(request.user,request.POST, instance=servicio)
         formset = AsistentesFormSet(request.POST, instance=servicio)
         
         if form.is_valid() and formset.is_valid():
@@ -891,7 +929,7 @@ def update_servicio(request, pk):
             return redirect('list_servicios')
     
     else:
-        form = serviciosForm(instance=servicio)
+        form = serviciosForm(request.user,instance=servicio)
         asistentes = servicio.asistentes_set.all()
         formset = AsistentesFormSet(instance=servicio, queryset=asistentes)
         

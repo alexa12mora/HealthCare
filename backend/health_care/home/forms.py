@@ -39,7 +39,6 @@ class CustomRegistrationForm(UserCreationForm):
         ('secretaria', 'Secretaria')
     )
     user_type = forms.ChoiceField(choices=USER_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
-    
     class Meta:
         model = User
         fields = ('username', 'email',)

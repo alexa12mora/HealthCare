@@ -119,12 +119,60 @@
     $(document).ready(function () {
         var miTabla = $('#miTabla').DataTable({
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
+                searchBuilder: {
+                    add: 'Añadir',
+                    condition: 'Condición',
+                    clearAll: 'Borrar todo',
+                    delete: 'Eliminar',
+                    deleteTitle: 'Eliminar título',
+                    data: 'Columna',
+                    left: 'Izquierda',
+                    leftTitle: 'Título izquierdo',
+                    logicAnd: 'Y',
+                    logicOr: 'O',
+                    right: 'Derecha',
+                    rightTitle: 'Título derecho',
+                    title: {
+                        0: 'Filtros',
+                        _: 'Filtros (%d)'
+                    },
+                    value: 'Opción',
+                    conditions: {
+                        "date": {
+                            "after": "Después",
+                            "before": "Antes",
+                            "between": "Entre",
+                            "empty": "Vacío",
+                            "equals": "Igual a",
+                            "not": "No",
+                            "notBetween": "No entre",
+                            "notEmpty": "No vacío"
+                        },
+                        "number": {
+                            ">=": ">=",
+                            "<=": "<=",
+                            "<>": "<>",
+                            "=": "=",
+                            ">": ">",
+                            "<": "<",
+                            between: "Entre",
+                            empty: "Vacío",
+                            equals: "Igual a",
+                            notBetween: "No entre",
+                            notEmpty: "No vacío"
+                        },
+                        // ... otras condiciones
+                    }
+                }
             },
             responsive: true,
+            autoFill: true,
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+            colReorder: true,
+            dom: 'Qfrtip',
+            searchBuilder: true,
         });
-
 
         $('#miTabla_length select').on('change', function () {
             var selectedValue = $(this).val();
@@ -132,7 +180,10 @@
                 miTabla.page.len(5).draw();
             }
         });
+        miTabla.searchBuilder.container().prependTo(table.table().container());
     });
+
+
 
     function deleteservices(id) {
         // Solicitar al servidor eliminar el servicio con el ID proporcionado

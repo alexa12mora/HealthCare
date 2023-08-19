@@ -22,27 +22,39 @@
 
 <div class="col-xl-12 col-md-6">
     <div class="card Recent-Users">
-        <div class="card-header">
-            <div class="float-right">
+        <div class="card card-body">
+            <nav class="nav">
                 <a href="{% url 'reportes_descarga' %}">
                     <i class="feather icon-file-text"></i>
-                    Reportes de contado y crédito
+                    Servicios pagados por aseguradora
                 </a>
-            </div>
+
+                <a href="{% url 'reportessinpago_descarga' %}">
+                    <i class="feather icon-file-text"></i>
+                    Servicios pendientes de pago
+                </a>
+                <a href="{% url 'reportessinpago_descarga' %}">
+                    <i class="feather icon-file-text"></i>
+                    Servicios pagados a asistentes
+                </a>
+            </nav>
+
         </div>
         <div class="card card-body">
-            <form>
+            <form method="post">
+                {% csrf_token %}
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4 mb-3">
+
                         <input type="date" class="form-control" id="start_date" name="start_date">
                     </div>
-                    <div class="col-md-5">
-
-                        <input type="date" class="form-control" id="end_date" name="end_date">
+                    <div class="col-md-4 mb-3">
+                        <input type="date" class="form-control " id="end_date" name="end_date">
                     </div>
                     <br>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary mb-2">Generar pagos</button>
+                    <br>
+                    <div class="col-md-4 mb-3">
+                        <button type="submit" class="btn btn-primary mb-2">Generar pago por un rango de fecha</button>
                     </div>
                 </div>
             </form>
@@ -55,9 +67,10 @@
                             <tr>
                                 <th scope="col">FECHA</th>
                                 <th scope="col">TIPO SERVICIO</th>
-                                <th scope="col">HOSPITAL</th>
                                 <th scope="col">FORMA DE PAGO</th>
-                                <th scope="col">ESTADO DE PAGO</th>
+                                <th scope="col">FACTURA ASEGURADORA</th>
+                                <th scope="col">ASISTENTES</th>
+                                <th scope="col">ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,14 +83,27 @@
                                     <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
                                 </td>
                                 <td>
-                                    <p class="m-0">{{ servicios.CodHospital }}</p>
-                                </td>
-                                <td>
                                     <p class="m-0">{{ servicios.MedioPago }}</p>
                                 </td>
+
                                 <td>
                                     <p class="m-0">{{ servicios.EstadoPago }}</p>
                                 </td>
+                                <td>
+                                    <a href="" class="label  text-white f-12 btn-primary"
+                                        style="background-color: #21734F">
+                                        ver lista
+                                    </a>
+
+
+                                </td>
+                                <td>
+                                    <a href="" class="label  text-white f-12 btn-primary"
+                                        style="background-color: #007bff">
+                                        Generar pago
+                                    </a>
+                                </td>
+
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -87,48 +113,72 @@
         </div>
     </div>
 </div>
-<style>
-    /* Estilos para simular un botón */
-    .btn-like {
-        display: inline-block;
-        padding: 3px 11px;
-        /* Puedes ajustar el padding según el tamaño deseado */
-        border-radius: 4px;
-        /* Para redondear los bordes */
-        text-decoration: none;
-        color: #fff;
-        /* Color del texto */
-        background-color: #C70039;
-        /* Color de fondo del botón */
-        border: none;
-        /* Quitamos el borde */
-        cursor: pointer;
-    }
-
-    .btn-like:hover {
-        background-color: #C70039;
-        /* Color de fondo al pasar el ratón por encima */
-    }
-
-    .btn-like:focus {
-        outline: none;
-        /* Quitamos el contorno al enfocar */
-    }
-</style>
-
-
-
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.1.1/css/dataTables.dateTime.min.css">
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/datetime/1.1.1/js/dataTables.dateTime.min.js"></script>
+<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"></script>
+<!-- Incluye Moment.js -->
+<script type="text/javascript" charset="utf8"
+    src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
     $(document).ready(function () {
         var miTabla = $('#miTabla').DataTable({
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
+                searchBuilder: {
+                    add: 'Añadir',
+                    condition: 'Condición',
+                    clearAll: 'Borrar todo',
+                    delete: 'Eliminar',
+                    deleteTitle: 'Eliminar título',
+                    data: 'Columna',
+                    left: 'Izquierda',
+                    leftTitle: 'Título izquierdo',
+                    logicAnd: 'Y',
+                    logicOr: 'O',
+                    right: 'Derecha',
+                    rightTitle: 'Título derecho',
+                    title: {
+                        0: 'Filtros',
+                        _: 'Filtros (%d)'
+                    },
+                    value: 'Opción',
+                    conditions: {
+                        "date": {
+                            "after": "Después",
+                            "before": "Antes",
+                            "between": "Entre",
+                            "empty": "Vacío",
+                            "equals": "Igual a",
+                            "not": "No",
+                            "notBetween": "No entre",
+                            "notEmpty": "No vacío"
+                        },
+                        "number": {
+                            ">=": ">=",
+                            "<=": "<=",
+                            "<>": "<>",
+                            "=": "=",
+                            ">": ">",
+                            "<": "<",
+                            between: "Entre",
+                            empty: "Vacío",
+                            equals: "Igual a",
+                            notBetween: "No entre",
+                            notEmpty: "No vacío"
+                        },
+                        // ... otras condiciones
+                    }
+                }
             },
             responsive: true,
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
-
+            dom: 'Qfrtip',
+            searchBuilder: true,
         });
-
 
         $('#miTabla_length select').on('change', function () {
             var selectedValue = $(this).val();
@@ -136,6 +186,7 @@
                 miTabla.page.len(5).draw();
             }
         });
+        miTabla.searchBuilder.container().prependTo(table.table().container());
     });
 
     function deleteservices(id) {

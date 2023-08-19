@@ -1,0 +1,226 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<!-- Carga de jQuery -->
+
+
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+</head>
+
+<div class="row">
+    <div class="col-md-6 col-xl-12">
+        <div class="card daily-appointments">
+            <div class="card-header">
+                <h5>Reporte de servicios pendientes de pago por aseguradora</h5>
+            </div>
+            {% if servicios_list %}
+            {% for item in servicios_list %}
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <div class="row">
+                            <div class="col col-lg-10">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse"
+                                        data-target="#{{item.asistente.pk}}" aria-expanded="true"
+                                        aria-controls="{{item.asistente.pk}}">
+                                        {{ item.asistente.Nombre }}
+                                    </button>
+                                </h5>
+                            </div>
+                            <div class="col col-lg-2">
+                                <div class="col-9" id="botones" style="display: none;">
+                                    <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
+                                            data-asistente="{{ item.asistente.pk }}"></i>
+                                    </a>
+                                    <a href="#" data-asistente="{{ item.asistente.pk }}">
+                                        <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="{{item.asistente.pk}}" class="collapse" aria-labelledby="headingOne"
+                        data-parent="#accordion">
+                        <div class="card">
+                            <div class="container mb-5 mt-3">
+                                <div class="container">
+                                    <div class="text-center">
+                                        <img src="{% static 'assets/images/surgy1.2.png' %}" class="rounded" alt="..."
+                                            style="max-width: 35%; ">
+                                    </div>
+                                </div>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-xl-8">
+                                            <ul class="list-unstyled">
+                                                <li class="text-muted">Para: <span style="color:#5d9fc5 ;">
+                                                        {{ item.asistente.Nombre }}</span></li>
+                                                <li class="text-muted">Correo: {{ item.asistente.correo }}</li>
+                                                <li class="text-muted">Total de servicios: </li>
+                                                <li class="text-muted">Medico principal: {{ medico.Nombre }}</li>
+                                                <li class="text-muted">Correo: {{ medico.correo }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="row my-2 mx-1 justify-content-center">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead style="background-color:#21734F; ;" class="text-white">
+                                                    <tr>
+                                                        <th scope="col">TIPO SERVICIO</th>
+                                                        <th scope="col">FECHA</th>
+                                                        <th scope="col">FORMA DE PAGO</th>
+                                                        <th scope="col">ASEGURADORA</th>
+                                                        <th scope="col">$ MONTO</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for servicios in item.servicios %}
+                                                    <tr>
+                                                        <td scope="row">{{servicios.CodCostoOperacion}}</td>
+                                                        <td scope="row">{{servicios.Fecha}}</td>
+                                                        <td scope="row">{{servicios.MedioPago}}</td>
+                                                        <td scope="row">{{servicios.EstadoPago}}</td>
+                                                        <td scope="row">
+                                                            ${{item.asistente.CodCostoPorAsistente.MontoCosto}}
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xl-3">
+                                            <p class="text-black float-start"><span class="text-black me-3">
+                                                    Total: </span><span style="font-size: 25px;">$ no esta
+                                                    implementado</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-xl-10">
+                                            <p>no esta implementado</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="card-block">
+                <p>No hay servicios pagados por la aseguradora</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('.fa-print').click(function () {
+            // Get the corresponding item's name
+            var itemName = $(this).data('asistente');
+
+            // Perform the print action for the item
+            // You can use a library like Print.js to handle the printing functionality
+            // Here's an example of how you can use Print.js:
+            printJS({
+                printable: itemName, // ID of the element you want to print
+                type: 'html',
+                showModal: true,
+                modalMessage: 'Preparando documento...'
+            });
+        });
+
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        var links = document.querySelectorAll('a[data-asistente]');
+
+        for (var i = 0; i < links.length; i++) {
+            links[i].addEventListener('click', function (event) {
+                event.preventDefault();
+
+                var asistente = this.getAttribute('data-asistente');
+                var content = document.getElementById(asistente);
+
+                // Crear un nuevo documento PDF con dimensiones personalizadas
+                const pdfWidth = 210; // Ancho en mm (A4 por defecto)
+                const pdfElement = content.cloneNode(true);
+                // Agregar un retraso antes de convertir a PDF
+                // Establecer dimensiones del contenido clonado para ajustar al PDF
+                pdfElement.style.width = pdfWidth + 'mm';
+                setTimeout(function () {
+                    // Convertir el contenido clonado a PDF
+                    html2pdf()
+                        .from(pdfElement)
+                        .set({
+                            width: pdfWidth,
+                        })
+                        .save(asistente + "_reporte.pdf");
+                }, 200); // Ajusta el valor del retraso según sea necesario
+            });
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        var buttons = document.querySelectorAll('.btn-link[data-toggle="collapse"]');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener('click', function () {
+                var targetId = this.getAttribute('data-target').replace('#', '');
+                var botonesDiv = document.getElementById('botones');
+
+                if (botonesDiv && targetId) {
+                    if (botonesDiv.style.display === 'none') {
+                        botonesDiv.style.display = 'block';
+                    } else {
+                        botonesDiv.style.display = 'none';
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock content %}

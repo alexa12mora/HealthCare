@@ -93,13 +93,12 @@ urlpatterns = [
   path('servicios/actualizar/<int:pk>', views.update_servicio, name='update_servicio'),
   path('servicios/eliminar/<int:pk>', views.delete_servicio, name='delete_servicio'),
   path('obtener/monto/costo/<int:cod_costo_operacion_id>/', views.obtener_monto_costo_servicios, name='obtener_monto_costo'),
-  path('servicios/descargar/reportes/<int:pk>/', views.descargar_reporte, name='descargar_reporte'),
   path('servicios/reportes', views.list_servicios_report, name='reportes'),
-  path('servicios/reportes/descarga', views.reporte_por_med_servicios, name='reportes_descarga'),
+  path('servicios/reporte/pagados/descarga', views.reporte_por_med_serviciospagados, name='reportes_descarga'),
+  path('servicios/reporte-sin-pago/descarga', views.reporte_por_med_servicios_no_pagados, name='reportessinpago_descarga'),
+   
+   
   path('servicios/reportes/descargar/<int:pk>/', views.descargar_reporte_pdf, name='descargar_reporte'),
-
-  
-  
   # Aseguradoras
   path('agregar/hospital/', views.create_hospital, name='create_hospital'),
   path('listar/hospitales/', views.list_hospital, name='list_hospital'),

@@ -3,24 +3,25 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-
-
 <!-- Carga de jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 
 <head>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 </head>
 
 <div class="row">
     <div class="col-md-6 col-xl-12">
         <div class="card daily-appointments">
             <div class="card-header">
-                <h5>Reporte de servicios para asistentes</h5>
+                <h5>Reporte de servicios pagados</h5>
             </div>
-
+            {% if servicios_list %}
             {% for item in servicios_list %}
             <div id="accordion">
                 <div class="card">
@@ -29,29 +30,27 @@
                             <div class="col col-lg-10">
                                 <h5 class="mb-0">
                                     <button class="btn btn-link" data-toggle="collapse"
-                                        data-target="#{{item.asistente.Nombre}}" aria-expanded="true"
-                                        aria-controls="{{item.asistente.Nombre}}">
+                                        data-target="#{{item.asistente.pk}}" aria-expanded="true"
+                                        aria-controls="{{item.asistente.pk}}">
                                         {{ item.asistente.Nombre }}
                                     </button>
                                 </h5>
                             </div>
                             <div class="col col-lg-2">
-                                <div class="col-9">
+                                <div class="col-9" id="botones" style="display: none;">
                                     <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
-                                            data-asistente="{{ item.asistente.Nombre }}"></i>
+                                            data-asistente="{{ item.asistente.pk }}"></i>
                                     </a>
-                                    <a href="{% url 'descargar_reporte' item.asistente.pk %}">
+                                    <a href="#" data-asistente="{{ item.asistente.pk }}">
                                         <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div id="{{item.asistente.Nombre}}" class="collapse" aria-labelledby="headingOne"
+                    <div id="{{item.asistente.pk}}" class="collapse" aria-labelledby="headingOne"
                         data-parent="#accordion">
-
                         <div class="card">
-
                             <div class="container mb-5 mt-3">
                                 <div class="container">
                                     <div class="text-center">
@@ -67,7 +66,8 @@
                                                         {{ item.asistente.Nombre }}</span></li>
                                                 <li class="text-muted">Correo: {{ item.asistente.correo }}</li>
                                                 <li class="text-muted">Total de servicios: </li>
-                                                <li class="text-muted">State, Country</li>
+                                                <li class="text-muted">Medico principal: {{ medico.Nombre }}</li>
+                                                <li class="text-muted">Correo: {{ medico.correo }}</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -80,7 +80,7 @@
                                                         <th scope="col">TIPO SERVICIO</th>
                                                         <th scope="col">FECHA</th>
                                                         <th scope="col">FORMA DE PAGO</th>
-                                                        <th scope="col">PAGO POR ASEGURADORA</th>
+                                                        <th scope="col">ASEGURADORA</th>
                                                         <th scope="col">$ MONTO</th>
                                                     </tr>
                                                 </thead>
@@ -122,7 +122,11 @@
                 </div>
             </div>
             {% endfor %}
-
+            {% else %}
+            <div class="card-block">
+                <p>No hay servicios pagados por la aseguradora</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -155,14 +159,6 @@
     }
 </style>
 
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- Incluir la biblioteca printJS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     $(document).ready(function () {
         $('.fa-print').click(function () {
@@ -180,17 +176,51 @@
             });
         });
 
-        $('.fa-file-pdf').click(function () {
-            // Get the corresponding item's name
-            var itemName = $(this).data('asistente');
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        var links = document.querySelectorAll('a[data-asistente]');
 
-            // Perform the PDF download action for the item
-            // You can use a library like jsPDF to generate and download the PDF
-            // Here's an example of how you can use jsPDF:
-            var doc = new jsPDF();
-            doc.text('PDF content for ' + itemName, 10, 10);
-            doc.save(itemName + '.pdf');
-        });
+        for (var i = 0; i < links.length; i++) {
+            links[i].addEventListener('click', function (event) {
+                event.preventDefault();
+
+                var asistente = this.getAttribute('data-asistente');
+                var content = document.getElementById(asistente);
+
+                // Crear un nuevo documento PDF con dimensiones personalizadas
+                const pdfWidth = 210; // Ancho en mm (A4 por defecto)
+                const pdfElement = content.cloneNode(true);
+                // Agregar un retraso antes de convertir a PDF
+                // Establecer dimensiones del contenido clonado para ajustar al PDF
+                pdfElement.style.width = pdfWidth + 'mm';
+                setTimeout(function () {
+                    // Convertir el contenido clonado a PDF
+                    html2pdf()
+                        .from(pdfElement)
+                        .set({
+                            width: pdfWidth,
+                        })
+                        .save(asistente + "_reporte.pdf");
+                }, 200); // Ajusta el valor del retraso según sea necesario
+            });
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        var buttons = document.querySelectorAll('.btn-link[data-toggle="collapse"]');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener('click', function () {
+                var targetId = this.getAttribute('data-target').replace('#', '');
+                var botonesDiv = document.getElementById('botones');
+
+                if (botonesDiv && targetId) {
+                    if (botonesDiv.style.display === 'none') {
+                        botonesDiv.style.display = 'block';
+                    } else {
+                        botonesDiv.style.display = 'none';
+                    }
+                }
+            });
+        }
     });
 </script>
 {% endblock content %}
