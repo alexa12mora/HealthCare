@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User 
 
 class Medico(models.Model):
     codMedico = models.AutoField(primary_key=True)
@@ -20,12 +21,15 @@ class CostosPorAsistente(models.Model):
     CodCostoPorAsistente = models.AutoField(primary_key=True)
     TipoAsistente = models.CharField(max_length=100)
     MontoCosto = models.DecimalField(max_digits=10, decimal_places=2)
+    codMedico = models.ForeignKey(User, on_delete=models.CASCADE)  # Agrega ForeignKey a User
 
     def __str__(self):
         return self.TipoAsistente
+    
 class Emisor(models.Model):
     CodBanco = models.AutoField(primary_key=True)
     NombreBanco = models.CharField(max_length=100)
+    codMedico = models.ForeignKey(User, on_delete=models.CASCADE)  # Agrega ForeignKey a User
 
     def __str__(self):
         return self.NombreBanco
@@ -33,6 +37,7 @@ class Emisor(models.Model):
 class Aseguradoras(models.Model):
     CodAseguradora = models.AutoField(primary_key=True)
     NombreAseguradora = models.CharField(max_length=100)
+    codMedico = models.ForeignKey(User, on_delete=models.CASCADE)  # Agrega ForeignKey a User
 
     def __str__(self):
         return self.NombreAseguradora
@@ -40,6 +45,7 @@ class Aseguradoras(models.Model):
 class Hospitales(models.Model):
     CodHospital = models.AutoField(primary_key=True)
     NombreHospital = models.CharField(max_length=100)
+    codMedico = models.ForeignKey(User, on_delete=models.CASCADE)  # Agrega ForeignKey a User
 
     def __str__(self):
         return self.NombreHospital
@@ -48,9 +54,10 @@ class CostosDeOperaciones(models.Model):
     CodCostoOperacion = models.AutoField(primary_key=True)
     NombreOperacion = models.CharField(max_length=100)
     MontoCosto = models.DecimalField(max_digits=10, decimal_places=2)
+    codMedico = models.ForeignKey(User, on_delete=models.CASCADE)  # Agrega ForeignKey a User
 
     def __str__(self):
-        return self.NombreOperacion  
+        return self.NombreOperacion
      
 class servicios(models.Model):
     CodProcedimiento = models.AutoField(primary_key=True)

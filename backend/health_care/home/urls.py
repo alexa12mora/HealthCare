@@ -64,7 +64,7 @@ urlpatterns = [
 
   # Emisores
   path('listar/emisores/', views.list_emitters, name='list_emisores'),
-  path('agregar/emisores/', views.emitters, name='create_emisores'),
+  path('agregar/emisores/', views.add_emitters, name='create_emisores'),
   path('actualizar/emisor/<int:pk>/', views.update_emitters, name='actualizar_emisor'),
   path('eliminar/emisores/<int:pk>/', views.eliminar_emisor, name='eliminar_emisor'),
   path('obetener/emisor/<int:pk>/', views.get_emisor, name='get_emisor'),

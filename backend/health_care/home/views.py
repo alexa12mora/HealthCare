@@ -267,23 +267,24 @@ def medico_delete(request, codMedico):
 # Vistas para las aseguradoras
 @login_required(login_url='/accounts/login/')    
 def create_insurer(request):
-    insurers = Aseguradoras.objects.all()  # Definimos la variable insurers fuera del bloque if
+    insurers = Aseguradoras.objects.all()
     if request.method == 'POST':
         form = AseguradorasForm(request.POST)
         if form.is_valid():
-            print("si")
-            form.save()
-            return redirect('listar_aseguradoras')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('listar_aseguradoras')
     else:
-        print("no")
         form = AseguradorasForm()
     context = {
         'insurers': insurers,
         'segment': 'add_insurer',
         'form': form,
     }
-    print(form.errors)
+    
     return render(request, 'medical_reports/insurers/list_insurers.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def update_insurer(request, pk):
@@ -291,8 +292,10 @@ def update_insurer(request, pk):
     if request.method == 'POST':
         form = AseguradorasForm(request.POST, instance=aseguradora)
         if form.is_valid():
-            form.save()
-            return redirect('listar_aseguradoras')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('listar_aseguradoras')
     else:
         form = AseguradorasForm(instance=aseguradora)
 
@@ -314,18 +317,15 @@ def eliminar_aseguradora(request, pk):
   
 @login_required(login_url='/accounts/login/')
 def list_insurers(request):
-    insurers = Aseguradoras.objects.all()
-    form = AseguradorasForm()  # Crea una instancia del formulario vacío
+    insurers = Aseguradoras.objects.filter(codMedico=request.user.id)
+    form = AseguradorasForm()  
     context = {
         'segment': 'Lista_de_aseguradoras',
         'insurers': insurers,
-        'form': form,  # Incluye el formulario en el contexto
+        'form': form,  
     }
     return render(request, 'medical_reports/insurers/list_insurers.html', context)
-  
- 
- 
- 
+
 # Vistas para los hospitales
 @login_required(login_url='/accounts/login/')    
 def create_hospital(request):
@@ -344,7 +344,6 @@ def create_hospital(request):
         'segment': 'Agregar_hospital',
         'form': form,
     }
-    print(form.errors)
     return render(request, 'medical_reports/hospitals/list_hospitals.html', context)
 
 @login_required(login_url='/accounts/login/')
@@ -384,13 +383,15 @@ def list_hospital(request):
    
  #Emisores
 @login_required(login_url='/accounts/login/')
-def emitters(request):
-    emisores = Emisor.objects.all()  # Obtener todos los Emisores
+def add_emitters(request):
+    emisores = Emisor.objects.all()  
     if request.method == 'POST':
         form = EmisorForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('list_emisores')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('list_emisores')
     else:
         form = EmisorForm()
     context = {
@@ -399,13 +400,12 @@ def emitters(request):
         'form': form,
         'action': 'Actualizar',
     }
-    print(form.errors)
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
   
   
 @login_required(login_url='/accounts/login/')
 def list_emitters(request):
-    emisores = Emisor.objects.all()  # Obtener todos los Emisores
+    emisores = Emisor.objects.filter(codMedico=request.user.id)  # Obtener todos los Emisores
     form = EmisorForm()  # Crea una instancia del formulario vacío
     context = {
         'segment': 'Lista_de_emisores',
@@ -420,8 +420,10 @@ def update_emitters(request, pk):
     if request.method == 'POST':
         form = EmisorForm(request.POST, instance=emisor)
         if form.is_valid():
-            form.save()
-            return redirect('list_emisores')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('list_emisores')
     else:
         form = AseguradorasForm(instance=emisor)
 

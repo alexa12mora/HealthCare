@@ -6,6 +6,10 @@ from .models import *
 from admin_datta.forms import RegistrationForm
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UsernameField, PasswordResetForm, SetPasswordForm
+from django import forms
+from .models import servicios, Aseguradoras, Emisor, Medico, CostosDeOperaciones
+from datetime import date
+
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -122,17 +126,19 @@ AsistentesFormSet = forms.inlineformset_factory(
 class EmisorForm(forms.ModelForm):
     class Meta:
         model = Emisor
-        fields = ['NombreBanco']
+        fields = ['NombreBanco','codMedico']
         widgets = {
             'NombreBanco': forms.TextInput(attrs={'class': 'form-control'}),
+            'codMedico': forms.HiddenInput(), 
         }
 
 class AseguradorasForm(forms.ModelForm):
     class Meta:
         model = Aseguradoras
-        fields = ['NombreAseguradora']
+        fields = ['NombreAseguradora', 'codMedico']  # Agrega 'codMedico' al formulario
         widgets = {
             'NombreAseguradora': forms.TextInput(attrs={'class': 'form-control'}),
+            'codMedico': forms.HiddenInput(), 
         }
 
 class HospitalesForm(forms.ModelForm):
@@ -151,10 +157,6 @@ class CostosDeOperacionesForm(forms.ModelForm):
             'NombreOperacion': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoCosto': forms.NumberInput(attrs={'class': 'form-control'}),
         }
-
-from django import forms
-from .models import servicios, Aseguradoras, Emisor, Medico, CostosDeOperaciones
-from datetime import date
 
 class serviciosForm(forms.ModelForm):
     CodAseguradora = forms.ModelChoiceField(queryset=Aseguradoras.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
