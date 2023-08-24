@@ -36,6 +36,7 @@
                             action="{% url 'crear_pago' %}">
                             {% csrf_token %}
                             <input type="hidden" id="update-id" name="id" value="">
+                            <input type="hidden" name="codMedico" value="{{ request.user.id }}">
                             <div class="form-row">
                                 <div class="col-md-12 mb-3">
                                     <label for="validationCustom01">Tipo de asistente</label>
@@ -67,7 +68,7 @@
                 <table class="table table-hover" id="miTabla">
                     <thead>
                         <tr>
-                            <th scope="col">Costo por asistente</th>
+                            <th scope="col">Código del costo</th>
                             <th scope="col">Tipo de asistente</th>
                             <th scope="col">Monto</th>
                             <th scope="col">Acciones</th>

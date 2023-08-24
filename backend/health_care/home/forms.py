@@ -95,10 +95,11 @@ class MedicoForm(forms.ModelForm):
 class CostosPorAsistenteForm(forms.ModelForm):
     class Meta:
         model = CostosPorAsistente
-        fields = ['TipoAsistente', 'MontoCosto']
+        fields = ['TipoAsistente', 'MontoCosto','codMedico']
         widgets = {
             'TipoAsistente': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoCosto': forms.NumberInput(attrs={'class': 'form-control'}),
+            'codMedico': forms.HiddenInput(), 
         }
 
 class AsistentesForm(forms.ModelForm):
@@ -144,18 +145,20 @@ class AseguradorasForm(forms.ModelForm):
 class HospitalesForm(forms.ModelForm):
     class Meta:
         model = Hospitales
-        fields = ['NombreHospital']
+        fields = ['NombreHospital','codMedico']
         widgets = {
             'NombreHospital': forms.TextInput(attrs={'class': 'form-control'}),
+            'codMedico': forms.HiddenInput(), 
         }
                 
 class CostosDeOperacionesForm(forms.ModelForm):
     class Meta:
         model = CostosDeOperaciones
-        fields = ['NombreOperacion', 'MontoCosto']
+        fields = ['NombreOperacion', 'MontoCosto','codMedico']
         widgets = {
             'NombreOperacion': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoCosto': forms.NumberInput(attrs={'class': 'form-control'}),
+            'codMedico': forms.HiddenInput(),
         }
 
 class serviciosForm(forms.ModelForm):

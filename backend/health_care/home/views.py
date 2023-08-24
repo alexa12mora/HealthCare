@@ -333,9 +333,10 @@ def create_hospital(request):
     if request.method == 'POST':
         form = HospitalesForm(request.POST)
         if form.is_valid():
-            print("si")
-            form.save()
-            return redirect('list_hospital')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('list_hospital')
     else:
         print("no")
         form = HospitalesForm()
@@ -352,8 +353,10 @@ def update_hospital(request, pk):
     if request.method == 'POST':
         form = HospitalesForm(request.POST, instance=hospital)
         if form.is_valid():
-            form.save()
-            return redirect('list_hospital')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('list_hospital')
     else:
         form = HospitalesForm(instance=hospital)
 
@@ -372,7 +375,7 @@ def eliminar_hospital(request, pk):
   
 @login_required(login_url='/accounts/login/')
 def list_hospital(request):
-    hospital = Hospitales.objects.all()
+    hospital = Hospitales.objects.filter(codMedico=request.user.id)  
     form = HospitalesForm()  
     context = {
         'segment': 'Lista_de_hospitales',
@@ -461,9 +464,12 @@ def create_costos_asistente(request):
     costos = CostosPorAsistente.objects.all()
     if request.method == 'POST':
         form = CostosPorAsistenteForm(request.POST)
+        print("-----------------",form.errors)
         if form.is_valid():
-            form.save()
-            return redirect('pagos_asistentes')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('pagos_asistentes')
     else:
         form = CostosPorAsistenteForm()
     context = {
@@ -475,7 +481,7 @@ def create_costos_asistente(request):
 
 @login_required(login_url='/accounts/login/')
 def list_costos_asistentes(request):
-    costos = CostosPorAsistente.objects.all()
+    costos = CostosPorAsistente.objects.filter(codMedico=request.user.id)
     form = CostosPorAsistenteForm()
     context = {
         'segment': 'Lista_costos',
@@ -491,8 +497,10 @@ def update_costos_asistentes(request, pk):
     if request.method == 'POST':
         form = CostosPorAsistenteForm(request.POST, instance=costo)
         if form.is_valid():
-            form.save()
-            return redirect('pagos_asistentes')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('pagos_asistentes')
     else:
         form = CostosPorAsistenteForm(instance=costo)
 
@@ -522,8 +530,10 @@ def create_costos_por_servicio(request):
     if request.method == 'POST':
         form = CostosDeOperacionesForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('list_servicio')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('list_servicio')
     else:
         form = CostosDeOperacionesForm()
     context = {
@@ -535,7 +545,7 @@ def create_costos_por_servicio(request):
 
 @login_required(login_url='/accounts/login/')
 def list_costos_por_servicio(request):
-    costos = CostosDeOperaciones.objects.all()
+    costos = CostosDeOperaciones.objects.filter(codMedico=request.user.id) 
     form = CostosDeOperacionesForm()
     context = {
         'segment': 'Lista_de_costos',
@@ -550,8 +560,10 @@ def update_costos_por_servicio(request, pk):
     if request.method == 'POST':
         form = CostosDeOperacionesForm(request.POST, instance=costo)
         if form.is_valid():
-            form.save()
-            return redirect('list_servicio')
+            doctor = Medico.objects.filter(correo=request.user.email).first()
+            if doctor:
+                form.save()
+                return redirect('list_servicio')
     else:
         form = CostosDeOperacionesForm(instance=costo)
 
