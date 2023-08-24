@@ -774,18 +774,19 @@ def reporte_por_med_servicios(request):
                     if asistente_key not in asistentes_servicios:
                         asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
                     asistentes_servicios[asistente_key]['servicios'].append(servicio)
-
         asistentes_servicios_list = list(asistentes_servicios.values())
         print(asistentes_servicios_list)
     else:
         pass
-
     context = {
         'segment': 'reportes',
         'servicios_list': asistentes_servicios_list,
         'medico': medico,
     }
     return render(request, 'medical_reports/servicios/descargareportespagados.html', context)
+
+
+
 
 @login_required(login_url='/accounts/login/')
 def list_servicios_report(request):
@@ -794,15 +795,16 @@ def list_servicios_report(request):
         servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
         for servicio in servicios_list:
             servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
+            servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
     else:
         pass
+
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     if start_date and end_date:
         start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
         end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
         servicios_list = servicios_list.filter(Fecha__range=[start_date, end_date])
-
     formset = AsistentesFormSet(request.POST)
     form = serviciosForm(request.user)
     context = {
@@ -812,6 +814,7 @@ def list_servicios_report(request):
         'formset': formset,
     }
     return render(request, 'medical_reports/servicios/reportes.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def list_servicios(request):
