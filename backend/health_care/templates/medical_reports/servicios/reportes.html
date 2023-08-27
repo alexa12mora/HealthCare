@@ -21,6 +21,10 @@
 </div>
 
 <div class="col-xl-12 col-md-6">
+    <div class="alert alert-success" role="alert" id="myAlert">
+        El proceso de completar los pagos se efectúa una vez que los asistentes hayan proporcionado sus respectivas
+        facturas.
+    </div>
     <div class="card Recent-Users">
 
         <ul class="nav">
@@ -67,17 +71,81 @@
                     <table class="table table-hover" id="miTabla">
                         <thead>
                             <tr>
+                                <th scope="col">ACCIONES</th>
+                                <th scope="col">ASISTENTES</th>
                                 <th scope="col">FECHA</th>
                                 <th scope="col">TIPO SERVICIO</th>
                                 <th scope="col">FORMA DE PAGO</th>
                                 <th scope="col">FACTURA ASEGURADORA</th>
-                                <th scope="col">ASISTENTES</th>
-                                <th scope="col">ACCIONES</th>
+
                             </tr>
                         </thead>
                         <tbody>
                             {% for servicios in servicios_list %}
-                            <tr class="unread">
+
+                            <tr class="parent">
+                                <td>
+                                    <a href="#" class="label text-white f-12 btn-primary"
+                                        style="background-color: #007bff">
+                                        Pagar
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="#" class="label text-white f-12 btn-primary"
+                                        style="background-color: #21734F" type="button" data-toggle="modal"
+                                        data-target="#{{servicios.pk}}">
+                                        ver lista
+                                    </a>
+                                    <div class="modal fade" id="{{servicios.pk}}" tabindex="-1" role="dialog"
+                                        aria-labelledby="{{servicios.pk}}Title" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle">Lista de
+                                                        asistentes</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="table-resposive">
+                                                        <table class="table table-hover">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col">Nombre</th>
+                                                                    <th scope="col">Estatus factura</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for asistentes in servicios.asistentes %}
+                                                                <tr class="parent">
+                                                                    <td>
+                                                                        <p class="m-0">{{ asistentes.Nombre }}</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if asistentes.factura.estado %}
+
+                                                                        <p class="m-0 text-c-blue"><i
+                                                                                class="fas fa-circle text-c-green f-10 m-r-15"></i>
+                                                                            Entregado</p>
+                                                                        {% else %}
+
+                                                                        <p class="m-0 text-c-red"><i
+                                                                                class="fas fa-circle text-c-red f-10 m-r-15"></i>
+                                                                            Sin entrega</p>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>
                                     <p class="m-0">{{ servicios.Fecha }}</p>
                                 </td>
@@ -87,23 +155,8 @@
                                 <td>
                                     <p class="m-0">{{ servicios.MedioPago }}</p>
                                 </td>
-
                                 <td>
                                     <p class="m-0">{{ servicios.EstadoPago }}</p>
-                                </td>
-                                <td>
-                                    <a href="" class="label  text-white f-12 btn-primary"
-                                        style="background-color: #21734F" type="button" data-toggle="modal"
-                                        data-target="#exampleModal">
-                                        ver lista
-                                    </a>
-
-                                </td>
-                                <td>
-                                    <a href="" class="label  text-white f-12 btn-primary"
-                                        style="background-color: #007bff">
-                                        Generar pago
-                                    </a>
                                 </td>
 
                             </tr>
@@ -140,10 +193,9 @@
         text-align: center;
     }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.1.1/css/dataTables.dateTime.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css">
-
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" charset="utf8"
     src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
@@ -216,38 +268,11 @@
                 miTabla.page.len(5).draw();
             }
         });
-
-        miTabla.searchBuilder.container().prependTo(table.table().container());
-
-        // Add event listener for opening and closing details
-        $('#miTabla tbody').on('click', 'td.details-control', function () {
-            var tr = $(this).closest('tr');
-            var row = miTabla.row(tr);
-
-            if (row.child.isShown()) {
-                // This row is already open - close it
-                row.child.hide();
-                tr.removeClass('shown');
-            } else {
-                // Open this row
-                row.child(format(row.data())).show();
-                tr.addClass('shown');
-            }
-        });
-
-        function format(d) {
-            // `d` is the original data object for the row
-            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-                '<tr>' +
-                '<td>Extra information 1:</td>' +
-                '<td>' + d[0] + '</td>' +
-                '</tr>' +
-                '<tr>' +
-                '<td>Extra information 2:</td>' +
-                '<td>' + d[1] + '</td>' +
-                '</tr>' +
-                '</table>';
-        }
+        // Espera 2 segundos (2000 milisegundos) antes de mostrar la alerta
+        setTimeout(function () {
+            var myAlert = document.getElementById('myAlert');
+            myAlert.style.display = 'block'; // Muestra la alerta
+        }, 120000);
 
     });
     function deleteservices(id) {
@@ -266,5 +291,8 @@
             },
         });
     }
+
+
+
 </script>
 {% endblock content %}

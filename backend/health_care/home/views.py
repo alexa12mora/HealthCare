@@ -808,6 +808,12 @@ def list_servicios_report(request):
         for servicio in servicios_list:
             servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
             servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
+            for asistente in servicio.asistentes:
+                factura = FacturasAsistentes.objects.filter(CodAsistente=asistente).first()
+                asistente.factura = factura
+        for  a in servicios_list:  
+           print(a.asistentes)
+     
     else:
         pass
 

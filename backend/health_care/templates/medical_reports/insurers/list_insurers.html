@@ -20,8 +20,6 @@
                 <i class="feather icon-plus-square"></i>
             </button>
         </div>
-        <!-- Modal -->
-        <!-- Modal -->
         <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -33,7 +31,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="update-form" class="needs-validation" novalidate method="post" action="{% url 'agregar_aseguradora' %}">
+                        <form id="update-form" class="needs-validation" novalidate method="post"
+                            action="{% url 'agregar_aseguradora' %}">
                             {% csrf_token %}
                             <input type="hidden" id="update-id" name="id" value="">
                             <input type="hidden" name="codMedico" value="{{ request.user.id }}">
@@ -48,7 +47,8 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                <button type="submit" class="btn btn-primary" style="background-color: #21734F;">Guardar cambios</button>
+                                <button type="submit" class="btn btn-primary" style="background-color: #21734F;">Guardar
+                                    cambios</button>
                             </div>
                         </form>
                     </div>
