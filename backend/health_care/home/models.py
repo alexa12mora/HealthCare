@@ -72,6 +72,7 @@ class servicios(models.Model):
     codMedico = models.ForeignKey(Medico, on_delete=models.CASCADE)
     numFactura = models.CharField(max_length=20)
     CodCostoOperacion = models.ForeignKey(CostosDeOperaciones, on_delete=models.CASCADE,default=1)
+    EstadoCierre = models.BooleanField(default=False)
     
     def __str__(self):
         return f"Procedimiento {self.CodProcedimiento}"
