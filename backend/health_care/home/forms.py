@@ -162,17 +162,17 @@ class CostosDeOperacionesForm(forms.ModelForm):
         }
 
 class serviciosForm(forms.ModelForm):
-    CodAseguradora = forms.ModelChoiceField(queryset=Aseguradoras.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-    CodBanco = forms.ModelChoiceField(queryset=Emisor.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    CodAseguradora = forms.ModelChoiceField(queryset=Aseguradoras.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
+    CodBanco = forms.ModelChoiceField(queryset=Emisor.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
     codMedico = forms.ModelChoiceField(queryset=Medico.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
-    CodCostoOperacion = forms.ModelChoiceField(queryset=CostosDeOperaciones.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    CodCostoOperacion = forms.ModelChoiceField(queryset=CostosDeOperaciones.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
     MedioPago = forms.ChoiceField(choices=(('', 'Seleccione'), ('Contado', 'Contado'), ('Credito', 'Crédito')), widget=forms.Select(attrs={'class': 'form-control'}))
     EstadoPago = forms.ChoiceField(
         choices=(('', 'Seleccione'), ('Pagada', 'Pagada'), ('Pendiente', 'Pendiente')),
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    CodHospital = forms.ModelChoiceField(queryset=Hospitales.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    CodHospital = forms.ModelChoiceField(queryset=Hospitales.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
     
     class Meta:
         model = servicios
@@ -190,8 +190,13 @@ class serviciosForm(forms.ModelForm):
         self.fields['Fecha'].initial = fecha_actual  
         self.fields['numFactura'].initial = '0'
         if user.is_authenticated and Medico.objects.filter(correo=user.email).exists():
-            self.fields['codMedico'].queryset = Medico.objects.filter(correo=user.email)
-    
+            medico =  Medico.objects.get(correo=user.email)
+            print(medico)
+            self.fields['codMedico'].queryset = Medico.objects.filter(codMedico=medico.codMedico)
+            self.fields['CodAseguradora'].queryset = Aseguradoras.objects.filter(codMedico=medico.codMedico)
+            self.fields['CodBanco'].queryset = Emisor.objects.filter(codMedico=medico.codMedico)
+            self.fields['CodCostoOperacion'].queryset = CostosDeOperaciones.objects.filter(codMedico=medico.codMedico)
+            self.fields['CodHospital'].queryset = Hospitales.objects.filter(codMedico=medico.codMedico)
 
 class FacturasForm(forms.ModelForm):
     class Meta:
