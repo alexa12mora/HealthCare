@@ -26,7 +26,6 @@
         facturas.
     </div>
     <div class="card Recent-Users">
-
         <ul class="nav">
             <li class="nav-item">
                 <a class="nav-link " href="{% url 'reportes_descarga' %}">
@@ -46,24 +45,28 @@
                     Servicios pagados a asistentes
                 </a>
             </li>
-
         </ul>
         <div class="card-header">
-            <form method="post">
+            <form method="post" action="{% url 'procesar_pagos' %}" class="row g-3 needs-validation" novalidate>
                 {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-
-                        <input type="date" class="form-control" id="start_date" name="start_date">
+                <div class="col-md-4">
+                    <label for="validationCustom01" class="form-label">Fecha inicial</label>
+                    <input type="date" class="form-control" id="validationCustom01" required>
+                    <div class="invalid-feedback">
+                        Campo requerido
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <input type="date" class="form-control " id="end_date" name="end_date">
+                </div>
+                <div class="col-md-4">
+                    <label for="validationCustom02" class="form-label">Fecha cierre</label>
+                    <input type="date" class="form-control" id="validationCustom02" required>
+                    <div class="invalid-feedback">
+                        Campo requerido
                     </div>
-                    <br>
-                    <br>
-                    <div class="col-md-4 mb-3">
-                        <button type="submit" class="btn btn-primary mb-2">Generar pago por un rango de fecha</button>
-                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="validationCustom01" class="form-label" style="color:white">Generar pago por un rango de
+                        fecha</label>
+                    <button type="submit" class="btn btn-primary mb-2">Generar pago por un rango de fecha</button>
                 </div>
             </form>
             <div class="card-block px-0 py-3">
@@ -141,6 +144,13 @@
                                                             </tbody>
                                                         </table>
                                                     </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <a href="{% url 'update_servicio' servicios.pk %}"
+                                                        class="label  text-white f-12 btn-primary"
+                                                        style="background-color: #007bff">
+                                                        Actualizar facturas
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -291,6 +301,27 @@
             },
         });
     }
+
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
 
 
 

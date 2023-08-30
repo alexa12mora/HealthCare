@@ -96,7 +96,7 @@ urlpatterns = [
   path('servicios/reportes', views.list_servicios_report, name='reportes'),
   path('servicios/reporte/pagados/descarga', views.reporte_por_med_serviciospagados, name='reportes_descarga'),
   path('servicios/reporte-sin-pago/descarga', views.reporte_por_med_servicios_no_pagados, name='reportessinpago_descarga'),
-   
+  path('servicios/proceso/pagos/fechas', views.procesar_pagos, name='procesar_pagos'),
    
   path('servicios/reportes/descargar/<int:pk>/', views.descargar_reporte_pdf, name='descargar_reporte'),
   # Aseguradoras

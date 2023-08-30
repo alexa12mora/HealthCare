@@ -1029,3 +1029,117 @@ def actualizar_factura(request, servicio_id, asistente_id):
     }
     return render(request, 'medical_reports/servicios/update_factura.html', context)
 
+
+
+# crear pagos......
+@login_required(login_url='/accounts/login/')
+def list_servicios_report(request):
+    if Medico.objects.filter(correo=request.user.email).exists():
+        medico = Medico.objects.get(correo=request.user.email)
+        servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+        for servicio in servicios_list:
+            servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
+            servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
+            for asistente in servicio.asistentes:
+                factura = FacturasAsistentes.objects.filter(CodAsistente=asistente).first()
+                asistente.factura = factura
+        for  a in servicios_list:  
+           print(a.asistentes)
+     
+    else:
+        pass
+
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date and end_date:
+        start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+        end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+        servicios_list = servicios_list.filter(Fecha__range=[start_date, end_date])
+    formset = AsistentesFormSet(request.POST)
+    form = serviciosForm(request.user)
+    context = {
+        'segment': 'reportes',
+        'servicios_list': servicios_list,
+        'form': form,
+        'formset': formset,
+    }
+    return render(request, 'medical_reports/servicios/reportes.html', context)
+
+
+#pagos
+def procesar_pagos(request):
+    if request.method == 'POST':
+        start_date = request.GET.get('rango_fecha_inicio')
+        end_date = request.GET.get('rango_fecha_fin')
+        if start_date and end_date:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date, "%Y-%m-%d")    
+            print(start_date)
+            print(end_date)  
+            if Medico.objects.filter(correo=request.user.email).exists():
+                medico = Medico.objects.get(correo=request.user.email)
+                servicios_list = servicios.objects.filter(
+                    codMedico=medico.codMedico,
+                    Fecha__range=(start_date, end_date),
+                    EstadoCierre=False
+                )   
+                for servicio in servicios_list:
+                    factura_aseguradora = Facturas.objects.filter(
+                        CodProcedimiento=servicio, estado=True
+                    ).first()
+                    
+                    if factura_aseguradora:
+                        servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
+                        asistentes_pagados = True                      
+                        for asistente in servicio.asistentes:
+                            factura = FacturasAsistentes.objects.filter(
+                                CodAsistente=asistente
+                            ).first()
+                            if factura is None or not factura.estado:
+                                asistentes_pagados = False
+                                break                   
+                        if asistentes_pagados:
+                            for asistente in servicio.asistentes:
+                                if not PagosAsistentes.objects.filter(
+                                        CodOperacion=servicio,
+                                        CodAsistente=asistente
+                                ).exists():
+                                    monto_asistente = asistente.CodCostoPorAsistente.MontoCosto
+                                    pago = PagosAsistentes.objects.create(
+                                        CodOperacion=servicio,
+                                        CodAsistente=asistente,
+                                        MontoPagado=monto_asistente,
+                                        FechaPago=datetime.now()
+                                    )
+                                    factura.estado = True
+                                    factura.save()
+                                    
+                            # Verificar si todas las facturas de asistentes tienen estado True
+                            asistentes_todos_pagados = all(
+                                FacturasAsistentes.objects.filter(
+                                    CodAsistente=asistente, estado=True
+                                ).exists() for asistente in servicio.asistentes
+                            )                         
+                            if asistentes_todos_pagados:
+                                servicio.EstadoCierre = True
+                                servicio.save()
+                response_data = {'message': 'Procesamiento de pagos completado'}
+                return JsonResponse(response_data)
+            else:
+                pass
+        else:
+            response_data = {'error': 'Fechas de inicio y fin no proporcionadas'}
+            return JsonResponse(response_data, status=400)
+        context = {
+        'segment': 'reportes',
+        'response_data': response_data,
+        'servicios_list':servicios_list,
+    }
+    return render(request, 'medical_reports/servicios/generarpagos.html', context)
+
+
+
+
+
+
+
