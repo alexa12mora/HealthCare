@@ -51,18 +51,19 @@
                 {% csrf_token %}
                 <div class="col-md-4">
                     <label for="validationCustom01" class="form-label">Fecha inicial</label>
-                    <input type="date" class="form-control" id="validationCustom01" required>
+                    <input type="date" class="form-control" id="rango_fecha_inicio" name="rango_fecha_inicio" required>
                     <div class="invalid-feedback">
                         Campo requerido
                     </div>
                 </div>
                 <div class="col-md-4">
                     <label for="validationCustom02" class="form-label">Fecha cierre</label>
-                    <input type="date" class="form-control" id="validationCustom02" required>
+                    <input type="date" class="form-control" id="rango_fecha_fin" name="rango_fecha_fin" required>
                     <div class="invalid-feedback">
                         Campo requerido
                     </div>
                 </div>
+                
                 <div class="col-md-4">
                     <label for="validationCustom01" class="form-label" style="color:white">Generar pago por un rango de
                         fecha</label>
