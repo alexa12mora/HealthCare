@@ -181,7 +181,8 @@ class serviciosForm(forms.ModelForm):
             'Fecha': forms.DateInput(attrs={'class': 'form-control'}),
             'NombrePaciente': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoTotal': forms.NumberInput(attrs={'class': 'form-control'}),
-            'numFactura': forms.TextInput(attrs={'class': 'form-control'}),
+            'numFactura': forms.TextInput(attrs={'class': 'form-control', 'id': 'num-factura-medico'}),
+            'MedioPago': forms.Select(attrs={'class': 'form-control', 'id': 'forma-pago'}), 
         }
         
     def __init__(self, user, *args, **kwargs):

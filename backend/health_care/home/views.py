@@ -22,6 +22,7 @@ from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from io import BytesIO
+from datetime import datetime
 
 
 def index(request):
@@ -1069,14 +1070,15 @@ def list_servicios_report(request):
 #pagos
 def procesar_pagos(request):
     if request.method == 'POST':
-        start_date = request.GET.get('rango_fecha_inicio')
-        end_date = request.GET.get('rango_fecha_fin')
+        start_date = request.POST.get('rango_fecha_inicio')
+        end_date = request.POST.get('rango_fecha_fin')
+        print("If 1")
         if start_date and end_date:
+            print("If 2")
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
             end_date = datetime.strptime(end_date, "%Y-%m-%d")    
-            print(start_date)
-            print(end_date)  
             if Medico.objects.filter(correo=request.user.email).exists():
+                print("If 3")
                 medico = Medico.objects.get(correo=request.user.email)
                 servicios_list = servicios.objects.filter(
                     codMedico=medico.codMedico,
@@ -1084,22 +1086,34 @@ def procesar_pagos(request):
                     EstadoCierre=False
                 )   
                 for servicio in servicios_list:
-                    factura_aseguradora = Facturas.objects.filter(
-                        CodProcedimiento=servicio, estado=True
-                    ).first()
+                    print("Servicio", servicio)
+                    print("servicios_list", servicios_list)
+                    print("for 1")
                     
-                    if factura_aseguradora:
+                    # Debugging: Print values for debugging
+                    print("servicio.CodProcedimiento:", servicio.CodProcedimiento)
+                    print("servicio.CodProcedimiento.pk:", servicio)
+                    factura_aseguradora = Facturas.objects.filter(
+                        CodProcedimiento=servicio.CodProcedimiento, estado=True
+                    ).first()
+                    print("factura_aseguradora:", factura_aseguradora)
+                    if factura_aseguradora or servicio.numFactura  != '0':
+                        print("If 4")
                         servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
                         asistentes_pagados = True                      
                         for asistente in servicio.asistentes:
+                            print("for 2")
                             factura = FacturasAsistentes.objects.filter(
                                 CodAsistente=asistente
                             ).first()
                             if factura is None or not factura.estado:
+                                print("If 5")
                                 asistentes_pagados = False
                                 break                   
                         if asistentes_pagados:
+                            print("If 6")
                             for asistente in servicio.asistentes:
+                                print("for 3")
                                 if not PagosAsistentes.objects.filter(
                                         CodOperacion=servicio,
                                         CodAsistente=asistente
@@ -1121,8 +1135,11 @@ def procesar_pagos(request):
                                 ).exists() for asistente in servicio.asistentes
                             )                         
                             if asistentes_todos_pagados:
+                                print("If 7")
                                 servicio.EstadoCierre = True
                                 servicio.save()
+                    else:
+                       response_data = {'message': 'No hay factura o el if no sirvio'}
                 response_data = {'message': 'Procesamiento de pagos completado'}
                 return JsonResponse(response_data)
             else:
