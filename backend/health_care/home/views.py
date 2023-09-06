@@ -1116,7 +1116,7 @@ def procesar_pagos(request):
                                     
                             # Verificar si todas las facturas de asistentes tienen estado True
                             asistentes_todos_pagados = all(
-                                FacturasAsistentes.objects.filter(
+                                FacturasAsistentes.object+s.filter(
                                     CodAsistente=asistente, estado=True
                                 ).exists() for asistente in servicio.asistentes
                             )                         
