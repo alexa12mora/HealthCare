@@ -698,7 +698,7 @@ def reporte_por_med_serviciospagados(request):
         servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
         asistentes_servicios = {}
         for servicio in servicios_medico:
-            if servicio.MedioPago == 'Credito':
+            if servicio.MedioPago == 'Credito' and servicio.EstadoPago == 'Pagado':
                 factura = Facturas.objects.filter(CodProcedimiento=servicio).first()
                 if factura and factura.estado:
                     asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
@@ -735,7 +735,7 @@ def reporte_por_med_servicios_no_pagados(request):
         servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
         asistentes_servicios = {}
         for servicio in servicios_medico:
-            if servicio.MedioPago == 'Credito':
+            if servicio.MedioPago == 'Credito' and servicio.EstadoPago == 'Pendiente':
                 factura = Facturas.objects.filter(CodProcedimiento=servicio).first()
                 if factura.estado == False:
                     asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
@@ -869,7 +869,6 @@ def create_servicio(request):
         factura_form = FacturasForm(request.POST)
         if form.is_valid() and formset.is_valid() and factura_form.is_valid():
             servicio = form.save(commit=False)
-            
             # Validar el estado del pago
             if form.cleaned_data['MedioPago'] == 'Credito':
                 servicio.EstadoPago = 'Pendiente'
@@ -1037,7 +1036,7 @@ def actualizar_factura(request, servicio_id, asistente_id):
 def list_servicios_report(request):
     if Medico.objects.filter(correo=request.user.email).exists():
         medico = Medico.objects.get(correo=request.user.email)
-        servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+        servicios_list = servicios.objects.filter(codMedico=medico.codMedico,EstadoPago='Pagado')
         for servicio in servicios_list:
             servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
             servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
@@ -1046,10 +1045,8 @@ def list_servicios_report(request):
                 asistente.factura = factura
         for  a in servicios_list:  
            print(a.asistentes)
-     
     else:
         pass
-
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     if start_date and end_date:
@@ -1068,6 +1065,7 @@ def list_servicios_report(request):
 
 
 #pagos
+@login_required(login_url='/accounts/login/')
 def procesar_pagos(request):
     if request.method == 'POST':
         start_date = request.POST.get('rango_fecha_inicio')
@@ -1076,47 +1074,40 @@ def procesar_pagos(request):
         if start_date and end_date:
             print("If 2")
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            end_date = datetime.strptime(end_date, "%Y-%m-%d")    
+            end_date = datetime.strptime(end_date, "%Y-%m-%d")   
+            print(start_date) 
+            print(end_date) 
             if Medico.objects.filter(correo=request.user.email).exists():
                 print("If 3")
                 medico = Medico.objects.get(correo=request.user.email)
                 servicios_list = servicios.objects.filter(
                     codMedico=medico.codMedico,
                     Fecha__range=(start_date, end_date),
-                    EstadoCierre=False
+                    EstadoCierre=False,
+                    EstadoPago = 'Pagado',
                 )   
+                print(servicios_list)
                 for servicio in servicios_list:
-                    print("Servicio", servicio)
-                    print("servicios_list", servicios_list)
-                    print("for 1")
-                    
-                    # Debugging: Print values for debugging
-                    print("servicio.CodProcedimiento:", servicio.CodProcedimiento)
-                    print("servicio.CodProcedimiento.pk:", servicio)
+
                     factura_aseguradora = Facturas.objects.filter(
                         CodProcedimiento=servicio.CodProcedimiento, estado=True
                     ).first()
                     print("factura_aseguradora:", factura_aseguradora)
                     if factura_aseguradora or servicio.numFactura  != '0':
-                        print("If 4")
                         servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
                         asistentes_pagados = True                      
                         for asistente in servicio.asistentes:
-                            print("for 2")
                             factura = FacturasAsistentes.objects.filter(
                                 CodAsistente=asistente
                             ).first()
+                            print("-------------------FACTURA---------------------")
+                            print(factura.estado)
                             if factura is None or not factura.estado:
-                                print("If 5")
-                                asistentes_pagados = False
-                                break                   
-                        if asistentes_pagados:
-                            print("If 6")
-                            for asistente in servicio.asistentes:
-                                print("for 3")
+                                asistentes_pagados = False                                                  
+                            if asistentes_pagados:
                                 if not PagosAsistentes.objects.filter(
-                                        CodOperacion=servicio,
-                                        CodAsistente=asistente
+                                            CodOperacion=servicio,
+                                            CodAsistente=asistente
                                 ).exists():
                                     monto_asistente = asistente.CodCostoPorAsistente.MontoCosto
                                     pago = PagosAsistentes.objects.create(
@@ -1126,20 +1117,25 @@ def procesar_pagos(request):
                                         FechaPago=datetime.now()
                                     )
                                     factura.estado = True
+                                    print("creo un pago")
                                     factura.save()
-                                    
-                            # Verificar si todas las facturas de asistentes tienen estado True
-                            asistentes_todos_pagados = all(
-                                FacturasAsistentes.object+s.filter(
+                                else:
+                                    print("YA EXISTE UN PAGO A ESTE ASISTENTE")  
+                                    pass    
+                                # Verificar si todas las facturas de asistentes tienen estado True
+                        asistentes_todos_pagados = all(
+                                FacturasAsistentes.objects.filter(
                                     CodAsistente=asistente, estado=True
                                 ).exists() for asistente in servicio.asistentes
-                            )                         
-                            if asistentes_todos_pagados:
-                                print("If 7")
-                                servicio.EstadoCierre = True
-                                servicio.save()
+                        )                         
+                        if asistentes_todos_pagados:
+                            print("If 7")
+                            servicio.EstadoCierre = True
+                            servicio.save()
+                        else:
+                            print("Llego al final")
                     else:
-                       response_data = {'message': 'No hay factura o el if no sirvio'}
+                       response_data = {'message': 'No hay factura'}
                 response_data = {'message': 'Procesamiento de pagos completado'}
                 return JsonResponse(response_data)
             else:
@@ -1156,7 +1152,27 @@ def procesar_pagos(request):
 
 
 
-
-
-
-
+@login_required(login_url='/accounts/login/')
+def reporteserviciospagados(request):
+    if Medico.objects.filter(correo=request.user.email).exists():
+        medico = Medico.objects.get(correo=request.user.email)
+        servicios_list = servicios.objects.filter(codMedico=medico.codMedico,EstadoCierre=True)
+        for servicio in servicios_list:
+            servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
+            servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
+            for asistente in servicio.asistentes:
+                factura = FacturasAsistentes.objects.filter(CodAsistente=asistente).first()
+                asistente.factura = factura
+        for  a in servicios_list:  
+           print(a.asistentes)
+    else:
+        pass   
+    formset = AsistentesFormSet(request.POST)
+    form = serviciosForm(request.user)
+    context = {
+        'segment': 'reportes',
+        'servicios_list': servicios_list,
+        'form': form,
+        'formset': formset,
+    }
+    return render(request, 'medical_reports/servicios/reportes.html', context)

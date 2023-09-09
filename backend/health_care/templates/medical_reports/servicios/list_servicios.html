@@ -45,6 +45,7 @@
                                     <th scope="col">HOSPITAL</th>
                                     <th scope="col">FORMA DE PAGO</th>
                                     <th scope="col">ESTADO DE PAGO</th>
+                                    <th scope="col">PROCESO DEL SERVICIO</th>
                                     <th scope="col">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -67,11 +68,33 @@
                                         <p class="m-0">{{ servicios.EstadoPago }}</p>
                                     </td>
                                     <td>
+                                        {% if servicios.EstadoCierre%}
+
+                                        <p class="m-0 text-c-blue"><i
+                                                class="fas fa-circle text-c-green f-10 m-r-15"></i>
+                                            Cerrada</p>
+                                        {% else %}
+
+                                        <p class="m-0 text-c-red"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>
+                                            En proceso</p>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if servicios.EstadoCierre%}
+
+                                        <a href="{% url 'update_servicio' servicios.pk %}"
+                                            class="label  text-white f-12 btn-primary"
+                                            style="background-color: #21734F">
+                                            Ver datos
+                                        </a>
+                                        {% else %}
+
                                         <a href="{% url 'update_servicio' servicios.pk %}"
                                             class="label  text-white f-12 btn-primary"
                                             style="background-color: #007bff">
                                             Actualizar
                                         </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}

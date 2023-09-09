@@ -181,7 +181,7 @@ class serviciosForm(forms.ModelForm):
             'Fecha': forms.DateInput(attrs={'class': 'form-control'}),
             'NombrePaciente': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoTotal': forms.NumberInput(attrs={'class': 'form-control'}),
-            'numFactura': forms.TextInput(attrs={'class': 'form-control', 'id': 'num-factura-medico'}),
+            'numFactura': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_numFactura'}),
             'MedioPago': forms.Select(attrs={'class': 'form-control', 'id': 'forma-pago'}), 
         }
         
@@ -198,6 +198,9 @@ class serviciosForm(forms.ModelForm):
             self.fields['CodBanco'].queryset = Emisor.objects.filter(codMedico=medico.codMedico)
             self.fields['CodCostoOperacion'].queryset = CostosDeOperaciones.objects.filter(codMedico=medico.codMedico)
             self.fields['CodHospital'].queryset = Hospitales.objects.filter(codMedico=medico.codMedico)
+            if self.instance.EstadoCierre:
+                for field_name, field in self.fields.items():
+                    field.widget.attrs['disabled'] = True
 
 class FacturasForm(forms.ModelForm):
     class Meta:

@@ -222,9 +222,19 @@
         <div class="col-md-12">
             <div class="card Recent-Users">
                 <div class="card-header">
+                    {% if servicio.EstadoCierre%}
+
+                    <div class="float-left">
+                        <a href="{% url 'list_servicios' %}" type="button" class="btn btn-primary btn-sm"
+                            style="margin-top: 10px;">
+                            Regresar
+                        </a>
+                    </div>
+                    {% else %}
                     <div class="float-left">
                         <input type="submit" value="Guardar" class="btn btn-success" style="margin-top: 10px;">
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -281,7 +291,6 @@
             $('.delete-button, .formset-add-button').show();
             $('.formset_row td:nth-last-child(2)').removeAttr('colspan');
         }
-
         $('.formset_row').formset({
             addText: 'Agregar',
             deleteText: '<i class="fa fa-trash"></i>',
@@ -330,10 +339,13 @@
     function toggleFacturaForm() {
         const medioPagoSelect = document.getElementById('id_MedioPago');
         const facturaForm = document.getElementById('facturaForm');
+        const numFacturaInput = document.getElementById('id_numFactura');
 
         if (medioPagoSelect.value === 'Contado') {
             facturaForm.style.display = 'none';
+            numFacturaInput.removeAttribute('readonly');
         } else {
+            numFacturaInput.setAttribute('readonly', 'readonly');
             facturaForm.style.display = 'block';
         }
     }

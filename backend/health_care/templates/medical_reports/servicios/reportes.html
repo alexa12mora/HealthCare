@@ -7,8 +7,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- CSS -->
-
-
 <div class="col-xl-12 col-md-6">
     <div class="card Recent-Users">
         <div class="card-header">
@@ -42,7 +40,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'reportessinpago_descarga' %}">
                     <i class="feather icon-file-text"></i>
-                    Servicios pagados a asistentes
+                    Servicios pagados a asistentes(falta)
                 </a>
             </li>
         </ul>
@@ -63,7 +61,7 @@
                         Campo requerido
                     </div>
                 </div>
-                
+
                 <div class="col-md-4">
                     <label for="validationCustom01" class="form-label" style="color:white">Generar pago por un rango de
                         fecha</label>
@@ -75,25 +73,17 @@
                     <table class="table table-hover" id="miTabla">
                         <thead>
                             <tr>
-                                <th scope="col">ACCIONES</th>
                                 <th scope="col">ASISTENTES</th>
                                 <th scope="col">FECHA</th>
                                 <th scope="col">TIPO SERVICIO</th>
                                 <th scope="col">FORMA DE PAGO</th>
                                 <th scope="col">FACTURA ASEGURADORA</th>
-
+                                <th scope="col">PROCESO DEL SERVICIO</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for servicios in servicios_list %}
-
                             <tr class="parent">
-                                <td>
-                                    <a href="#" class="label text-white f-12 btn-primary"
-                                        style="background-color: #007bff">
-                                        Pagar
-                                    </a>
-                                </td>
                                 <td>
                                     <a href="#" class="label text-white f-12 btn-primary"
                                         style="background-color: #21734F" type="button" data-toggle="modal"
@@ -118,7 +108,7 @@
                                                             <thead>
                                                                 <tr>
                                                                     <th scope="col">Nombre</th>
-                                                                    <th scope="col">Estatus factura</th>
+                                                                    <th scope="col">Status factura</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -146,13 +136,20 @@
                                                         </table>
                                                     </div>
                                                 </div>
+                                                {% if servicios.EstadoCierre%}
                                                 <div class="modal-footer">
-                                                    <a href="{% url 'update_servicio' servicios.pk %}"
-                                                        class="label  text-white f-12 btn-primary"
-                                                        style="background-color: #007bff">
+
+                                                </div>
+                                                {% else %}
+
+                                                <div class="modal-footer">
+                                                    <a href="{% url 'update_servicio' servicios.pk %}" type="button"
+                                                        class="btn btn-primary btn-sm">
                                                         Actualizar facturas
                                                     </a>
                                                 </div>
+                                                {% endif %}
+
                                             </div>
                                         </div>
                                     </div>
@@ -168,6 +165,17 @@
                                 </td>
                                 <td>
                                     <p class="m-0">{{ servicios.EstadoPago }}</p>
+                                </td>
+                                <td>
+                                    {% if servicios.EstadoCierre%}
+
+                                    <p class="m-0 text-c-blue"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>
+                                        Cerrada</p>
+                                    {% else %}
+
+                                    <p class="m-0 text-c-red"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>
+                                        En proceso</p>
+                                    {% endif %}
                                 </td>
 
                             </tr>
