@@ -37,15 +37,17 @@
                                 </h5>
                             </div>
                             <div class="col col-lg-2">
-                                <div class="col-9" id="botones" style="display: none;">
-                                    <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
-                                            data-asistente="{{ item.asistente.pk }}"></i>
+                                <div class="col-9" id="{{ item.asistente.pk }}-botones" style="display: none;">
+                                    <a href="#" data-asistente="{{ item.asistente.pk }}" class="btn-print">
+                                        <i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"></i> 
                                     </a>
+                                    
                                     <a href="#" data-asistente="{{ item.asistente.pk }}">
                                         <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
                                     </a>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                     <div id="{{item.asistente.pk}}" class="collapse" aria-labelledby="headingOne"
@@ -92,7 +94,7 @@
                                                         <td scope="row">{{servicios.MedioPago}}</td>
                                                         <td scope="row">{{servicios.EstadoPago}}</td>
                                                         <td scope="row">
-                                                            ${{item.asistente.CodCostoPorAsistente.MontoCosto}}
+                                                            ${{ item.asistente.CodCostoPorAsistente.MontoCosto }}
                                                         </td>
                                                     </tr>
                                                     {% endfor %}
@@ -104,17 +106,11 @@
                                     <div class="row">
                                         <div class="col-xl-3">
                                             <p class="text-black float-start"><span class="text-black me-3">
-                                                    Total: </span><span style="font-size: 25px;">$ no esta
-                                                    implementado</span>
+                                                    Total: </span><span style="font-size: 25px;">$  {{item.total_monto}} </span>
                                             </p>
                                         </div>
                                     </div>
                                     <hr>
-                                    <div class="row">
-                                        <div class="col-xl-10">
-                                            <p>no esta implementado</p>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -201,7 +197,7 @@
                             width: pdfWidth,
                         })
                         .save(asistente + "_reporte.pdf");
-                }, 200); // Ajusta el valor del retraso según sea necesario
+                }, 200); 
             });
         }
     });
@@ -210,7 +206,7 @@
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].addEventListener('click', function () {
                 var targetId = this.getAttribute('data-target').replace('#', '');
-                var botonesDiv = document.getElementById('botones');
+                var botonesDiv = document.getElementById(targetId + '-botones'); 
 
                 if (botonesDiv && targetId) {
                     if (botonesDiv.style.display === 'none') {
@@ -222,5 +218,26 @@
             });
         }
     });
+    $(document).ready(function () {
+        $('.btn-print').click(function () {
+            var asistente = $(this).data('asistente');
+            var content = document.getElementById(asistente);
+
+            // Clona el contenido que deseas imprimir
+            var printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.open();
+            printWindow.document.write('<html><head><title>Imprimir</title></head><body>');
+            printWindow.document.write(content.innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+
+            // Llama a la función de impresión
+            printWindow.print();
+            printWindow.close();
+
+            return false; // Evita que el enlace redireccione
+        });
+    });
+
 </script>
 {% endblock content %}

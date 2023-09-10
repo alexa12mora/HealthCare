@@ -26,10 +26,15 @@ from datetime import datetime
 
 
 def index(request):
-  users = User.objects.all()
+  medico = Medico.objects.filter(correo=request.user.email).first()
+  users = User.objects.filter()
+  doctors = Medico.objects.all()
+  services = servicios.objects.filter(codMedico=medico.codMedico)
   context = {
     'segment': 'index',
     'users':users,
+    'doctors': doctors,
+    'services': services,
   }
   return render(request, "pages/index.html", context)
 
@@ -697,6 +702,7 @@ def reporte_por_med_serviciospagados(request):
         medico = Medico.objects.get(correo=request.user.email)
         servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
         asistentes_servicios = {}
+        
         for servicio in servicios_medico:
             if servicio.MedioPago == 'Credito' and servicio.EstadoPago == 'Pagado':
                 factura = Facturas.objects.filter(CodProcedimiento=servicio).first()
@@ -705,15 +711,17 @@ def reporte_por_med_serviciospagados(request):
                     for asistente in asistentes_servicio:
                         asistente_key = asistente.correo
                         if asistente_key not in asistentes_servicios:
-                            asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
+                            asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': [], 'total_monto': 0.0}
                         asistentes_servicios[asistente_key]['servicios'].append(servicio)
+                        asistentes_servicios[asistente_key]['total_monto'] += float(asistente.CodCostoPorAsistente.MontoCosto)
             elif servicio.MedioPago == 'Contado' and servicio.EstadoPago == 'Pagado':
                 asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
                 for asistente in asistentes_servicio:
                     asistente_key = asistente.correo
                     if asistente_key not in asistentes_servicios:
-                        asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': []}
+                        asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios': [], 'total_monto': 0.0}
                     asistentes_servicios[asistente_key]['servicios'].append(servicio)
+                    asistentes_servicios[asistente_key]['total_monto'] += float(asistente.CodCostoPorAsistente.MontoCosto)
 
         asistentes_servicios_list = list(asistentes_servicios.values())
         print(asistentes_servicios_list)
@@ -726,6 +734,7 @@ def reporte_por_med_serviciospagados(request):
         'medico': medico,
     }
     return render(request, 'medical_reports/servicios/descargareportespagados.html', context)
+
 
 #reporte de servicios no pagados por aseguradora
 @login_required(login_url='/accounts/login/')
