@@ -35,14 +35,34 @@
                     </a>
 
                 </div>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'lista_reportes' %}">
+                            <i class="feather icon-file-text"></i>
+                            Reportes de servicios pagados por aseguradora
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'reportessinpago_descarga' %}">
+                            <i class="feather icon-file-text"></i>
+                            Servicios pendientes de pago
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_reportes_pagados' %}">
+                            <i class="feather icon-file-text"></i>
+                            Reporte servicios pagados a asistentes
+                        </a>
+                    </li>
+                </ul>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table " id="miTabla">
                             <thead>
                                 <tr>
                                     <th scope="col">FECHA</th>
-                                    <th scope="col">TIPO SERVICIO</th>
-                                    <th scope="col">HOSPITAL</th>
+                                    <th scope="col">SERVICIO</th>
+
                                     <th scope="col">FORMA DE PAGO</th>
                                     <th scope="col">ESTADO DE PAGO</th>
                                     <th scope="col">PROCESO DEL SERVICIO</th>
@@ -58,9 +78,7 @@
                                     <td>
                                         <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
                                     </td>
-                                    <td>
-                                        <p class="m-0">{{ servicios.CodHospital }}</p>
-                                    </td>
+
                                     <td>
                                         <p class="m-0">{{ servicios.MedioPago }}</p>
                                     </td>
@@ -72,7 +90,7 @@
 
                                         <p class="m-0 text-c-blue"><i
                                                 class="fas fa-circle text-c-green f-10 m-r-15"></i>
-                                            Cerrada</p>
+                                            Cerrado</p>
                                         {% else %}
 
                                         <p class="m-0 text-c-red"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>

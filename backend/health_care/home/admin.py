@@ -12,4 +12,5 @@ admin.site.register(servicios)
 admin.site.register(Facturas)
 admin.site.register(FacturasAsistentes)
 admin.site.register(PagosAsistentes)
+admin.site.register(Reporte)
 

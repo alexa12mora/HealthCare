@@ -12,6 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
+
 
 </head>
 
@@ -37,7 +40,7 @@
                                 </h5>
                             </div>
                             <div class="col col-lg-2">
-                                <div class="col-9" id="botones" style="display: none;">
+                                <div class="col-9" id="{{ item.asistente.pk }}-botones" style="display: none;">
                                     <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
                                             data-asistente="{{ item.asistente.pk }}"></i>
                                     </a>
@@ -77,7 +80,7 @@
                                             <table class="table">
                                                 <thead style="background-color:#21734F; ;" class="text-white">
                                                     <tr>
-                                                        <th scope="col">TIPO SERVICIO</th>
+                                                        <th scope="col">SERVICIO</th>
                                                         <th scope="col">FECHA</th>
                                                         <th scope="col">FORMA DE PAGO</th>
                                                         <th scope="col">ASEGURADORA</th>
@@ -88,7 +91,7 @@
                                                     {% for servicios in item.servicios %}
                                                     <tr>
                                                         <td scope="row">{{servicios.CodCostoOperacion}}</td>
-                                                        <td scope="row">{{servicios.Fecha}}</td>
+                                                        <td scope="row">{{ servicios.Fecha|date:"d/m/Y" }}</td>
                                                         <td scope="row">{{servicios.MedioPago}}</td>
                                                         <td scope="row">{{servicios.EstadoPago}}</td>
                                                         <td scope="row">
@@ -104,15 +107,10 @@
                                     <div class="row">
                                         <div class="col-xl-3">
                                             <p class="text-black float-start"><span class="text-black me-3">
-                                                    Total: </span><span style="font-size: 25px;">$ no esta
-                                                    implementado</span>
+                                                    Total: </span><span style="font-size: 15px;" class="text-primary">$
+                                                    {{item.total_monto}}
+                                                </span>
                                             </p>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-xl-10">
-                                            <p>no esta implementado</p>
                                         </div>
                                     </div>
                                 </div>
@@ -164,12 +162,8 @@
         $('.fa-print').click(function () {
             // Get the corresponding item's name
             var itemName = $(this).data('asistente');
-
-            // Perform the print action for the item
-            // You can use a library like Print.js to handle the printing functionality
-            // Here's an example of how you can use Print.js:
             printJS({
-                printable: itemName, // ID of the element you want to print
+                printable: itemName,
                 type: 'html',
                 showModal: true,
                 modalMessage: 'Preparando documento...'
@@ -177,6 +171,7 @@
         });
 
     });
+
     document.addEventListener("DOMContentLoaded", function () {
         var links = document.querySelectorAll('a[data-asistente]');
 
@@ -201,7 +196,7 @@
                             width: pdfWidth,
                         })
                         .save(asistente + "_reporte.pdf");
-                }, 200); // Ajusta el valor del retraso según sea necesario
+                }, 200);
             });
         }
     });
@@ -210,7 +205,7 @@
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].addEventListener('click', function () {
                 var targetId = this.getAttribute('data-target').replace('#', '');
-                var botonesDiv = document.getElementById('botones');
+                var botonesDiv = document.getElementById(targetId + '-botones');
 
                 if (botonesDiv && targetId) {
                     if (botonesDiv.style.display === 'none') {

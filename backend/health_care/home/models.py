@@ -73,6 +73,7 @@ class servicios(models.Model):
     numFactura = models.CharField(max_length=20)
     CodCostoOperacion = models.ForeignKey(CostosDeOperaciones, on_delete=models.CASCADE,default=1)
     EstadoCierre = models.BooleanField(default=False)
+    EstadoFactura = models.BooleanField(default=False)
     
     def __str__(self):
         return f"Procedimiento {self.CodProcedimiento}"
@@ -97,12 +98,24 @@ class Facturas(models.Model):
     estado = models.BooleanField(default=False)
     def __str__(self):
         return f"Factura {self.NumFactura}"
-
+    
+    
+    
+class Reporte(models.Model):
+    CodReporte = models.AutoField(primary_key=True)
+    FechaReporte = models.DateField()
+    Servicios = models.ManyToManyField(servicios)  # Relación ManyToMany con servicios
+    Medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
+    Asistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
+    estado = models.BooleanField(default=False)
+    EstadoCierre = models.BooleanField(default=False)
+    def __str__(self):
+        return f"Reporte {self.CodReporte}"
 
 class FacturasAsistentes(models.Model):
     NumFacturaAsistente = models.AutoField(primary_key=True)
     FechaEmision = models.DateField(null=True, blank=True)
-    CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
+    CodReporte = models.ForeignKey(Reporte, on_delete=models.CASCADE) 
     descFactura = models.CharField(null=True,max_length=100,blank=True)
     estado = models.BooleanField(default=False)
 
@@ -111,11 +124,10 @@ class FacturasAsistentes(models.Model):
 
 
 class PagosAsistentes(models.Model):
-    CodOperacion = models.ForeignKey(servicios, on_delete=models.CASCADE)
+    CodReporte = models.ForeignKey(Reporte, on_delete=models.CASCADE) 
     CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
     MontoPagado = models.DecimalField(max_digits=10, decimal_places=2)
     FechaPago = models.DateField()
 
     def __str__(self):
-        return f"PagoAsistente {self.CodOperacion} - {self.CodAsistente}"
-
+        return f"CodReporte {self.CodReporte}"

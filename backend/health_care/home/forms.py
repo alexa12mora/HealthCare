@@ -189,7 +189,7 @@ class serviciosForm(forms.ModelForm):
         super(serviciosForm, self).__init__(*args, **kwargs)
         fecha_actual = date.today().strftime('%Y-%m-%d')
         self.fields['Fecha'].initial = fecha_actual  
-        self.fields['numFactura'].initial = '0'
+        self.fields['numFactura'].initial = '1'
         if user.is_authenticated and Medico.objects.filter(correo=user.email).exists():
             medico =  Medico.objects.get(correo=user.email)
             print(medico)
@@ -217,6 +217,8 @@ class FacturasForm(forms.ModelForm):
         if fecha_pago is None:
             cleaned_data['FechaPago'] = None
     
+
+
 class FacturasAsistentesForm(forms.ModelForm):
     class Meta:
         model = FacturasAsistentes
@@ -228,9 +230,13 @@ class FacturasAsistentesForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Inicializar el campo FechaEmision con la fecha actual
+        self.fields['FechaEmision'].initial = date.today()
+        
         if self.instance.estado:
             for field in self.fields.values():
                 field.disabled = True
+                
     def clean(self):
         cleaned_data = super().clean()
         fecha_emision = cleaned_data.get("FechaEmision")
@@ -242,15 +248,18 @@ class FacturasAsistentesForm(forms.ModelForm):
 
         return cleaned_data
 
-class PagosAsistentesForm(forms.ModelForm):
+        
+class ReporteForm(forms.ModelForm):
     class Meta:
-        model = PagosAsistentes
-        fields = ['CodOperacion', 'CodAsistente', 'MontoPagado', 'FechaPago']
+        model = Reporte
+        fields = ['FechaReporte', 'Servicios', 'Medico', 'Asistente']
         widgets = {
-            'CodOperacion': forms.Select(attrs={'class': 'form-control'}),
-            'CodAsistente': forms.Select(attrs={'class': 'form-control'}),
-            'MontoPagado': forms.NumberInput(attrs={'class': 'form-control'}),
-            'FechaPago': forms.DateInput(attrs={'class': 'form-control'}),
+            'FechaReporte': forms.DateInput(attrs={'class': 'form-control'}),
+            'Servicios': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'Medico': forms.Select(attrs={'class': 'form-control'}),
+            'Asistente': forms.Select(attrs={'class': 'form-control'}),
+
         }
+
 
 

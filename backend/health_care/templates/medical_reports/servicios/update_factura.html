@@ -33,29 +33,32 @@
         <div class="row">
             <div class="col-md-12">
                 <form class="needs-validation" novalidate method="post"
-                    action="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=asistente.pk %}">
+                    action="{% url 'actulizar_factura' reporte.pk %}">
                     {% csrf_token %}
-
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action active">
+                            Servicios asociados
+                        </a>
+                        {% for servicios in servicios_reporte %}
+                        <a href="#" class="list-group-item list-group-item-action">{{servicios.CodCostoOperacion}} -
+                            {{servicios.Fecha}}, Monto: {{servicios.MontoTotal}}, Medio de pago:
+                            {{servicios.MedioPago}}</a>
+                        {% endfor %}
+                    </div>
                     <div class="mb-12">
                         <label for="disabledTextInput" class="form-label">Nombre del asistente</label>
                         <input type="text" id="disabledTextInput" class="form-control" disabled
-                            value="{{ asistente.Nombre }}">
-                    </div>
-                    <div class="mb-12">
-                        <label for="disabledTextInput" class="form-label">Servicio asociado</label>
-                        <input type="text" id="disabledTextInput" class="form-control" disabled
-                            value="{{ servicio.CodCostoOperacion.NombreOperacion }}">
+                            value="{{ asistente_reporte.Nombre }}">
                     </div>
                     <div class="mb-12">
                         <label for="disabledTextInput" class="form-label">Monto a pagar al asistente</label>
                         <input type="text" id="disabledTextInput" class="form-control" disabled
-                            value="$ {{ asistente.CodCostoPorAsistente.MontoCosto }}">
+                            value="$ {{ montoTotal}}">
                     </div>
                     <div class="mb-12">
                         <label for="exampleInputEmail1" class="form-label">Fecha de ingreso de factura</label>
                         {{ form.FechaEmision }}
                     </div>
-
                     <div class="mb-12">
                         <label for="validationCustom02" class="form-label">Número de factura</label>
                         {{ form.descFactura }}

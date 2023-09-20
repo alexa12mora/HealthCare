@@ -1,0 +1,110 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Carga de jQuery -->
+<!-- Carga de jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- CSS -->
+<div class="col-xl-12 col-md-6">
+    <div class="card Recent-Users">
+        <div class="card-header">
+            <div class="float-left">
+                <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 25%; "
+                    class="float-left">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-xl-12 col-md-6">
+    <div class="card Recent-Users">
+        <div class="card-header">
+            <div class="card-block px-0 py-3">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="miTabla">
+                        <thead>
+                            <tr>
+                                <th scope="col">FECHA</th>
+                                <th scope="col">TIPO SERVICIO</th>
+                                <th scope="col">MONTO TOTAL</th>
+                                <th scope="col">ASISTENTES</th>
+                                <th scope="col">TOTAL DE UTILIDAD</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for servicio_info in servicios_info %}
+                            <tr class="parent">
+                                <td>
+                                    <p class="m-0">{{ servicio_info.servicio.Fecha }}</p>
+                                </td>
+                                <td>
+                                    <p class="m-0">{{ servicio_info.servicio.CodCostoOperacion.NombreOperacion }}</p>
+                                </td>
+                                <td>
+                                    <p class="m-0">{{ servicio_info.servicio.MontoTotal }}</p>
+                                </td>
+
+                                <td>
+                                    <ul>
+                                        {% for asistente in servicio_info.asistentes %}
+                                        <li>{{ asistente.Nombre }} <p class="text-primary">
+                                                ${{asistente.CodCostoPorAsistente.MontoCosto}}</p>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+
+                                </td>
+                                <td>
+                                    <p class="text-primary">
+                                        ${{ servicio_info.utilidad_servicio }} {{servicio_info.utilidad_total }}
+                                    </p>
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var miTabla = $('#miTabla').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
+            },
+            responsive: true,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+            "order": [[0, "desc"]], // Ordena los datos de la primera columna en orden descendente
+            dom: 'Bfrtip', // Define donde se colocarán los botones
+            buttons: [
+
+                {
+                    extend: 'excel',
+                    text: 'Excel'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF'
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir'
+                }
+            ]
+        });
+
+        $('#miTabla_length select').on('change', function () {
+            var selectedValue = $(this).val();
+            if (selectedValue === '10') {
+                miTabla.page.len(5).draw();
+            }
+        });
+    });
+</script>
+{% endblock content %}

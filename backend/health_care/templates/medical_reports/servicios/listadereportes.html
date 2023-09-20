@@ -1,0 +1,360 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
+
+
+</head>
+<!-- Carga de jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- [ Main Content ] start -->
+<!--[ Recent Patients ] start-->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <div class="float-left">
+                        <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 30%; "
+                            class="float-left">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="alert-container">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}"
+                    role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <a href="{% url 'reportes_descarga' %}" class="btn btn-success">
+                        Generar nuevo reporte de servicios pagados
+                    </a>
+                </div>
+
+                <div class="card-body">
+                    <h6 class="text-primary">Reporte de utilidad en servicios pagados</h6>
+                    <form method="post" action="{% url 'reporte_utilidad_pagos' %}" class="row g-3 needs-validation"
+                        novalidate>
+                        {% csrf_token %}
+                        <div class="col-md-5">
+                            <label for="validationCustom01" class="form-label">Fecha inicial</label>
+                            <input type="date" class="form-control" id="rango_fecha_inicio" name="rango_fecha_inicio"
+                                required>
+                            <div class="invalid-feedback">
+                                Campo requerido
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="validationCustom02" class="form-label">Fecha cierre</label>
+                            <input type="date" class="form-control" id="rango_fecha_fin" name="rango_fecha_fin"
+                                required>
+                            <div class="invalid-feedback">
+                                Campo requerido
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label for="validationCustom01" class="form-label" style="color:white">Generar pago</label>
+                            <button type="submit" class="btn btn-primary mb-2">Generar</button>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table " id="miTabla">
+                            <thead>
+                                <tr>
+                                    <th scope="col">DESCARGAS</th>
+                                    <th scope="col">NOMBRE ASISTENTE</th>
+                                    <th scope="col">SERVICIOS</th>
+                                    <th scope="col">FACTURA ASISTENTE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reporte_info in lista_reportes %}
+                                <tr class="unread">
+                                    <td>
+                                        |
+                                        <a href="#" data-asistente="{{ reporte_info.reporte.pk }}">
+                                            <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
+                                        </a>
+                                        |
+                                        <div class="card" style="display: none;" id="{{reporte_info.reporte.pk}}">
+                                            <div class="container mb-5 mt-3">
+                                                <div class="container">
+                                                    <div class="text-center">
+                                                        <img src="{% static 'assets/images/surgy1.2.png' %}"
+                                                            class="rounded" alt="..." style="max-width: 45%; ">
+                                                    </div>
+                                                </div>
+                                                <div class="container">
+                                                    <div class="row">
+                                                        <div class="col-xl-8">
+                                                            <ul class="list-unstyled">
+                                                                <li class="text-muted">Para: <span
+                                                                        style="color:#5d9fc5 ;">
+                                                                        {{ reporte_info.asistente.Nombre }}</span></li>
+                                                                <li class="text-muted">Correo: <span
+                                                                        style="color:#5d9fc5 ;">
+                                                                        {{reporte_info.asistente.correo }}</span></li>
+                                                                <li class="text-muted">Total de servicios: <span
+                                                                        style="color:#5d9fc5 ;">
+                                                                        {{reporte_info.asistente.correo }}</span></li>
+
+                                                                <li class="text-muted">Medico principal: <span
+                                                                        style="color:#5d9fc5 ;">
+                                                                        {{reporte_info.medico.Nombre }}</span></li>
+                                                                <li class="text-muted">Correo: <span
+                                                                        style="color:#5d9fc5 ;">
+                                                                        {{reporte_info.medico.correo }}</span></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row my-2 mx-1 justify-content-center">
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead style="background-color:#21734F; ;"
+                                                                    class="text-white">
+                                                                    <tr>
+                                                                        <th scope="col">SERVICIO</th>
+                                                                        <th scope="col">FORMA DE PAGO</th>
+                                                                        <th scope="col">ASEGURADORA</th>
+                                                                        <th scope="col">$MONTO</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for servicios in reporte_info.servicios %}
+                                                                    <tr>
+                                                                        <td scope="row">{{servicios.CodCostoOperacion}}
+                                                                        </td>
+                                                                        <td scope="row">{{servicios.MedioPago}}</td>
+                                                                        <td scope="row">{{servicios.EstadoPago}}</td>
+                                                                        <td scope="row">
+                                                                            ${{reporte_info.asistente.CodCostoPorAsistente.MontoCosto}}
+                                                                        </td>
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-xl-3">
+                                                            <p class="text-black float-start"><span
+                                                                    class="text-black me-3">
+                                                                    Total: </span><span style="font-size: 25px;">$
+                                                                    {{reporte_info.montototal}}</span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="m-0">{{ reporte_info.asistente.Nombre }}</p>
+                                    </td>
+
+                                    <td>
+                                        <ul>
+                                            {% for servicio in reporte_info.servicios %}
+                                            <li>{{ servicio.CodCostoOperacion }} - {{ servicio.Fecha }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {% if reporte_info.reporte.estado%}
+                                        <a href="{% url 'actulizar_factura' reporte_info.reporte.pk %}"
+                                            class="label  text-white f-12 btn-primary"
+                                            style="background-color: #21734F">
+                                            Ver factura
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'actulizar_factura' reporte_info.reporte.pk%}"
+                                            class="label  text-white f-12 btn-primary"
+                                            style="background-color: #007bff">
+                                            Agregar factura
+                                        </a>
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+</style>
+
+
+
+<script>
+    $(document).ready(function () {
+        var miTabla = $('#miTabla').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
+                searchBuilder: {
+                    add: 'Añadir',
+                    condition: 'Condición',
+                    clearAll: 'Borrar todo',
+                    delete: 'Eliminar',
+                    deleteTitle: 'Eliminar título',
+                    data: 'Columna',
+                    left: 'Izquierda',
+                    leftTitle: 'Título izquierdo',
+                    logicAnd: 'Y',
+                    logicOr: 'O',
+                    right: 'Derecha',
+                    rightTitle: 'Título derecho',
+                    title: {
+                        0: 'Filtros',
+                        _: 'Filtros (%d)'
+                    },
+                    value: 'Opción',
+                    conditions: {
+                        "date": {
+                            "after": "Después",
+                            "before": "Antes",
+                            "between": "Entre",
+                            "empty": "Vacío",
+                            "equals": "Igual a",
+                            "not": "No",
+                            "notBetween": "No entre",
+                            "notEmpty": "No vacío"
+                        },
+                        "number": {
+                            ">=": ">=",
+                            "<=": "<=",
+                            "<>": "<>",
+                            "=": "=",
+                            ">": ">",
+                            "<": "<",
+                            between: "Entre",
+                            empty: "Vacío",
+                            equals: "Igual a",
+                            notBetween: "No entre",
+                            notEmpty: "No vacío"
+                        },
+                        // ... otras condiciones
+                    }
+                }
+            },
+            responsive: true,
+            autoFill: true,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+            colReorder: true,
+            dom: 'Qfrtip',
+            searchBuilder: true,
+        });
+
+        $('#miTabla_length select').on('change', function () {
+            var selectedValue = $(this).val();
+            if (selectedValue === '5') {
+                miTabla.page.len(5).draw();
+            }
+        });
+        miTabla.searchBuilder.container().prependTo(table.table().container());
+    });
+    $(document).ready(function () {
+        $('.fa-print').click(function () {
+            // Get the corresponding item's name
+            var itemName = $(this).data('asistente');
+            printJS({
+                printable: itemName, // ID of the element you want to print
+                type: 'html',
+                showModal: true,
+                modalMessage: 'Preparando documento...'
+            });
+        });
+
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var links = document.querySelectorAll('a[data-asistente]');
+        for (var i = 0; i < links.length; i++) {
+            links[i].addEventListener('click', function (event) {
+                event.preventDefault();
+                var asistente = this.getAttribute('data-asistente');
+                var content = document.getElementById(asistente);
+                // Guardar el estilo de display original
+                var originalDisplay = content.style.display;
+                // Cambiar el estilo de display a block
+                content.style.display = 'block';
+                // Crear un nuevo documento PDF con dimensiones personalizadas
+                const pdfWidth = 210; // Ancho en mm (A4 por defecto)
+                const pdfElement = content.cloneNode(true);
+                // Agregar un retraso antes de convertir a PDF
+                // Establecer dimensiones del contenido clonado para ajustar al PDF
+                pdfElement.style.width = pdfWidth + 'mm';
+                setTimeout(function () {
+                    // Convertir el contenido clonado a PDF
+                    html2pdf()
+                        .from(pdfElement)
+                        .set({
+                            width: pdfWidth,
+                            scale: 10
+                        })
+                        .save(asistente + "_reporte.pdf")
+                        .then(function () {
+                            // Cambiar el estilo de display a su valor original después de la conversión
+                            content.style.display = originalDisplay;
+                        });
+                }, 1); // Ajusta el valor del retraso según sea necesario
+            });
+        }
+    });
+
+</script>
+{% endblock content %}

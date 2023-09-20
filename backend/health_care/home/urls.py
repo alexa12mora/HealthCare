@@ -93,12 +93,18 @@ urlpatterns = [
   path('servicios/actualizar/<int:pk>', views.update_servicio, name='update_servicio'),
   path('servicios/eliminar/<int:pk>', views.delete_servicio, name='delete_servicio'),
   path('obtener/monto/costo/<int:cod_costo_operacion_id>/', views.obtener_monto_costo_servicios, name='obtener_monto_costo'),
+  
+  
+  path('servicios/', views.list_servicios, name='servicios'),
   path('servicios/reportes', views.list_servicios_report, name='reportes'),
   path('servicios/reporte/pagados/descarga', views.reporte_por_med_serviciospagados, name='reportes_descarga'),
   path('servicios/reporte/sin/pago/descarga', views.reporte_por_med_servicios_no_pagados, name='reportessinpago_descarga'),
   path('servicios/proceso/pagos/fechas', views.procesar_pagos, name='procesar_pagos'),
-   
   path('servicios/reportes/descargar/<int:pk>/', views.descargar_reporte_pdf, name='descargar_reporte'),
+  path('servicios/reportes/pagados', views.lista_reportes, name='lista_reportes'),
+  #reporte de servicios pagados a asistentes
+  path('servicios/reportes/pagados/lista', views.reporteserviciospagados, name='lista_reportes_pagados'),
+  path('servicios/reportes/utilidad', views.reporte_utilidad_pagos, name='reporte_utilidad_pagos'),
   # Aseguradoras
   path('agregar/hospital/', views.create_hospital, name='create_hospital'),
   path('listar/hospitales/', views.list_hospital, name='list_hospital'),
@@ -106,6 +112,6 @@ urlpatterns = [
   path('eliminar/hospital/<int:pk>/', views.eliminar_hospital, name='eliminar_hospital'),
   
   # Facturas Asistentes
-  path('actualizar/factura/<int:servicio_id>/<int:asistente_id>/', views.actualizar_factura, name='actulizar_factura'),
+  path('actualizar/factura/<int:reporte_id>', views.actualizar_factura, name='actulizar_factura'),
 ]
 

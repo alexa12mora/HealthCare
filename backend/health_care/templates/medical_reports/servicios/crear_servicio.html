@@ -137,10 +137,6 @@
                                         <th>Nombre</th>
                                         <th>Correo</th>
                                         <th>Tipo</th>
-                                        <!-- En tu plantilla -->
-                                        {% if is_update %}
-                                        <th colspan="2">Factura asistente</th>
-                                        {% endif %}
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
@@ -159,31 +155,6 @@
                                             {{ field }}
                                         </td>
                                         {% endfor %}
-                                        {% if is_update %}
-                                        <td colspan="2">
-
-                                            {% for factura in facturasis %}
-                                            {% if factura.CodAsistente.pk == form.instance.pk %}
-                                            {% if factura.estado == True %}
-                                            <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
-                                                class="label text-white f-12 btn-danger btn-like"
-                                                style="background-color: #21734F">
-                                                entregada
-                                            </a>
-                                            {% else %}
-                                            <a href="{% url 'actulizar_factura' servicio_id=servicio.pk asistente_id=form.instance.pk %}"
-                                                class="label text-white f-12 btn-danger btn-like"
-                                                style="background-color: #007bff">
-                                                completar
-                                            </a>
-                                            {% endif %}
-                                            {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        {% endif %}
-                                        {% if is_update %}
-                                        <td></td>
-                                        {% endif %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -204,9 +175,6 @@
                             <label for="validationCustom01" class="form-label">Fecha de pago por la
                                 aseguradora</label>
                             {{ form.Fecha }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
                         </div>
                         <div class="col-md-6">
                             <label for="validationCustom02" class="form-label">Número de factura</label>

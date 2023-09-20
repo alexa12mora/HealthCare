@@ -1,0 +1,312 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+</head>
+<!-- Carga de jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- [ Main Content ] start -->
+<!--[ Recent Patients ] start-->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <div class="float-left">
+                        <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 30%; "
+                            class="float-left">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="alert-container">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}"
+                    role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table " id="miTabla">
+                            <thead>
+                                <tr>
+                                    <th scope="col">NOMBRE ASISTENTE</th>
+                                    <th scope="col">SERVICIOS</th>
+                                    <th scope="col">DESCARGAS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asistente_info in lista_asistentes %}
+                                <tr class="unread">
+                                    <td>
+                                        <p class="m-0">{{ asistente_info.asistente.Nombre }}</p>
+                                    </td>
+                                    <td>
+                                        {% for reporte in asistente_info.reportes %}
+                                        <h6>Fecha de reporte: {{ reporte.reporte.FechaReporte }}</h6>
+                                        <h6>Fecha de pago: {{ reporte.pago_asistente.FechaPago }}</h6>
+                                        <h6>Monto: $ {{ reporte.pago_asistente.MontoPagado }}</h6>
+                                        <ul>
+                                            <h6 class="text-primary">Servicios:</h6>
+                                            {% for servicio in reporte.servicios %}
+                                            <li>{{ servicio.CodCostoOperacion }} -
+                                                {{servicio.MontoTotal}}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        <a href="#" data-reporte="{{ reporte_info.reporte.pk }}">
+                                            <i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"></i>
+                                        </a>
+                                        <a href="#" data-reporte="{{ reporte_info.reporte.pk }}">
+                                            <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
+                                        </a>
+                                        <div class="card" style="display: none;" id="{{reporte_info.reporte.pk}}">
+                                            <div class="card">
+                                                <div class="container mb-5 mt-3">
+                                                    <div class="container">
+                                                        <div class="text-center">
+                                                            <img src="{% static 'assets/images/surgy1.2.png' %}"
+                                                                class="rounded" alt="..." style="max-width: 50%; ">
+                                                        </div>
+                                                    </div>
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col-xl-8">
+                                                                <ul class="list-unstyled">
+                                                                    <li class="text-muted">Nombre del asistente: <span
+                                                                            style="color:#5d9fc5 ;">
+                                                                            {{ asistente_info.asistente.Nombre }}</span>
+                                                                    </li>
+                                                                    <li class="text-muted">Correo: </li>
+                                                                    <li class="text-muted">Total de servicios: </li>
+                                                                    <li class="text-muted">Medico principal:</li>
+                                                                    <li class="text-muted">Correo:</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row my-2 mx-1 justify-content-center">
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <thead style="background-color:#21734F; ;"
+                                                                        class="text-white">
+                                                                        <tr>
+                                                                            <th scope="col">FECHA DE REPORTE</th>
+                                                                            <th scope="col">FECHA DE PAGO</th>
+                                                                            <th scope="col">SERVICIOS</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% for servicios in item.servicios %}
+                                                                        <tr>
+                                                                            <td scope="row">
+                                                                                {{reporte.reporte.FechaReporte}}</td>
+                                                                            <td scope="row">{{
+                                                                                reporte.pago_asistente.FechaPago }}</td>
+                                                                            <td scope="row">
+                                                                                <ul>
+                                                                                    <h6 class="text-primary">Servicios:
+                                                                                    </h6>
+                                                                                    {% for s in reporte.servicios%}
+                                                                                    <li>{{ s.CodCostoOperacion
+                                                                                        }}-{{s.MontoTotal}}</li>
+                                                                                    {% endfor %}
+                                                                                </ul>
+                                                                            </td>
+                                                                        </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xl-3">
+                                                                <p class="text-black float-start"><span
+                                                                        class="text-black me-3">
+                                                                        Total: </span> <span
+                                                                        style="font-size: 15px;">${{servicio.MontoTotal}}</span>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+</style>
+
+
+
+<script>
+    $(document).ready(function () {
+        var miTabla = $('#miTabla').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
+                searchBuilder: {
+                    add: 'Añadir',
+                    condition: 'Condición',
+                    clearAll: 'Borrar todo',
+                    delete: 'Eliminar',
+                    deleteTitle: 'Eliminar título',
+                    data: 'Columna',
+                    left: 'Izquierda',
+                    leftTitle: 'Título izquierdo',
+                    logicAnd: 'Y',
+                    logicOr: 'O',
+                    right: 'Derecha',
+                    rightTitle: 'Título derecho',
+                    title: {
+                        0: 'Filtros',
+                        _: 'Filtros (%d)'
+                    },
+                    value: 'Opción',
+                    conditions: {
+                        "date": {
+                            "after": "Después",
+                            "before": "Antes",
+                            "between": "Entre",
+                            "empty": "Vacío",
+                            "equals": "Igual a",
+                            "not": "No",
+                            "notBetween": "No entre",
+                            "notEmpty": "No vacío"
+                        },
+                        "number": {
+                            ">=": ">=",
+                            "<=": "<=",
+                            "<>": "<>",
+                            "=": "=",
+                            ">": ">",
+                            "<": "<",
+                            between: "Entre",
+                            empty: "Vacío",
+                            equals: "Igual a",
+                            notBetween: "No entre",
+                            notEmpty: "No vacío"
+                        },
+                        // ... otras condiciones
+                    }
+                }
+            },
+            responsive: true,
+            autoFill: true,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+            colReorder: true,
+            dom: 'Qfrtip',
+            searchBuilder: true,
+        });
+
+        $('#miTabla_length select').on('change', function () {
+            var selectedValue = $(this).val();
+            if (selectedValue === '5') {
+                miTabla.page.len(5).draw();
+            }
+        });
+        miTabla.searchBuilder.container().prependTo(table.table().container());
+    });
+    $(document).ready(function () {
+        $('.fa-print').click(function () {
+            // Get the corresponding item's name
+            var itemName = $(this).data('asistente');
+            printJS({
+                printable: itemName, // ID of the element you want to print
+                type: 'html',
+                showModal: true,
+                modalMessage: 'Preparando documento...'
+            });
+        });
+
+    });
+
+    $(document).ready(function () {
+        $('a[data-reporte]').click(function (event) {
+            event.preventDefault();
+
+            var reporteId = $(this).data('reporte');
+            var content = $('#' + reporteId);
+
+            // Guardar el estilo de display original
+            var originalDisplay = content.css('display');
+            // Cambiar el estilo de display a block
+            content.css('display', 'block');
+
+            // Crear un nuevo documento PDF con dimensiones personalizadas
+            const pdfWidth = 210; // Ancho en mm (A4 por defecto)
+            const pdfElement = content.clone();
+            // Agregar un retraso antes de convertir a PDF
+            // Establecer dimensiones del contenido clonado para ajustar al PDF
+            pdfElement.css('width', pdfWidth + 'mm');
+            setTimeout(function () {
+                // Convertir el contenido clonado a PDF
+                html2pdf()
+                    .from(pdfElement[0]) // Tomar el primer elemento del jQuery object
+                    .set({
+                        width: pdfWidth,
+                    })
+                    .save(reporteId + "_reporte.pdf")
+                    .then(function () {
+                        // Cambiar el estilo de display a su valor original después de la conversión
+                        content.css('display', originalDisplay);
+                    });
+            }, 200); // Ajusta el valor del retraso según sea necesario
+        });
+    });
+
+
+</script>
+{% endblock content %}
