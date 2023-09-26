@@ -948,7 +948,7 @@ def update_servicio(request, pk):
     if request.method == 'POST':
         form = serviciosForm(request.user,request.POST, instance=servicio)
         formset = AsistentesFormSet(request.POST, instance=servicio, form_kwargs={'user': request.user})
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             servicio = form.save(commit=False)
             if request.POST.get('NumeroFactura'):
                 servicio.EstadoPago = 'Pagado'
@@ -970,6 +970,9 @@ def update_servicio(request, pk):
                     servicio.EstadoPago = 'Pendiente'
                 servicio.save()
             return redirect('list_servicios')
+        else:
+            print("errores")
+            print(formset.errors)
     else:
         form = serviciosForm(request.user,instance=servicio)
         asistentes = servicio.asistentes_set.all()
@@ -977,9 +980,9 @@ def update_servicio(request, pk):
         # Filtrar las facturas de los asistentes asociados al servicio
         #asistentes = formset.save(commit=False)
        # facturas_asistentes = FacturasAsistentes.objects.filter(CodAsistente__in=asistentes)
+        formset.extra=0
         if servicio.MedioPago == 'Credito':
            factura_form = FacturasForm(instance=servicio.facturas_set.first())       
-
     context = {
         'segment': 'servicios',
         'form': form,

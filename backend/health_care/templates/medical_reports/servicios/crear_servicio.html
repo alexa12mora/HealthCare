@@ -36,7 +36,7 @@
             </div>
         </div>
     </div>
-    <form method="post" class="needs-validation" novalidate>
+    <form method="post" class="needs-validation" novalidate id="id_del_formulario">
         {% csrf_token %}
         <div class="col-md-6 col-xl-12">
             <div class="card daily-appointments">
@@ -336,7 +336,6 @@
         toggleFacturaForm();
     });
     // Espera a que el documento esté listo
-
     $(document).ready(function () {
         $('#id_CodCostoOperacion').change(function () {
             var selectedValue = $(this).val();
@@ -363,6 +362,29 @@
                         }
                     });
                 });
+        });
+    });
+    $(document).ready(function () {
+        // Cuando el formulario se envía...
+        $('#id_del_formulario').submit(function (event) {
+            // Itera sobre cada 'tr' en el 'tbody'
+            $('#miTabla tbody tr').each(function () {
+                var isEmpty = true;
+                // Itera sobre cada 'td' en este 'tr'
+                $(this).find('td').each(function () {
+                    // Si el 'input' dentro de este 'td' no está vacío, entonces este 'tr' no está vacío
+                    if ($(this).find('input').val() !== '') {
+                        isEmpty = false;
+                        // Rompe el ciclo .each() ya que no necesitamos verificar más 'td'
+                        return false;
+                    }
+                });
+                // Si todos los 'input' en los 'td' están vacíos, elimina este 'tr'
+                if (isEmpty) {
+                    $(this).remove();
+                }
+            });
+            // Continúa con la presentación del formulario
         });
     });
 
