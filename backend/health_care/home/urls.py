@@ -105,6 +105,12 @@ urlpatterns = [
   #reporte de servicios pagados a asistentes
   path('servicios/reportes/pagados/lista', views.reporteserviciospagados, name='lista_reportes_pagados'),
   path('servicios/reportes/utilidad', views.reporte_utilidad_pagos, name='reporte_utilidad_pagos'),
+  
+  #obtener todos los asistentes por tipo de servicio
+  path('servicios/asistentes/obtener/<int:pk>/', views.get_asistentes, name='get_asistentes'),
+  #obtener costo de cada asistente dependiendo del tipo de asistente
+   path('asistente/obtener/monto/costo/<int:cod_costo_servicio_id>/', views.obtener_monto_costo_asistente, name='obtener_monto_costo_asistente'),
+  
   # Aseguradoras
   path('agregar/hospital/', views.create_hospital, name='create_hospital'),
   path('listar/hospitales/', views.list_hospital, name='list_hospital'),

@@ -105,16 +105,18 @@ class CostosPorAsistenteForm(forms.ModelForm):
 class AsistentesForm(forms.ModelForm):
     class Meta:
         model = Asistentes
-        fields = ['Nombre', 'correo', 'CodCostoPorAsistente']
+        fields = ['Nombre', 'correo', 'CodCostoPorAsistente', 'monto']
         widgets = {
             'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'correo': forms.EmailInput(attrs={'class': 'form-control'}),
-            'CodCostoPorAsistente': forms.Select(attrs={'class': 'form-control'}),
+            'CodCostoPorAsistente': forms.Select(attrs={'class': 'form-control codcostoporasistente'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control monto'}),
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')  # obtén el usuario actual
         super(AsistentesForm, self).__init__(*args, **kwargs)
-        self.fields['CodCostoPorAsistente'].queryset = CostosPorAsistente.objects.all()
+        self.fields['CodCostoPorAsistente'].queryset = CostosPorAsistente.objects.filter(codMedico=user)  # filtra por el usuario actual
 
 AsistentesFormSet = forms.inlineformset_factory(
     servicios,
@@ -210,15 +212,18 @@ class FacturasForm(forms.ModelForm):
             'FechaPago': forms.DateInput(attrs={'class': 'form-control'}),
             'NumeroFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
+    def __init__(self, *args, **kwargs):
+        super(FacturasForm, self).__init__(*args, **kwargs)
+        self.fields['FechaPago'].required = False
+        self.fields['NumeroFactura'].required = False
+        
     def clean(self):
         cleaned_data = super().clean()
         fecha_pago = cleaned_data.get("FechaPago")
         if fecha_pago is None:
             cleaned_data['FechaPago'] = None
+  
     
-
-
 class FacturasAsistentesForm(forms.ModelForm):
     class Meta:
         model = FacturasAsistentes

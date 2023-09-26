@@ -741,8 +741,6 @@ def reporte_por_med_serviciospagados(request):
     }
     return render(request, 'medical_reports/servicios/listadereportes.html', context)
 
-
-
 def obtener_asistentes_servicios(medico_pk):
     medico = Medico.objects.get(pk=medico_pk)
     servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
@@ -874,13 +872,36 @@ def reporte_por_med_servicios(request):
     }
     return render(request, 'medical_reports/servicios/descargareportespagados.html', context)
 
+
+@login_required(login_url='/accounts/login/')
+def get_asistentes(request, pk):
+    # Obtiene el medico actual
+    medico = Medico.objects.get(correo=request.user.email)
+    costo_operacion = CostosDeOperaciones.objects.get(CodCostoOperacion=pk)
+    # Obtiene todos los servicios que tienen el mismo CodCostoOperacion y son del medico actual
+    listservicios = servicios.objects.filter(CodCostoOperacion=costo_operacion, codMedico=medico)
+    # Obtiene todos los asistentes de esos servicios
+    asistentes = Asistentes.objects.filter(servicio__in=listservicios)
+    # Crea un diccionario para almacenar los asistentes únicos
+    unique_asistentes = {}
+    for asistente in asistentes:
+        # Usa el correo del asistente como clave del diccionario
+        # Esto garantiza que cada asistente se cuente solo una vez
+        unique_asistentes[asistente.correo] = asistente
+    # Convierte la lista de asistentes en un formato que pueda ser enviado como respuesta JSON
+    asistentes_data = [{'Nombre': a.Nombre, 'correo': a.correo, 'CodCostoPorAsistente': a.CodCostoPorAsistente_id, 'monto': a.monto} for a in unique_asistentes.values()]
+    return JsonResponse(asistentes_data, safe=False)
+
+
+#hay que arreglar que solo se filtren los datos que pertencen al doc, en este casonm la lista de tipos de precoo de asistencia cuando se va crear un asistente
 @login_required(login_url='/accounts/login/')
 def create_servicio(request):
     if request.method == 'POST':
         form = serviciosForm(request.user,request.POST)
-        formset = AsistentesFormSet(request.POST)
+        formset = AsistentesFormSet(request.POST, form_kwargs={'user': request.user})
         factura_form = FacturasForm(request.POST)
         if form.is_valid() and formset.is_valid() and factura_form.is_valid():
+            print("Si entro")
             servicio = form.save(commit=False)
             # Validar el estado del pago
             if form.cleaned_data['MedioPago'] == 'Credito':
@@ -899,13 +920,14 @@ def create_servicio(request):
                 factura = factura_form.save(commit=False)
                 factura.CodProcedimiento = servicio
                 factura.save()
-                print("Si se salva el form de factura")
-            
+                print("Si se salva el form de factura")     
             return redirect('list_servicios')
-    
+        else:
+            print("NO SOL VALIDOS")
+            print(formset.errors)
     else:
         form = serviciosForm(request.user,initial={'EstadoPago': 'Pendiente'})
-        formset = AsistentesFormSet()
+        formset = AsistentesFormSet(form_kwargs={'user': request.user})  # pasa el usuario actual al formset
         factura_form = FacturasForm()
 
     context = {
@@ -923,11 +945,9 @@ def create_servicio(request):
 def update_servicio(request, pk):
     servicio = get_object_or_404(servicios, pk=pk)
     factura_form = None
-    
     if request.method == 'POST':
         form = serviciosForm(request.user,request.POST, instance=servicio)
-        formset = AsistentesFormSet(request.POST, instance=servicio)
-        
+        formset = AsistentesFormSet(request.POST, instance=servicio, form_kwargs={'user': request.user})
         if form.is_valid() and formset.is_valid():
             servicio = form.save(commit=False)
             if request.POST.get('NumeroFactura'):
@@ -943,25 +963,22 @@ def update_servicio(request, pk):
                     factura.CodProcedimiento = servicio
                     factura.estado = True
                     factura.save()
-            
             if form.cleaned_data['MedioPago'] == 'Contado':
                 if form.cleaned_data['numFactura'] != '0':
                     servicio.EstadoPago = 'Pagado' 
                 else:
                     servicio.EstadoPago = 'Pendiente'
                 servicio.save()
-
             return redirect('list_servicios')
-    
     else:
         form = serviciosForm(request.user,instance=servicio)
         asistentes = servicio.asistentes_set.all()
-        formset = AsistentesFormSet(instance=servicio, queryset=asistentes)   
+        formset = AsistentesFormSet(instance=servicio, queryset=asistentes, form_kwargs={'user': request.user})   
         # Filtrar las facturas de los asistentes asociados al servicio
-        asistentes = formset.save(commit=False)
+        #asistentes = formset.save(commit=False)
        # facturas_asistentes = FacturasAsistentes.objects.filter(CodAsistente__in=asistentes)
         if servicio.MedioPago == 'Credito':
-            factura_form = FacturasForm(instance=servicio.facturas_set.first())       
+           factura_form = FacturasForm(instance=servicio.facturas_set.first())       
 
     context = {
         'segment': 'servicios',
@@ -992,6 +1009,10 @@ def obtener_monto_costo_servicios(request, cod_costo_operacion_id):
     monto_costo = costo_operacion.MontoCosto
     return JsonResponse({'monto': str(monto_costo)})
 
+def obtener_monto_costo_asistente(request, cod_costo_servicio_id):
+    costo_asistente = CostosPorAsistente.objects.get(pk=cod_costo_servicio_id)
+    monto_costo = costo_asistente.MontoCosto
+    return JsonResponse({'monto': str(monto_costo)})
 
 @login_required(login_url='/accounts/login/')
 def actualizar_factura(request, reporte_id):

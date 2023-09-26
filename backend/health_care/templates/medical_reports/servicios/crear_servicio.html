@@ -137,6 +137,7 @@
                                         <th>Nombre</th>
                                         <th>Correo</th>
                                         <th>Tipo</th>
+                                        <th>Monto</th>
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
@@ -147,11 +148,8 @@
                                         <td>
                                             {# Include the hidden fields in the form #}
                                             {% if forloop.first %}
-                                            {% for hidden in form.hidden_fields %}
-                                            {{ hidden }}
-                                            {% endfor %}
+
                                             {% endif %}
-                                            {{ field.errors.as_ul }}
                                             {{ field }}
                                         </td>
                                         {% endfor %}
@@ -250,15 +248,24 @@
 
 <script>
     $(document).ready(function () {
-        var isUpdate = $('#miTabla').data('is-update') === 'true';
-        // Mostrar u ocultar botones según is_update
-        if (isUpdate) {
-            $('.delete-button, .formset-add-button').hide();
-            $('.formset_row td:nth-last-child(2)').attr('colspan', '3');
-        } else {
-            $('.delete-button, .formset-add-button').show();
-            $('.formset_row td:nth-last-child(2)').removeAttr('colspan');
-        }
+
+
+        // Delegación de eventos para los selects
+        $('#miTabla').on('change', '.codcostoporasistente', function () {
+            var selectCostoPorAsistente = this;
+            var selectedOption = selectCostoPorAsistente.options[selectCostoPorAsistente.selectedIndex];
+            var codCostoPorAsistenteId = selectedOption.value;
+            var montoField = $(this).closest('tr').find('.monto');  // Encuentra el campo 'monto' en la misma fila
+            fetch(`/asistente/obtener/monto/costo/${codCostoPorAsistenteId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    montoField.val(data.monto);  // Actualiza el valor del campo 'monto'
+                })
+                .catch(error => {
+                    console.error('Error al obtener el monto del costo de operación:', error);
+                });
+        });
+
         $('.formset_row').formset({
             addText: 'Agregar',
             deleteText: '<i class="fa fa-trash"></i>',
@@ -266,6 +273,7 @@
             addCssClass: 'btn btn-success formset-add-button',
         });
     });
+
 
     document.getElementById('id_CodCostoOperacion').addEventListener('change', function () {
         const selectCostoOperacion = this;
@@ -281,10 +289,10 @@
             });
     }, { passive: false });
 
+
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {
         'use strict'
-
         // Fetch all the forms we want to apply custom Bootstrap validation styles to
         var forms = document.querySelectorAll('.needs-validation')
 
@@ -327,5 +335,36 @@
     document.getElementById('id_MedioPago').addEventListener('change', function () {
         toggleFacturaForm();
     });
+    // Espera a que el documento esté listo
+
+    $(document).ready(function () {
+        $('#id_CodCostoOperacion').change(function () {
+            var selectedValue = $(this).val();
+
+            // Realiza una solicitud AJAX a la vista get_asistentes
+            fetch('/servicios/asistentes/obtener/' + selectedValue)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    // Elimina los formularios existentes
+                    $('#miTabla tbody tr').not(':first').remove();
+                    // Añade formularios adicionales al formset si es necesario
+                    for (var i = 0; i < data.length - 1; i++) {
+                        $('.formset-add-button').click();
+                    }
+                    // Llena los formularios con los datos de los asistentes                  
+                    $('#miTabla tbody tr').each(function (index) {
+                        if (index < data.length) {
+                            var form = $(this).find('td');
+                            $(form[0]).find('input').val(data[index].Nombre);
+                            $(form[1]).find('input').val(data[index].correo);
+                            $(form[2]).find('select').val(data[index].CodCostoPorAsistente);
+                            $(form[3]).find('input').val(data[index].monto);
+                        }
+                    });
+                });
+        });
+    });
+
 </script>
 {% endblock content %}

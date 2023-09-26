@@ -20,7 +20,7 @@ class Secreataria(models.Model):
 class CostosPorAsistente(models.Model):
     CodCostoPorAsistente = models.AutoField(primary_key=True)
     TipoAsistente = models.CharField(max_length=100)
-    MontoCosto = models.DecimalField(max_digits=10, decimal_places=2)
+    MontoCosto = models.DecimalField(max_digits=10, decimal_places=1)
     codMedico = models.ForeignKey(User, on_delete=models.CASCADE)  # Agrega ForeignKey a User
 
     def __str__(self):
@@ -53,7 +53,7 @@ class Hospitales(models.Model):
 class CostosDeOperaciones(models.Model):
     CodCostoOperacion = models.AutoField(primary_key=True)
     NombreOperacion = models.CharField(max_length=100)
-    MontoCosto = models.DecimalField(max_digits=10, decimal_places=2)
+    MontoCosto = models.DecimalField(max_digits=10, decimal_places=1)
     codMedico = models.ForeignKey(User, on_delete=models.CASCADE)  # Agrega ForeignKey a User
 
     def __str__(self):
@@ -63,7 +63,7 @@ class servicios(models.Model):
     CodProcedimiento = models.AutoField(primary_key=True)
     Fecha = models.DateField()
     NombrePaciente = models.CharField(max_length=100)
-    MontoTotal = models.DecimalField(max_digits=10, decimal_places=2)
+    MontoTotal = models.DecimalField(max_digits=10, decimal_places=1)
     MedioPago = models.CharField(max_length=20)
     CodAseguradora = models.ForeignKey(Aseguradoras, on_delete=models.CASCADE)
     CodHospital = models.ForeignKey(Hospitales, on_delete=models.CASCADE,default=1)
@@ -85,11 +85,11 @@ class Asistentes(models.Model):
     correo = models.CharField(max_length=100)
     CodCostoPorAsistente = models.ForeignKey(CostosPorAsistente, on_delete=models.CASCADE)
     servicio = models.ForeignKey(servicios, on_delete=models.CASCADE)
+    monto =  models.DecimalField(default=0.0, max_digits=10, decimal_places=1)
 
     def __str__(self):
         return self.Nombre
 
-    
 class Facturas(models.Model):
     NumFactura = models.AutoField(primary_key=True)
     FechaPago = models.DateField(null=True, blank=True)
@@ -98,9 +98,7 @@ class Facturas(models.Model):
     estado = models.BooleanField(default=False)
     def __str__(self):
         return f"Factura {self.NumFactura}"
-    
-    
-    
+       
 class Reporte(models.Model):
     CodReporte = models.AutoField(primary_key=True)
     FechaReporte = models.DateField()
@@ -126,7 +124,7 @@ class FacturasAsistentes(models.Model):
 class PagosAsistentes(models.Model):
     CodReporte = models.ForeignKey(Reporte, on_delete=models.CASCADE) 
     CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
-    MontoPagado = models.DecimalField(max_digits=10, decimal_places=2)
+    MontoPagado = models.DecimalField(max_digits=10, decimal_places=1)
     FechaPago = models.DateField()
 
     def __str__(self):
