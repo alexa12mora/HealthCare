@@ -23,7 +23,7 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from io import BytesIO
 from datetime import datetime
-
+from django.contrib.auth import get_user_model
 
 def index(request):
   users = User.objects.all()
@@ -144,7 +144,8 @@ class UserRegistrationView(CreateView):
         if form.cleaned_data['user_type'] == 'medico':
             Medico.objects.create(codMedico=self.object.id, Nombre=self.object.username, correo=self.object.email)
         else: 
-            Secreataria.objects.create(codSecretaria=self.object.id,Nombre=self.object.username, correo=self.object.email)
+            medico = form.cleaned_data['medico']
+            Secretaria.objects.create(codSecretaria=self.object.id,Nombre=self.object.username, correo=self.object.email, medico=medico)
         return response
       
 class UserLoginView(LoginView):
@@ -266,14 +267,20 @@ def medico_delete(request, codMedico):
 # Vistas para las aseguradoras
 @login_required(login_url='/accounts/login/')    
 def create_insurer(request):
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     insurers = Aseguradoras.objects.all()
     if request.method == 'POST':
         form = AseguradorasForm(request.POST)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('listar_aseguradoras')
+            aseguradora = form.save(commit=False)
+            aseguradora.codMedico = user
+            aseguradora.save()
+            return redirect('listar_aseguradoras')
     else:
         form = AseguradorasForm()
     context = {
@@ -287,14 +294,20 @@ def create_insurer(request):
 
 @login_required(login_url='/accounts/login/')
 def update_insurer(request, pk):
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     aseguradora = get_object_or_404(Aseguradoras, pk=pk)
     if request.method == 'POST':
         form = AseguradorasForm(request.POST, instance=aseguradora)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('listar_aseguradoras')
+            aseguradora = form.save(commit=False)
+            aseguradora.codMedico = user
+            aseguradora.save()
+            return redirect('listar_aseguradoras')
     else:
         form = AseguradorasForm(instance=aseguradora)
 
@@ -316,7 +329,15 @@ def eliminar_aseguradora(request, pk):
   
 @login_required(login_url='/accounts/login/')
 def list_insurers(request):
-    insurers = Aseguradoras.objects.filter(codMedico=request.user.id)
+    if not Medico.objects.filter(correo=request.user.email).exists():
+        return redirect('servicios')
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
+    insurers = Aseguradoras.objects.filter(codMedico=user.id)
     form = AseguradorasForm()  
     context = {
         'segment': 'Lista_de_aseguradoras',
@@ -328,41 +349,77 @@ def list_insurers(request):
 # Vistas para los hospitales
 @login_required(login_url='/accounts/login/')    
 def create_hospital(request):
-    hospitals = Hospitales.objects.all()  # Definimos la variable insurers fuera del bloque if
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
+    hospitals = Hospitales.objects.all()
     if request.method == 'POST':
         form = HospitalesForm(request.POST)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('list_hospital')
+            hospital = form.save(commit=False)
+            hospital.codMedico = user
+            hospital.save()
+            return redirect('list_hospital')
     else:
-        print("no")
         form = HospitalesForm()
     context = {
         'hospitals': hospitals,
         'segment': 'Agregar_hospital',
         'form': form,
     }
+    
     return render(request, 'medical_reports/hospitals/list_hospitals.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def update_hospital(request, pk):
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     hospital = get_object_or_404(Hospitales, pk=pk)
     if request.method == 'POST':
         form = HospitalesForm(request.POST, instance=hospital)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('list_hospital')
+            hospital = form.save(commit=False)
+            hospital.codMedico = user
+            hospital.save()
+            return redirect('list_hospital')
     else:
         form = HospitalesForm(instance=hospital)
 
     context = {
         'form': form,
     }
+
     return render(request, 'medical_reports/hospitals/list_hospitals.html', context)
+
+
+@login_required(login_url='/accounts/login/')
+def list_hospital(request):
+    if not Medico.objects.filter(correo=request.user.email).exists():
+        return redirect('servicios')
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
+    hospital = Hospitales.objects.filter(codMedico=user.id)  
+    form = HospitalesForm()  
+    context = {
+        'segment': 'Lista_de_hospitales',
+        'hospital': hospital,
+        'form': form,
+    }
+    
+    return render(request, 'medical_reports/hospitals/list_hospitals.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def eliminar_hospital(request, pk):
@@ -371,29 +428,24 @@ def eliminar_hospital(request, pk):
         hospital.delete()
         return redirect('list_hospital')
     return redirect('list_hospital')
-  
-@login_required(login_url='/accounts/login/')
-def list_hospital(request):
-    hospital = Hospitales.objects.filter(codMedico=request.user.id)  
-    form = HospitalesForm()  
-    context = {
-        'segment': 'Lista_de_hospitales',
-        'hospital': hospital,
-        'form': form, 
-    }
-    return render(request, 'medical_reports/hospitals/list_hospitals.html', context)
    
  #Emisores
-@login_required(login_url='/accounts/login/')
+@login_required(login_url='/accounts/login/')    
 def add_emitters(request):
-    emisores = Emisor.objects.all()  
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
+    emisores = Emisor.objects.all()
     if request.method == 'POST':
         form = EmisorForm(request.POST)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('list_emisores')
+            emisor = form.save(commit=False)
+            emisor.codMedico = user
+            emisor.save()
+            return redirect('list_emisores')
     else:
         form = EmisorForm()
     context = {
@@ -402,32 +454,49 @@ def add_emitters(request):
         'form': form,
         'action': 'Actualizar',
     }
+    
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
-  
-  
+
+
 @login_required(login_url='/accounts/login/')
 def list_emitters(request):
-    emisores = Emisor.objects.filter(codMedico=request.user.id)  # Obtener todos los Emisores
+    if not Medico.objects.filter(correo=request.user.email).exists():
+        return redirect('servicios')
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
+    emisores = Emisor.objects.filter(codMedico=user.id)  # Obtener todos los Emisores
     form = EmisorForm()  # Crea una instancia del formulario vacío
     context = {
         'segment': 'Lista_de_emisores',
         'emisores': emisores,
-        'form': form,  # Incluye el formulario en el contexto
+        'form': form,
     }
+    
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def update_emitters(request, pk):
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     emisor = get_object_or_404(Emisor, pk=pk)
     if request.method == 'POST':
         form = EmisorForm(request.POST, instance=emisor)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('list_emisores')
+            emisor = form.save(commit=False)
+            emisor.codMedico = user
+            emisor.save()
+            return redirect('list_emisores')
     else:
-        form = AseguradorasForm(instance=emisor)
+        form = EmisorForm(instance=emisor)
 
     context = {
         'form': form,
@@ -435,6 +504,7 @@ def update_emitters(request, pk):
     }
 
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
+
 
 
 @login_required(login_url='/accounts/login/')
@@ -458,17 +528,22 @@ def get_emisor(request, pk):
     return render(request, 'medical_reports/emitters/list_emitters.html', context)
   
 #Pago Asistentes 
-@login_required(login_url='/accounts/login/')
+@login_required(login_url='/accounts/login/')    
 def create_costos_asistente(request):
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     costos = CostosPorAsistente.objects.all()
     if request.method == 'POST':
         form = CostosPorAsistenteForm(request.POST)
-        print("-----------------",form.errors)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('pagos_asistentes')
+            costo = form.save(commit=False)
+            costo.codMedico = user
+            costo.save()
+            return redirect('pagos_asistentes')
     else:
         form = CostosPorAsistenteForm()
     context = {
@@ -476,30 +551,47 @@ def create_costos_asistente(request):
         'form': form,
         'segment': 'costos',
     }
+    
     return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def list_costos_asistentes(request):
-    costos = CostosPorAsistente.objects.filter(codMedico=request.user.id)
+    if not Medico.objects.filter(correo=request.user.email).exists():
+        return redirect('servicios')
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
+    costos = CostosPorAsistente.objects.filter(codMedico=user.id)
     form = CostosPorAsistenteForm()
     context = {
         'segment': 'Lista_costos',
         'costos': costos,
         'form': form,
     }
+    
     return render(request, 'medical_reports/costos_por_asistente/list_costos.html', context)
-  
-  
+
+
 @login_required(login_url='/accounts/login/')
 def update_costos_asistentes(request, pk):
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     costo = get_object_or_404(CostosPorAsistente, pk=pk)
     if request.method == 'POST':
         form = CostosPorAsistenteForm(request.POST, instance=costo)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('pagos_asistentes')
+            costo = form.save(commit=False)
+            costo.codMedico = user
+            costo.save()
+            return redirect('pagos_asistentes')
     else:
         form = CostosPorAsistenteForm(instance=costo)
 
@@ -523,16 +615,22 @@ def eliminar_costos_asistentes(request, pk):
 
 
 #Costos por servicio(operaciones)
-@login_required(login_url='/accounts/login/')
+@login_required(login_url='/accounts/login/')    
 def create_costos_por_servicio(request):
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     costos = CostosDeOperaciones.objects.all()
     if request.method == 'POST':
         form = CostosDeOperacionesForm(request.POST)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('list_servicio')
+            costo = form.save(commit=False)
+            costo.codMedico = user
+            costo.save()
+            return redirect('list_servicio')
     else:
         form = CostosDeOperacionesForm()
     context = {
@@ -540,29 +638,47 @@ def create_costos_por_servicio(request):
         'form': form,
         'segment': 'costos',
     }
+    
     return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def list_costos_por_servicio(request):
-    costos = CostosDeOperaciones.objects.filter(codMedico=request.user.id) 
+    if not Medico.objects.filter(correo=request.user.email).exists():
+        return redirect('servicios')
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
+    costos = CostosDeOperaciones.objects.filter(codMedico=user.id)
     form = CostosDeOperacionesForm()
     context = {
         'segment': 'Lista_de_costos',
         'costos': costos,
         'form': form,
     }
+    
     return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def update_costos_por_servicio(request, pk):
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     costo = get_object_or_404(CostosDeOperaciones, pk=pk)
     if request.method == 'POST':
         form = CostosDeOperacionesForm(request.POST, instance=costo)
         if form.is_valid():
-            doctor = Medico.objects.filter(correo=request.user.email).first()
-            if doctor:
-                form.save()
-                return redirect('list_servicio')
+            costo = form.save(commit=False)
+            costo.codMedico = user
+            costo.save()
+            return redirect('list_servicio')
     else:
         form = CostosDeOperacionesForm(instance=costo)
 
@@ -572,6 +688,7 @@ def update_costos_por_servicio(request, pk):
     }
 
     return render(request, 'medical_reports/costos_servicios/costos_servicios.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def eliminar_costos_por_servicio(request, pk):
@@ -913,9 +1030,15 @@ def get_asistentes(request, pk):
 #hay que arreglar que solo se filtren los datos que pertencen al doc, en este casonm la lista de tipos de precoo de asistencia cuando se va crear un asistente
 @login_required(login_url='/accounts/login/')
 def create_servicio(request):
+    User = get_user_model()
+    user = request.user
+    if Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
     if request.method == 'POST':
-        form = serviciosForm(request.user,request.POST)
-        formset = AsistentesFormSet(request.POST, form_kwargs={'user': request.user})
+        form = serviciosForm(user, request.POST)
+        formset = AsistentesFormSet(request.POST, form_kwargs={'user': user})
         factura_form = FacturasForm(request.POST)
         if form.is_valid() and formset.is_valid() and factura_form.is_valid():
             print("Si entro")
@@ -940,11 +1063,10 @@ def create_servicio(request):
                 print("Si se salva el form de factura")     
             return redirect('list_servicios')
         else:
-            print("NO SOL VALIDOS")
             print(formset.errors)
     else:
-        form = serviciosForm(request.user,initial={'EstadoPago': 'Pendiente'})
-        formset = AsistentesFormSet(form_kwargs={'user': request.user})  # pasa el usuario actual al formset
+        form = serviciosForm(user, initial={'EstadoPago': 'Pendiente'})
+        formset = AsistentesFormSet(form_kwargs={'user': user}) 
         factura_form = FacturasForm()
 
     context = {
@@ -1119,19 +1241,18 @@ def list_servicios_report(request):
 #VISTA DE NUEVOS REPORTES
 @login_required(login_url='/accounts/login/')
 def list_servicios(request):
-    if Medico.objects.filter(correo=request.user.email).exists():
-        medico = Medico.objects.get(correo=request.user.email)
-        servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
-        for servicio in servicios_list:
-            servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
-            servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
-            #for asistente in servicio.asistentes:
-               # factura = FacturasAsistentes.objects.filter(CodAsistente=asistente).first()
-               # asistente.factura = factura
-        for  a in servicios_list:  
-           print(a.asistentes)
-    else:
-        pass
+    User = get_user_model()
+    user = request.user
+    if not Medico.objects.filter(correo=request.user.email).exists() and Secretaria.objects.filter(correo=request.user.email).exists():
+        secretaria = Secretaria.objects.get(correo=request.user.email)
+        user = User.objects.get(email=secretaria.medico.correo)
+
+    medico = Medico.objects.get(correo=user.email)
+    servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+    for servicio in servicios_list:
+        servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
+        servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
+
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     if start_date and end_date:
@@ -1139,14 +1260,17 @@ def list_servicios(request):
         end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
         servicios_list = servicios_list.filter(Fecha__range=[start_date, end_date])
     formset = AsistentesFormSet(request.POST)
-    form = serviciosForm(request.user)
+    form = serviciosForm(user)
     context = {
         'segment': 'reportes',
         'servicios_list': servicios_list,
         'form': form,
         'formset': formset,
     }
+    
     return render(request, 'medical_reports/servicios/list_servicios.html', context)
+
+
 
 #pagos
 @login_required(login_url='/accounts/login/')

@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import *
 
 admin.site.register(Medico)
-admin.site.register(Secreataria)
+admin.site.register(Secretaria)
 admin.site.register(CostosPorAsistente)
 admin.site.register(Asistentes)
 admin.site.register(Emisor)

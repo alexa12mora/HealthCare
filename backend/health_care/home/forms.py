@@ -43,9 +43,10 @@ class CustomRegistrationForm(UserCreationForm):
         ('secretaria', 'Secretaria')
     )
     user_type = forms.ChoiceField(choices=USER_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    medico = forms.ModelChoiceField(queryset=Medico.objects.all(), required=False, widget=forms.Select(attrs={'class': 'form-control', 'id': 'medico'}))
     class Meta:
         model = User
-        fields = ('username', 'email',)
+        fields = ('username', 'email','medico')
         widgets = {
             'username': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -115,7 +116,9 @@ class AsistentesForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')  # obtén el usuario actual
+        print("User1", user)
         super(AsistentesForm, self).__init__(*args, **kwargs)
+        print( CostosPorAsistente.objects.filter(codMedico=user))
         self.fields['CodCostoPorAsistente'].queryset = CostosPorAsistente.objects.filter(codMedico=user)  # filtra por el usuario actual
 
 AsistentesFormSet = forms.inlineformset_factory(

@@ -59,5 +59,23 @@
     <i class="icon feather icon-sun" id="theme-indicator"></i>
     <input type="checkbox" id="theme-switch" class="d-none">
 </label>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var userTypeSelect = document.getElementById('user_type');
+        var medicoSelect = document.getElementById('medico');
+        
+        function toggleMedicoSelect() {
+            if (userTypeSelect.value === 'secretaria') {
+                medicoSelect.style.display = '';
+            } else {
+                medicoSelect.style.display = 'none';
+            }
+        }
+        
+        userTypeSelect.addEventListener('change', toggleMedicoSelect);
+        
+        toggleMedicoSelect();
+    });
+</script>
 
 {% endblock content %}
