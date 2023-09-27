@@ -86,26 +86,58 @@
         </li>
         <li data-username="form elements advance componant validation masking wizard picker select"
           class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
-          <a href="{% url 'list_servicios' %}" class="nav-link "><span class="pcoded-micon"><i
-                class="feather icon-file-text"></i></span><span class="pcoded-mtext">Servicios</span></a>
+          <a href="{% url 'list_servicios' %}" class="nav-link "><span class="pcoded-micon"><i style="color:white"
+                class="feather icon-file-plus"></i></span><span class="pcoded-mtext">Servicios</span></a>
         </li>
+
+        <li class="nav-item pcoded-menu-caption">
+          <label>REPORTES</label>
+        </li>
+
         <li data-username="form elements advance componant validation masking wizard picker select"
           class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
-          <a href="{% url 'reportes' %}" class="nav-link "><span class="pcoded-micon"><i
-                class="feather icon-server"></i></span><span class="pcoded-mtext">Generar pagos</span></a>
-        </li>
-        <li data-username="form elements advance componant validation masking wizard picker select"
-          class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
-          <a href="{% url 'lista_reportes' %}" class="nav-link "><span class="pcoded-micon"><i
+          <a href="{% url 'lista_reportes' %}" class="nav-link "><span class="pcoded-micon"><i style="color:white"
                 class="feather icon-file-text"></i></span><span class="pcoded-mtext">Reporte servicios por
               pagar</span></a>
         </li>
 
+        <li data-username="form elements advance componant validation masking wizard picker select"
+          class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+          <a href="{% url 'reportessinpago_descarga' %}" class="nav-link "><span class="pcoded-micon"><i
+                style="color:white" class="feather icon-file-text"></i></span><span class="pcoded-mtext">Servicios
+              pendientes de
+              pago por aseguradora</span></a>
+        </li>
+        <li data-username="form elements advance componant validation masking wizard picker select"
+          class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+          <a href="{% url 'lista_reportes_pagados' %}" class="nav-link "><span class="pcoded-micon"><i
+                style="color:white" class="feather icon-file-text"></i></span><span class="pcoded-mtext"> Reporte
+              servicios
+              pagados a asistentes</span></a>
+        </li>
+        <li data-username="form elements advance componant validation masking wizard picker select"
+          class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+          <a href="{% url 'lista_reportes_pagados' %}" class="nav-link "><span class="pcoded-micon"><i
+                style="color:white" style="color:white" class="feather icon-file-text"></i></span><span
+              class="pcoded-mtext"> Reporte de
+              utilidad en servicios
+              pagados</span></a>
+        </li>
+        <li data-username="form elements advance componant validation masking wizard picker select"
+          class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+          <a href="{% url 'icon_feather' %}" class="nav-link "><span class="pcoded-micon"><i style="color:white"
+                class="feather icon-file-text"></i></span><span class="pcoded-mtext">icon_feather</span></a>
+        </li>
+        <li data-username="form elements advance componant validation masking wizard picker select"
+          class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+          <a href="{% url 'reportes' %}" class="nav-link "><span class="pcoded-micon"><i style="color:white"
+                class="feather icon-server"></i></span><span class="pcoded-mtext">Generar pagos</span></a>
+        </li>
         <li class="nav-item pcoded-menu-caption">
           <label>MIS DATOS</label>
         </li>
         <li data-username="Profile Page" class="nav-item {% if 'profile' in segment %}active{% endif %}"><a
-            href="{% url 'profile' %}" class="nav-link"><span class="pcoded-micon"><i
+            href="{% url 'profile' %}" class="nav-link"><span class="pcoded-micon"><i style="color:white"
                 class="feather icon-user"></i></span><span class="pcoded-mtext">Mis datos</span></a>
         </li>
         {% if not request.user.is_authenticated %}
@@ -115,13 +147,13 @@
               sesión</span></a>
         </li>
         <li data-username="Disabled Menu" class="nav-item"><a href="{% url 'register' %}" class="nav-link"><span
-              class="pcoded-micon"><i class="feather icon-power"></i></span><span
+              class="pcoded-micon"><i style="color:white" class="feather icon-power"></i></span><span
               class="pcoded-mtext">Registrarse</span></a>
         </li>
         {% else %}
         <!-- Mostrar el usuario logueado y todas las opciones si está autenticado -->
         <li data-username="Disabled Menu" class="nav-item"><a href="{% url 'logout' %}" class="nav-link"><span
-              class="pcoded-micon"><i class="feather icon-log-out"></i></span><span
+              class="pcoded-micon"><i style="color:white" class="feather icon-log-out"></i></span><span
               class="pcoded-mtext">Salir</span></a>
 
         </li>

@@ -9,8 +9,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js"></script>
+
+
 
 
 </head>
@@ -47,10 +48,9 @@
             <div class="card Recent-Users">
                 <div class="card-header">
                     <a href="{% url 'reportes_descarga' %}" class="btn btn-success">
-                        Generar nuevo reporte de servicios pagados
+                        Generar reporte servicios pagados
                     </a>
                 </div>
-
                 <div class="card-body">
                     <h6 class="text-primary">Reporte de utilidad en servicios pagados</h6>
                     <form method="post" action="{% url 'reporte_utilidad_pagos' %}" class="row g-3 needs-validation"
@@ -97,7 +97,8 @@
                                             <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
                                         </a>
                                         |
-                                        <div class="card" style="display: none;" id="{{reporte_info.reporte.pk}}">
+                                        <div style="display: none; width: 90%; height: 100%;"
+                                            id="{{reporte_info.reporte.pk}}">
                                             <div class="container mb-5 mt-3">
                                                 <div class="container">
                                                     <div class="text-center">
@@ -178,7 +179,8 @@
                                     <td>
                                         <ul>
                                             {% for servicio in reporte_info.servicios %}
-                                            <li>{{ servicio.CodCostoOperacion }} - {{ servicio.Fecha }}</li>
+                                            <li>{{ servicio.CodCostoOperacion }} - {{ servicio.Fecha|date:"d/m/Y" }}
+                                            </li>
                                             {% endfor %}
                                         </ul>
                                     </td>
@@ -189,6 +191,11 @@
                                             style="background-color: #21734F">
                                             Ver factura
                                         </a>
+                                        <a href="{% url 'actulizar_factura' reporte_info.reporte.pk%}"
+                                            class="label  text-white f-12 btn-primary"
+                                            style="background-color: #007bff">
+                                            Pagar
+                                        </a>
                                         {% else %}
                                         <a href="{% url 'actulizar_factura' reporte_info.reporte.pk%}"
                                             class="label  text-white f-12 btn-primary"
@@ -196,7 +203,6 @@
                                             Agregar factura
                                         </a>
                                         {% endif %}
-
                                     </td>
 
                                 </tr>
@@ -307,20 +313,6 @@
         });
         miTabla.searchBuilder.container().prependTo(table.table().container());
     });
-    $(document).ready(function () {
-        $('.fa-print').click(function () {
-            // Get the corresponding item's name
-            var itemName = $(this).data('asistente');
-            printJS({
-                printable: itemName, // ID of the element you want to print
-                type: 'html',
-                showModal: true,
-                modalMessage: 'Preparando documento...'
-            });
-        });
-
-    });
-
     document.addEventListener("DOMContentLoaded", function () {
         var links = document.querySelectorAll('a[data-asistente]');
         for (var i = 0; i < links.length; i++) {
@@ -332,29 +324,60 @@
                 var originalDisplay = content.style.display;
                 // Cambiar el estilo de display a block
                 content.style.display = 'block';
-                // Crear un nuevo documento PDF con dimensiones personalizadas
-                const pdfWidth = 210; // Ancho en mm (A4 por defecto)
-                const pdfElement = content.cloneNode(true);
-                // Agregar un retraso antes de convertir a PDF
-                // Establecer dimensiones del contenido clonado para ajustar al PDF
-                pdfElement.style.width = pdfWidth + 'mm';
-                setTimeout(function () {
-                    // Convertir el contenido clonado a PDF
-                    html2pdf()
-                        .from(pdfElement)
-                        .set({
-                            width: pdfWidth,
-                            scale: 10
-                        })
-                        .save(asistente + "_reporte.pdf")
-                        .then(function () {
-                            // Cambiar el estilo de display a su valor original después de la conversión
-                            content.style.display = originalDisplay;
-                        });
-                }, 1); // Ajusta el valor del retraso según sea necesario
+                // Clonar el contenido y agregarlo a un nuevo div
+                var printContent = content.cloneNode(true);
+
+                var newDiv = document.createElement("div");
+
+                newDiv.appendChild(printContent);
+                document.body.appendChild(newDiv);
+                console.log(newDiv)
+                // Imprimir el nuevo div
+                printJS({
+                    printable: newDiv,
+                    type: 'html',
+                    targetStyles: ['*'],
+                    style: `
+                        /* Aquí puedes agregar los estilos CSS que quieras */
+                        .container {
+                            width: 100%;
+                            height: 100%;
+                        }
+                        .text-center {
+                            text-align: center;
+                        }
+                        img {
+                            max-width: 100%;
+                            height: auto;
+                        }
+                        ul {
+                            list-style-type: none;
+                        }
+                        li {
+                            color: #5d9fc5;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        th, td {
+                            border: 1px solid black;
+                            padding: 15px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #21734F;
+                            color: white;
+                        }
+                    `
+                });
+                console.log("2")
+                // Eliminar el nuevo div después de la impresión
+                document.body.removeChild(newDiv);
+                // Cambiar el estilo de display a su valor original después de la impresión
+                content.style.display = originalDisplay;
             });
         }
     });
-
 </script>
 {% endblock content %}

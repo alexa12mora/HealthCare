@@ -209,7 +209,7 @@ class FacturasForm(forms.ModelForm):
         model = Facturas
         fields = ['FechaPago', 'NumeroFactura']
         widgets = {
-            'FechaPago': forms.DateInput(attrs={'class': 'form-control'}),
+            'FechaPago': forms.DateInput(attrs={'class': 'form-control','placeholder': 'Formato: dd/mm/yyyy'}),
             'NumeroFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
     def __init__(self, *args, **kwargs):
