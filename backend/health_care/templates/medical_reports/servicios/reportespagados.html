@@ -29,6 +29,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-12">
             <div class="alert-container">
                 {% if messages %}
@@ -87,10 +88,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">DESCARGAS</th>
-                                    <th scope="col">SERVICIOS</th>
-                                    <th scope="col">FACTURA</th>
-                                    <th scope="col">PAGO </th>
-
+                                  
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,131 +96,38 @@
                                 {% for rep in asi_inf.reportes %}
                                 <tr class="unread">
                                     <td>
-                                        <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
-                                                data-asistente="{{rep.reporte.pk}}"></i>
-                                        </a>
-                                        <div id="{{rep.reporte.pk}}" style="display: none;">
-                                            <div class="container mb-5 mt-3">
-                                                <div class="container">
-                                                    <div class="text-center">
-                                                        <img src="{% static 'assets/images/surgy1.2.png' %}"
-                                                            class="rounded" alt="..." style="max-width: 45%; ">
-                                                    </div>
-                                                </div>
-                                                <div class="container">
-                                                    <div class="row">
-                                                        <div class="col-xl-8">
-                                                            <ul class="list-unstyled">
-                                                                <li class="text-muted">Nombre del asistente: <span
-                                                                        style="color:#5d9fc5 ;">
-                                                                        {{ rep.asistente.Nombre }}</span>
-                                                                </li>
-                                                                <li class="text-muted">Correo:{{rep.asistente.correo}}
-                                                                </li>
-                                                                <li class="text-muted">Medico
-                                                                    principal:{{rep.medico.Nombre}}</li>
-                                                                <li class="text-muted">Correo:{{rep.medico.correo}}</li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row my-2 mx-1 justify-content-center">
-                                                        <div class="table-responsive">
-                                                            <table class="table">
-                                                                <thead style="background-color:#21734F;"
-                                                                    class="text-white">
-                                                                    <tr>
-                                                                        <th scope="col">FECHA</th>
-                                                                        <th scope="col">SERVICIOS</th>
-                                                                        <th scope="col">FACTURA</th>
-                                                                        <th scope="col">FECHA PAGO</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-
-                                                                    <tr>
-                                                                        <td scope="row">
-                                                                            {{rep.reporte.FechaReporte|date:"d/m/Y"}}
-                                                                        </td>
-
-                                                                        <td>
-                                                                            <table class="table table-hover">
-                                                                                <thead>
-                                                                                    <tr>
-
-                                                                                        <th scope="col">Servicio</th>
-                                                                                        <th scope="col">Monto</th>
-
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                    {% for servicio,monto in rep.servicios.items %}
-                                                                                    <tr>
-                                                                                        <td>{{servicio.CodCostoOperacion}}
-                                                                                        </td>
-                                                                                        <td> {{monto}} </td>
-                                                                                    </tr>
-                                                                                    {% endfor %}
-                                                                                </tbody>
-                                                                            </table>
-
-                                                                        </td>
-                                                                        <td>
-                                                                            <p class="m-0">
-                                                                                Fecha:{{rep.factura_asistente.FechaEmision|date:"d/m/Y"}}
-                                                                            </p>
-                                                                            <p class="m-0">Número
-                                                                                factura:{{rep.factura_asistente.descFactura}}
-                                                                            </p>
-
-                                                                        </td>
-                                                                        <td>
-                                                                            <p class="m-0">
-                                                                                Fecha:{{rep.pago_asistente.FechaPago|date:"d/m/Y"}}
-                                                                            </p>
-                                                                            <p class="m-0">
-                                                                                Referencia:{{rep.pago_asistente.descFactura}}
-                                                                            </p>
-                                                                        </td>
-                                                                    </tr>
-
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-xl-3">
-                                                            <p class="text-black float-start"><span
-                                                                    class="text-black me-3">
-                                                                    Total: </span> <span
-                                                                    style="font-size: 15px;">${{rep.montototal }} con
-                                                                    iva</span>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <table class="table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">First</th>
+                                                <th scope="col">Last</th>
+                                                <th scope="col">Handle</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <th scope="row">1</th>
+                                                <td>Mark</td>
+                                                <td>Otto</td>
+                                                <td>@mdo</td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">2</th>
+                                                <td>Jacob</td>
+                                                <td>Thornton</td>
+                                                <td>@fat</td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">3</th>
+                                                <td>Larry</td>
+                                                <td>the Bird</td>
+                                                <td>@twitter</td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
                                     </td>
-                                    <td>
-                                        <ul>
-                                            <h6 class="text-primary">Servicios:</h6>
-                                            {% for servicio,monto in rep.servicios.items %}
-                                            <li>{{ servicio.Fecha|date:"d/m/Y" }}-{{ servicio.CodCostoOperacion }} -
-                                                {{monto}}</li>
-                                            {% endfor %}
-                                        </ul>
-                                        <h6>Monto: $ {{ rep.montototal }}</h6>
-                                    </td>
-                                    <td>
-                                        <p class="m-0">Fecha:{{ rep.factura_asistente.FechaEmision|date:"d/m/Y" }}
-                                        </p>
-                                        <p class="m-0">Número factura:{{rep.factura_asistente.descFactura }}</p>
-                                    </td>
-                                    <td>
-                                        <p class="m-0">Fecha:{{ rep.pago_asistente.FechaPago|date:"d/m/Y" }}
-                                        </p>
-                                        <p class="m-0">Referencia:{{rep.pago_asistente.descFactura }}</p>
-                                    </td>
+                                    
 
 
                                 </tr>
