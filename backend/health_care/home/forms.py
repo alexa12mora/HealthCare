@@ -229,14 +229,15 @@ class FacturasAsistentesForm(forms.ModelForm):
         model = FacturasAsistentes
         fields = ['FechaEmision','descFactura']
         widgets = {
-            'FechaEmision': forms.DateInput(attrs={'class': 'form-control','placeholder': 'Formato: yyyy-mm-dd'}),
+            'FechaEmision': forms.DateInput(attrs={'class': 'form-control','placeholder': 'Formato: dd/mm/yyyy'}),
             'descFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Inicializar el campo FechaEmision con la fecha actual
-        self.fields['FechaEmision'].initial = date.today()
+        fecha_actual = date.today().strftime('%Y-%m-%d')
+        self.fields['FechaEmision'].initial = fecha_actual  
         
         if self.instance.estado:
             for field in self.fields.values():
@@ -263,7 +264,6 @@ class ReporteForm(forms.ModelForm):
             'Servicios': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'Medico': forms.Select(attrs={'class': 'form-control'}),
             'Asistente': forms.Select(attrs={'class': 'form-control'}),
-
         }
 
 

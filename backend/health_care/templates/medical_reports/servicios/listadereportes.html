@@ -8,11 +8,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js"></script>
-
-
-
+    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 </head>
 <!-- Carga de jQuery -->
@@ -43,62 +41,94 @@
                 {% endif %}
             </div>
         </div>
+        <div class="col-12">
+            <div class="alert alert-success" role="alert" id="myAlert">
+                El proceso de completar los pagos se efectúa una vez que los asistentes hayan proporcionado sus
+                respectivas
+                facturas.
+            </div>
+        </div>
 
         <div class="col-12">
             <div class="card Recent-Users">
                 <div class="card-header">
-                    <a href="{% url 'reportes_descarga' %}" class="btn btn-success">
-                        Generar reporte servicios pagados
+                    <a href="{% url 'reportes_descarga' %}">
+                        <i style="color:blue" class="feather icon-file-text"></i> Generar reporte
+                        servicios pagados
                     </a>
                 </div>
                 <div class="card-body">
-                    <h6 class="text-primary">Reporte de utilidad en servicios pagados</h6>
-                    <form method="post" action="{% url 'reporte_utilidad_pagos' %}" class="row g-3 needs-validation"
-                        novalidate>
-                        {% csrf_token %}
-                        <div class="col-md-5">
-                            <label for="validationCustom01" class="form-label">Fecha inicial</label>
-                            <input type="date" class="form-control" id="rango_fecha_inicio" name="rango_fecha_inicio"
-                                required>
-                            <div class="invalid-feedback">
-                                Campo requerido
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <label for="validationCustom02" class="form-label">Fecha cierre</label>
-                            <input type="date" class="form-control" id="rango_fecha_fin" name="rango_fecha_fin"
-                                required>
-                            <div class="invalid-feedback">
-                                Campo requerido
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label for="validationCustom01" class="form-label" style="color:white">Generar pago</label>
-                            <button type="submit" class="btn btn-primary mb-2">Generar</button>
-                        </div>
-                    </form>
                     <div class="table-responsive">
                         <table class="table " id="miTabla">
                             <thead>
                                 <tr>
-                                    <th scope="col">DESCARGAS</th>
-                                    <th scope="col">NOMBRE ASISTENTE</th>
+                                    <th scope="col">ACCIÓN</th>
+                                    <th scope="col">ASISTENTE</th>
                                     <th scope="col">SERVICIOS</th>
-                                    <th scope="col">FACTURA ASISTENTE</th>
+                                    <th scope="col">FACTURAS</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for reporte_info in lista_reportes %}
+                                {% for r in lista_reportes %}
                                 <tr class="unread">
                                     <td>
                                         |
-                                        <a href="#" data-asistente="{{ reporte_info.reporte.pk }}">
-                                            <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
+                                        <a><i class="fas fa-print text-primary text-c-green fa-lg m-r-8 b"
+                                                data-asistente="{{ r.reporte.pk }}"></i></a>
+                                        |
+                                        {% if r.reporte.estado%}
+                                        <a data-toggle="modal" data-target="#{{r.reporte.pk}}pago"
+                                            class="label  text-white f-10 btn-primary"
+                                            style="background-color: #007bff">
+                                            Pagar
                                         </a>
                                         |
-                                        <div style="display: none; width: 90%; height: 100%;"
-                                            id="{{reporte_info.reporte.pk}}">
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="{{r.reporte.pk}}pago" tabindex="-1" role="dialog"
+                                            aria-labelledby="{{r.reporte.pk}}pagoLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">
+                                                            {{r.asistente.Nombre }}</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <form class="needs-validation" novalidate method="post"
+                                                            action="{% url 'procesar_pagos_individual' r.reporte.pk %}">
+                                                            {% csrf_token %}
+                                                            <div class="form-row">
+                                                                <div class="col-md-12 mb-3">
+                                                                    <label for="validationCustom03">Número
+                                                                        de referencia bancaria</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="validationCustom03"
+                                                                        placeholder="Número de referencia bancaria"
+                                                                        required name="numero_consecutivo">
+                                                                    <div class="invalid-feedback">
+                                                                        Campo requerido
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <button class="btn btn-primary" type="submit">Realizar
+                                                                pago</button>
+                                                        </form>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Cerrar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        <div style="display: none;" id="{{r.reporte.pk}}">
                                             <div class="container mb-5 mt-3">
                                                 <div class="container">
                                                     <div class="text-center">
@@ -112,20 +142,16 @@
                                                             <ul class="list-unstyled">
                                                                 <li class="text-muted">Para: <span
                                                                         style="color:#5d9fc5 ;">
-                                                                        {{ reporte_info.asistente.Nombre }}</span></li>
+                                                                        {{ r.asistente.Nombre }}</span></li>
                                                                 <li class="text-muted">Correo: <span
                                                                         style="color:#5d9fc5 ;">
-                                                                        {{reporte_info.asistente.correo }}</span></li>
-                                                                <li class="text-muted">Total de servicios: <span
+                                                                        {{r.asistente.correo }}</span></li>
+                                                                <li class="text-muted">Médico principal: <span
                                                                         style="color:#5d9fc5 ;">
-                                                                        {{reporte_info.asistente.correo }}</span></li>
-
-                                                                <li class="text-muted">Medico principal: <span
-                                                                        style="color:#5d9fc5 ;">
-                                                                        {{reporte_info.medico.Nombre }}</span></li>
+                                                                        {{r.medico.Nombre }}</span></li>
                                                                 <li class="text-muted">Correo: <span
                                                                         style="color:#5d9fc5 ;">
-                                                                        {{reporte_info.medico.correo }}</span></li>
+                                                                        {{r.medico.correo }}</span></li>
                                                             </ul>
                                                         </div>
                                                     </div>
@@ -136,22 +162,24 @@
                                                                 <thead style="background-color:#21734F; ;"
                                                                     class="text-white">
                                                                     <tr>
-                                                                        <th scope="col">SERVICIO</th>
-                                                                        <th scope="col">FORMA DE PAGO</th>
+                                                                        <th scope="col">FECHA</th>
+                                                                        <th scope="col">TIPO DE SERVICIO</th>
+                                                                        <th scope="col">NOMBRE DEL PACIENTE</th>
+                                                                        <th scope="col">HOSPITAL</th>
                                                                         <th scope="col">ASEGURADORA</th>
                                                                         <th scope="col">$MONTO</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    {% for servicios in reporte_info.servicios %}
+                                                                    {% for s,n in r.servicios.items %}
                                                                     <tr>
-                                                                        <td scope="row">{{servicios.CodCostoOperacion}}
+                                                                        <td scope="row">{{s.Fecha|date:"d/m/Y" }}
                                                                         </td>
-                                                                        <td scope="row">{{servicios.MedioPago}}</td>
-                                                                        <td scope="row">{{servicios.EstadoPago}}</td>
-                                                                        <td scope="row">
-                                                                            ${{reporte_info.asistente.CodCostoPorAsistente.MontoCosto}}
-                                                                        </td>
+                                                                        <td scope="row">{{s.CodCostoOperacion}}</td>
+                                                                        <td scope="row">{{s.NombrePaciente}}</td>
+                                                                        <td scope="row">{{s.CodHospital}}</td>
+                                                                        <td scope="row">{{s.CodAseguradora}}</td>
+                                                                        <td scope="row"> ${{n}}</td>
                                                                     </tr>
                                                                     {% endfor %}
                                                                 </tbody>
@@ -163,8 +191,8 @@
                                                         <div class="col-xl-3">
                                                             <p class="text-black float-start"><span
                                                                     class="text-black me-3">
-                                                                    Total: </span><span style="font-size: 25px;">$
-                                                                    {{reporte_info.montototal}}</span>
+                                                                    Total: </span><span style="font-size: 19px;">$
+                                                                    {{r.montototal}}</span>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -173,38 +201,32 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <p class="m-0">{{ reporte_info.asistente.Nombre }}</p>
+                                        <p class="m-0">{{ r.asistente.Nombre }}</p>
                                     </td>
 
                                     <td>
                                         <ul>
-                                            {% for servicio in reporte_info.servicios %}
+                                            {% for servicio in r.servicios %}
                                             <li>{{ servicio.CodCostoOperacion }} - {{ servicio.Fecha|date:"d/m/Y" }}
                                             </li>
                                             {% endfor %}
                                         </ul>
                                     </td>
                                     <td>
-                                        {% if reporte_info.reporte.estado%}
-                                        <a href="{% url 'actulizar_factura' reporte_info.reporte.pk %}"
+                                        {% if r.reporte.estado%}
+                                        <a href="{% url 'actulizar_factura' r.reporte.pk %}"
                                             class="label  text-white f-12 btn-primary"
                                             style="background-color: #21734F">
                                             Ver factura
                                         </a>
-                                        <a href="{% url 'actulizar_factura' reporte_info.reporte.pk%}"
-                                            class="label  text-white f-12 btn-primary"
-                                            style="background-color: #007bff">
-                                            Pagar
-                                        </a>
                                         {% else %}
-                                        <a href="{% url 'actulizar_factura' reporte_info.reporte.pk%}"
+                                        <a href="{% url 'actulizar_factura' r.reporte.pk%}"
                                             class="label  text-white f-12 btn-primary"
                                             style="background-color: #007bff">
                                             Agregar factura
                                         </a>
                                         {% endif %}
                                     </td>
-
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -313,71 +335,53 @@
         });
         miTabla.searchBuilder.container().prependTo(table.table().container());
     });
-    document.addEventListener("DOMContentLoaded", function () {
-        var links = document.querySelectorAll('a[data-asistente]');
-        for (var i = 0; i < links.length; i++) {
-            links[i].addEventListener('click', function (event) {
-                event.preventDefault();
-                var asistente = this.getAttribute('data-asistente');
-                var content = document.getElementById(asistente);
-                // Guardar el estilo de display original
-                var originalDisplay = content.style.display;
-                // Cambiar el estilo de display a block
-                content.style.display = 'block';
-                // Clonar el contenido y agregarlo a un nuevo div
-                var printContent = content.cloneNode(true);
 
-                var newDiv = document.createElement("div");
 
-                newDiv.appendChild(printContent);
-                document.body.appendChild(newDiv);
-                console.log(newDiv)
-                // Imprimir el nuevo div
-                printJS({
-                    printable: newDiv,
-                    type: 'html',
-                    targetStyles: ['*'],
-                    style: `
-                        /* Aquí puedes agregar los estilos CSS que quieras */
-                        .container {
-                            width: 100%;
-                            height: 100%;
-                        }
-                        .text-center {
-                            text-align: center;
-                        }
-                        img {
-                            max-width: 100%;
-                            height: auto;
-                        }
-                        ul {
-                            list-style-type: none;
-                        }
-                        li {
-                            color: #5d9fc5;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                        }
-                        th, td {
-                            border: 1px solid black;
-                            padding: 15px;
-                            text-align: left;
-                        }
-                        th {
-                            background-color: #21734F;
-                            color: white;
-                        }
-                    `
-                });
-                console.log("2")
-                // Eliminar el nuevo div después de la impresión
-                document.body.removeChild(newDiv);
-                // Cambiar el estilo de display a su valor original después de la impresión
-                content.style.display = originalDisplay;
+
+    $(document).ready(function () {
+        $('.fa-print').click(function () {
+            // Get the corresponding item's name
+            var itemName = $(this).data('asistente');
+
+            // Get the element to print
+            var printableElement = document.getElementById(itemName);
+
+            // Save the original display style
+            var originalDisplay = printableElement.style.display;
+
+            // Set the display style to 'block'
+            printableElement.style.display = 'block';
+
+            printJS({
+                printable: itemName,
+                type: 'html',
+                showModal: true,
+                modalMessage: 'Preparando documento...'
             });
-        }
+
+            // Restore the original display style
+            printableElement.style.display = originalDisplay;
+        });
     });
+
+
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
 </script>
 {% endblock content %}

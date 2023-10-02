@@ -44,9 +44,6 @@
                                     <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
                                             data-asistente="{{ item.asistente.pk }}"></i>
                                     </a>
-                                    <a href="#" data-asistente="{{ item.asistente.pk }}">
-                                        <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -62,41 +59,40 @@
                                     </div>
                                 </div>
                                 <div class="container">
-                                    <div class="row">
-                                        <div class="col-xl-8">
-                                            <ul class="list-unstyled">
-                                                <li class="text-muted">Para: <span style="color:#5d9fc5 ;">
-                                                        {{ item.asistente.Nombre }}</span></li>
-                                                <li class="text-muted">Correo: {{ item.asistente.correo }}</li>
-                                                <li class="text-muted">Total de servicios: </li>
-                                                <li class="text-muted">Medico principal: {{ medico.Nombre }}</li>
-                                                <li class="text-muted">Correo: {{ medico.correo }}</li>
-                                            </ul>
-                                        </div>
+
+                                    <div class="col-xl-8">
+                                        <ul class="list-unstyled">
+                                            <li class="text-muted">Para: <span style="color:#5d9fc5 ;">
+                                                    {{ item.asistente.Nombre }}</span></li>
+                                            <li class="text-muted">Correo: {{ item.asistente.correo }}</li>
+                                            <li class="text-muted">Médico principal: {{ medico.Nombre }}</li>
+                                            <li class="text-muted">Correo: {{ medico.correo }}</li>
+                                        </ul>
                                     </div>
+
 
                                     <div class="row my-2 mx-1 justify-content-center">
                                         <div class="table-responsive">
                                             <table class="table">
                                                 <thead style="background-color:#21734F; ;" class="text-white">
                                                     <tr>
-                                                        <th scope="col">SERVICIO</th>
                                                         <th scope="col">FECHA</th>
-                                                        <th scope="col">FORMA DE PAGO</th>
+                                                        <th scope="col">SERVICIO</th>
+                                                        <th scope="col">PACIENTE</th>
                                                         <th scope="col">ASEGURADORA</th>
-                                                        <th scope="col">$ MONTO</th>
+                                                        <th scope="col">HOSPITAL</th>
+                                                        <th scope="col">MONTO</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for servicios in item.servicios %}
+                                                    {% for servicios,monto in item.servicios %}
                                                     <tr>
-                                                        <td scope="row">{{servicios.CodCostoOperacion}}</td>
                                                         <td scope="row">{{ servicios.Fecha|date:"d/m/Y" }}</td>
-                                                        <td scope="row">{{servicios.MedioPago}}</td>
-                                                        <td scope="row">{{servicios.EstadoPago}}</td>
-                                                        <td scope="row">
-                                                            ${{item.asistente.CodCostoPorAsistente.MontoCosto}}
-                                                        </td>
+                                                        <td scope="row">{{servicios.CodCostoOperacion}}</td>
+                                                        <td scope="row">{{servicios.NombrePaciente}}</td>
+                                                        <td scope="row">{{servicios.CodAseguradora}}</td>
+                                                        <td scope="row">{{servicios.CodHospital}}</td>
+                                                        <td scope="row"> ${{monto}}</td>
                                                     </tr>
                                                     {% endfor %}
                                                 </tbody>
@@ -108,7 +104,7 @@
                                         <div class="col-xl-3">
                                             <p class="text-black float-start"><span class="text-black me-3">
                                                     Total: </span><span style="font-size: 15px;" class="text-primary">$
-                                                    {{item.total_monto}}
+                                                    {{item.montototal }}
                                                 </span>
                                             </p>
                                         </div>
@@ -172,34 +168,6 @@
 
     });
 
-    document.addEventListener("DOMContentLoaded", function () {
-        var links = document.querySelectorAll('a[data-asistente]');
-
-        for (var i = 0; i < links.length; i++) {
-            links[i].addEventListener('click', function (event) {
-                event.preventDefault();
-
-                var asistente = this.getAttribute('data-asistente');
-                var content = document.getElementById(asistente);
-
-                // Crear un nuevo documento PDF con dimensiones personalizadas
-                const pdfWidth = 210; // Ancho en mm (A4 por defecto)
-                const pdfElement = content.cloneNode(true);
-                // Agregar un retraso antes de convertir a PDF
-                // Establecer dimensiones del contenido clonado para ajustar al PDF
-                pdfElement.style.width = pdfWidth + 'mm';
-                setTimeout(function () {
-                    // Convertir el contenido clonado a PDF
-                    html2pdf()
-                        .from(pdfElement)
-                        .set({
-                            width: pdfWidth,
-                        })
-                        .save(asistente + "_reporte.pdf");
-                }, 200);
-            });
-        }
-    });
     document.addEventListener("DOMContentLoaded", function () {
         var buttons = document.querySelectorAll('.btn-link[data-toggle="collapse"]');
         for (var i = 0; i < buttons.length; i++) {

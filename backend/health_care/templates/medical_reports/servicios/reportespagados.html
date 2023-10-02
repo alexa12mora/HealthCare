@@ -9,6 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
 
 </head>
 <!-- Carga de jQuery -->
@@ -39,119 +41,192 @@
                 {% endif %}
             </div>
         </div>
+
         <div class="col-12">
             <div class="card Recent-Users">
                 <div class="card-body">
+                    <form method="post" class="row g-3 needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="col-md-4">
+                            <label for="validationCustom04" class="form-label">Nombre del asistente</label>
+                            <select class="mb-3 form-control" name="asistente_datos" required>
+                                <option>Seleccione un nombre</option>
+                                {% for asistente in asistentes_select %}
+                                <option value="{{ asistente.correo }}">{{ asistente.Nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                                Campo requerido
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationCustom02" class="form-label">Fecha inicio</label>
+                            <input type="date" class="form-control" id="rango_fecha_inicio" name="rango_fecha_inicio"
+                                required>
+                            <div class="invalid-feedback">
+                                Campo requerido
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationCustom02" class="form-label">Fecha cierre</label>
+                            <input type="date" class="form-control" id="rango_fecha_fin" name="rango_fecha_fin"
+                                required>
+                            <div class="invalid-feedback">
+                                Campo requerido
+                            </div>
+                        </div>
+
+                        <div class="col-2">
+                            <br />
+                            <button type="submit" class="btn btn-primary mb-2">Generar</button>
+                        </div>
+                    </form>
+
                     <div class="table-responsive">
-                        <table class="table " id="miTabla">
+                        <table class="table table-bordered " id="miTabla">
                             <thead>
                                 <tr>
-                                    <th scope="col">NOMBRE ASISTENTE</th>
-                                    <th scope="col">SERVICIOS</th>
                                     <th scope="col">DESCARGAS</th>
+                                    <th scope="col">SERVICIOS</th>
+                                    <th scope="col">FACTURA</th>
+                                    <th scope="col">PAGO </th>
+
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for asistente_info in lista_asistentes %}
+                                {% for asi_inf in lista_asistentes %}
+                                {% for rep in asi_inf.reportes %}
                                 <tr class="unread">
                                     <td>
-                                        <p class="m-0">{{ asistente_info.asistente.Nombre }}</p>
-                                    </td>
-                                    <td>
-                                        {% for reporte in asistente_info.reportes %}
-                                        <h6>Fecha de reporte: {{ reporte.reporte.FechaReporte }}</h6>
-                                        <h6>Fecha de pago: {{ reporte.pago_asistente.FechaPago }}</h6>
-                                        <h6>Monto: $ {{ reporte.pago_asistente.MontoPagado }}</h6>
-                                        <ul>
-                                            <h6 class="text-primary">Servicios:</h6>
-                                            {% for servicio in reporte.servicios %}
-                                            <li>{{ servicio.CodCostoOperacion }} -
-                                                {{servicio.MontoTotal}}</li>
-                                            {% endfor %}
-                                        </ul>
-                                        {% endfor %}
-                                    </td>
-                                    <td>
-                                        <a href="#" data-reporte="{{ reporte_info.reporte.pk }}">
-                                            <i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"></i>
+                                        <a><i class="fas fa-print text-primary text-c-green f-20 m-r-8 b"
+                                                data-asistente="{{rep.reporte.pk}}"></i>
                                         </a>
-                                        <a href="#" data-reporte="{{ reporte_info.reporte.pk }}">
-                                            <i class="far fa-file-pdf text-danger f-20 m-r-8"></i>
-                                        </a>
-                                        <div class="card" style="display: none;" id="{{reporte_info.reporte.pk}}">
-                                            <div class="card">
-                                                <div class="container mb-5 mt-3">
-                                                    <div class="container">
-                                                        <div class="text-center">
-                                                            <img src="{% static 'assets/images/surgy1.2.png' %}"
-                                                                class="rounded" alt="..." style="max-width: 50%; ">
+                                        <div id="{{rep.reporte.pk}}" style="display: none;">
+                                            <div class="container mb-5 mt-3">
+                                                <div class="container">
+                                                    <div class="text-center">
+                                                        <img src="{% static 'assets/images/surgy1.2.png' %}"
+                                                            class="rounded" alt="..." style="max-width: 45%; ">
+                                                    </div>
+                                                </div>
+                                                <div class="container">
+                                                    <div class="row">
+                                                        <div class="col-xl-8">
+                                                            <ul class="list-unstyled">
+                                                                <li class="text-muted">Nombre del asistente: <span
+                                                                        style="color:#5d9fc5 ;">
+                                                                        {{ rep.asistente.Nombre }}</span>
+                                                                </li>
+                                                                <li class="text-muted">Correo:{{rep.asistente.correo}}
+                                                                </li>
+                                                                <li class="text-muted">Medico
+                                                                    principal:{{rep.medico.Nombre}}</li>
+                                                                <li class="text-muted">Correo:{{rep.medico.correo}}</li>
+                                                            </ul>
                                                         </div>
                                                     </div>
-                                                    <div class="container">
-                                                        <div class="row">
-                                                            <div class="col-xl-8">
-                                                                <ul class="list-unstyled">
-                                                                    <li class="text-muted">Nombre del asistente: <span
-                                                                            style="color:#5d9fc5 ;">
-                                                                            {{ asistente_info.asistente.Nombre }}</span>
-                                                                    </li>
-                                                                    <li class="text-muted">Correo: </li>
-                                                                    <li class="text-muted">Total de servicios: </li>
-                                                                    <li class="text-muted">Medico principal:</li>
-                                                                    <li class="text-muted">Correo:</li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
+                                                    <div class="row my-2 mx-1 justify-content-center">
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead style="background-color:#21734F;"
+                                                                    class="text-white">
+                                                                    <tr>
+                                                                        <th scope="col">FECHA</th>
+                                                                        <th scope="col">SERVICIOS</th>
+                                                                        <th scope="col">FACTURA</th>
+                                                                        <th scope="col">FECHA PAGO</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
 
-                                                        <div class="row my-2 mx-1 justify-content-center">
-                                                            <div class="table-responsive">
-                                                                <table class="table">
-                                                                    <thead style="background-color:#21734F; ;"
-                                                                        class="text-white">
-                                                                        <tr>
-                                                                            <th scope="col">FECHA DE REPORTE</th>
-                                                                            <th scope="col">FECHA DE PAGO</th>
-                                                                            <th scope="col">SERVICIOS</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        {% for servicios in item.servicios %}
-                                                                        <tr>
-                                                                            <td scope="row">
-                                                                                {{reporte.reporte.FechaReporte}}</td>
-                                                                            <td scope="row">{{
-                                                                                reporte.pago_asistente.FechaPago }}</td>
-                                                                            <td scope="row">
-                                                                                <ul>
-                                                                                    <h6 class="text-primary">Servicios:
-                                                                                    </h6>
-                                                                                    {% for s in reporte.servicios%}
-                                                                                    <li>{{ s.CodCostoOperacion
-                                                                                        }}-{{s.MontoTotal}}</li>
+                                                                    <tr>
+                                                                        <td scope="row">
+                                                                            {{rep.reporte.FechaReporte|date:"d/m/Y"}}
+                                                                        </td>
+
+                                                                        <td>
+                                                                            <table class="table table-hover">
+                                                                                <thead>
+                                                                                    <tr>
+
+                                                                                        <th scope="col">Servicio</th>
+                                                                                        <th scope="col">Monto</th>
+
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {% for servicio,monto in rep.servicios.items %}
+                                                                                    <tr>
+                                                                                        <td>{{servicio.CodCostoOperacion}}
+                                                                                        </td>
+                                                                                        <td> {{monto}} </td>
+                                                                                    </tr>
                                                                                     {% endfor %}
-                                                                                </ul>
-                                                                            </td>
-                                                                        </tr>
-                                                                        {% endfor %}
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                        </td>
+                                                                        <td>
+                                                                            <p class="m-0">
+                                                                                Fecha:{{rep.factura_asistente.FechaEmision|date:"d/m/Y"}}
+                                                                            </p>
+                                                                            <p class="m-0">Número
+                                                                                factura:{{rep.factura_asistente.descFactura}}
+                                                                            </p>
+
+                                                                        </td>
+                                                                        <td>
+                                                                            <p class="m-0">
+                                                                                Fecha:{{rep.pago_asistente.FechaPago|date:"d/m/Y"}}
+                                                                            </p>
+                                                                            <p class="m-0">
+                                                                                Referencia:{{rep.pago_asistente.descFactura}}
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                </tbody>
+                                                            </table>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-xl-3">
-                                                                <p class="text-black float-start"><span
-                                                                        class="text-black me-3">
-                                                                        Total: </span> <span
-                                                                        style="font-size: 15px;">${{servicio.MontoTotal}}</span>
-                                                                </p>
-                                                            </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xl-3">
+                                                            <p class="text-black float-start"><span
+                                                                    class="text-black me-3">
+                                                                    Total: </span> <span
+                                                                    style="font-size: 15px;">${{rep.montototal }} con
+                                                                    iva</span>
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
+                                    <td>
+                                        <ul>
+                                            <h6 class="text-primary">Servicios:</h6>
+                                            {% for servicio,monto in rep.servicios.items %}
+                                            <li>{{ servicio.Fecha|date:"d/m/Y" }}-{{ servicio.CodCostoOperacion }} -
+                                                {{monto}}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        <h6>Monto: $ {{ rep.montototal }}</h6>
+                                    </td>
+                                    <td>
+                                        <p class="m-0">Fecha:{{ rep.factura_asistente.FechaEmision|date:"d/m/Y" }}
+                                        </p>
+                                        <p class="m-0">Número factura:{{rep.factura_asistente.descFactura }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="m-0">Fecha:{{ rep.pago_asistente.FechaPago|date:"d/m/Y" }}
+                                        </p>
+                                        <p class="m-0">Referencia:{{rep.pago_asistente.descFactura }}</p>
+                                    </td>
+
+
                                 </tr>
+                                {% endfor %}
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -247,6 +322,22 @@
             colReorder: true,
             dom: 'Qfrtip',
             searchBuilder: true,
+            dom: 'Bfrtip', // Define donde se colocarán los botones
+            buttons: [
+
+                {
+                    extend: 'excel',
+                    text: 'Excel'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF'
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir'
+                }
+            ]
         });
 
         $('#miTabla_length select').on('change', function () {
@@ -261,50 +352,47 @@
         $('.fa-print').click(function () {
             // Get the corresponding item's name
             var itemName = $(this).data('asistente');
+            console.log(itemName)
+
+            // Get the element to print
+            var printableElement = document.getElementById(itemName);
+
+            // Save the original display style
+            var originalDisplay = printableElement.style.display;
+
+            // Set the display style to 'block'
+            printableElement.style.display = 'block';
+
             printJS({
-                printable: itemName, // ID of the element you want to print
+                printable: itemName,
                 type: 'html',
                 showModal: true,
                 modalMessage: 'Preparando documento...'
             });
-        });
 
-    });
-
-    $(document).ready(function () {
-        $('a[data-reporte]').click(function (event) {
-            event.preventDefault();
-
-            var reporteId = $(this).data('reporte');
-            var content = $('#' + reporteId);
-
-            // Guardar el estilo de display original
-            var originalDisplay = content.css('display');
-            // Cambiar el estilo de display a block
-            content.css('display', 'block');
-
-            // Crear un nuevo documento PDF con dimensiones personalizadas
-            const pdfWidth = 210; // Ancho en mm (A4 por defecto)
-            const pdfElement = content.clone();
-            // Agregar un retraso antes de convertir a PDF
-            // Establecer dimensiones del contenido clonado para ajustar al PDF
-            pdfElement.css('width', pdfWidth + 'mm');
-            setTimeout(function () {
-                // Convertir el contenido clonado a PDF
-                html2pdf()
-                    .from(pdfElement[0]) // Tomar el primer elemento del jQuery object
-                    .set({
-                        width: pdfWidth,
-                    })
-                    .save(reporteId + "_reporte.pdf")
-                    .then(function () {
-                        // Cambiar el estilo de display a su valor original después de la conversión
-                        content.css('display', originalDisplay);
-                    });
-            }, 200); // Ajusta el valor del retraso según sea necesario
+            // Restore the original display style
+            printableElement.style.display = originalDisplay;
         });
     });
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict'
 
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
 
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
 </script>
 {% endblock content %}

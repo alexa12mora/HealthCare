@@ -111,6 +111,9 @@ urlpatterns = [
   #obtener costo de cada asistente dependiendo del tipo de asistente
    path('asistente/obtener/monto/costo/<int:cod_costo_servicio_id>/', views.obtener_monto_costo_asistente, name='obtener_monto_costo_asistente'),
   
+  
+  #pago individual
+  path('servicios/pagos/<int:reporte_pk>', views.procesar_pagos_individual, name='procesar_pagos_individual'),
   # Aseguradoras
   path('agregar/hospital/', views.create_hospital, name='create_hospital'),
   path('listar/hospitales/', views.list_hospital, name='list_hospital'),

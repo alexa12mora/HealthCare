@@ -30,24 +30,14 @@
     </div>
 </div>
 <div class="col-xl-12 col-md-6">
-    <div class="alert alert-success" role="alert" id="myAlert">
-        El proceso de completar los pagos se efectúa una vez que los asistentes hayan proporcionado sus respectivas
-        facturas.
-    </div>
     <div class="card Recent-Users">
         <div class="card">
 
             <div class="card-header">
-                <form method="post" action="{% url 'procesar_pagos' %}" class="row g-3 needs-validation" novalidate>
+                <h6 class="text-primary">Reporte de utilidad en servicios pagados</h6>
+                <form method="post" action="{% url 'reporte_utilidad_pagos' %}" class="row g-3 needs-validation"
+                    novalidate>
                     {% csrf_token %}
-                    <div class="col-md-5">
-                        <label for="validationCustom01" class="form-label">Fecha inicial</label>
-                        <input type="date" class="form-control" id="rango_fecha_inicio" name="rango_fecha_inicio"
-                            required>
-                        <div class="invalid-feedback">
-                            Campo requerido
-                        </div>
-                    </div>
                     <div class="col-md-5">
                         <label for="validationCustom02" class="form-label">Fecha cierre</label>
                         <input type="date" class="form-control" id="rango_fecha_fin" name="rango_fecha_fin" required>
@@ -58,7 +48,7 @@
 
                     <div class="col-md-2">
                         <label for="validationCustom01" class="form-label" style="color:white">Generar pago</label>
-                        <button type="submit" class="btn btn-primary mb-2">Generar pagos</button>
+                        <button type="submit" class="btn btn-primary mb-2">Generar</button>
                     </div>
                 </form>
                 <div class="card-block px-0 py-3">
@@ -77,7 +67,7 @@
                                 {% for servicios in servicios_list %}
                                 <tr class="parent">
                                     <td>
-                                        <p class="m-0">{{ servicios.Fecha }}</p>
+                                        <p class="m-0">{{ servicios.Fecha|date:"d/m/Y" }}</p>
                                     </td>
                                     <td>
                                         <p class="m-0">{{ servicios.CodCostoOperacion }}</p>

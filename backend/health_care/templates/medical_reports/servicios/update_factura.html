@@ -39,10 +39,10 @@
                         <a href="#" class="list-group-item list-group-item-action active">
                             Servicios asociados
                         </a>
-                        {% for servicios in servicios_reporte %}
-                        <a href="#" class="list-group-item list-group-item-action">{{servicios.CodCostoOperacion}} -
-                            {{servicios.Fecha}}, Monto: {{servicios.MontoTotal}}, Medio de pago:
-                            {{servicios.MedioPago}}</a>
+                        {% for servicios,monto in prueba.servicios.items %}
+                        <a href="#" class="list-group-item list-group-item-action">{{servicios.CodCostoOperacion}} |
+                            {{servicios.Fecha|date:"d/m/Y"}}| Nombre del paciente: {{servicios.NombrePaciente}} | Monto:
+                            ${{monto}} </a>
                         {% endfor %}
                     </div>
                     <div class="mb-12">
@@ -53,7 +53,7 @@
                     <div class="mb-12">
                         <label for="disabledTextInput" class="form-label">Monto a pagar al asistente</label>
                         <input type="text" id="disabledTextInput" class="form-control" disabled
-                            value="$ {{ montoTotal}}">
+                            value="$ {{ prueba.montototal}}">
                     </div>
                     <div class="mb-12">
                         <label for="exampleInputEmail1" class="form-label">Fecha de ingreso de factura</label>

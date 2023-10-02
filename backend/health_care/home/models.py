@@ -126,6 +126,6 @@ class PagosAsistentes(models.Model):
     CodAsistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
     MontoPagado = models.DecimalField(max_digits=10, decimal_places=1)
     FechaPago = models.DateField()
-
+    descFactura = models.CharField(null=True,max_length=100,blank=True)
     def __str__(self):
         return f"CodReporte {self.CodReporte}"
