@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
@@ -134,9 +135,9 @@
                                 {{ formset.management_form }}
                                 <thead>
                                     <tr>
-                                        <th>Nombre</th>
-                                        <th>Correo</th>
                                         <th>Tipo</th>
+                                        <th>Nombre del asistente</th>
+                                        <th>Correo</th>
                                         <th>Monto</th>
                                         <th>Acción</th>
                                     </tr>
@@ -156,6 +157,7 @@
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -241,7 +243,7 @@
         /* Quitamos el contorno al enfocar */
     }
 </style>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 <script>
     $(document).ready(function () {
@@ -263,12 +265,7 @@
                 });
         });
 
-        $('.formset_row').formset({
-            addText: 'Agregar',
-            deleteText: '<i class="fa fa-trash"></i>',
-            prefix: 'asistentes_set',
-            addCssClass: 'btn btn-success formset-add-button',
-        });
+
     });
 
 
@@ -333,57 +330,120 @@
         toggleFacturaForm();
     });
     // Espera a que el documento esté listo
-    $(document).ready(function () {
-        $('#id_CodCostoOperacion').change(function () {
-            var selectedValue = $(this).val();
 
-            // Realiza una solicitud AJAX a la vista get_asistentes
-            fetch('/servicios/asistentes/obtener/' + selectedValue)
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data)
-                    // Elimina los formularios existentes
-                    $('#miTabla tbody tr').not(':first').remove();
-                    // Añade formularios adicionales al formset si es necesario
-                    for (var i = 0; i < data.length - 1; i++) {
-                        $('.formset-add-button').click();
-                    }
-                    // Llena los formularios con los datos de los asistentes                  
-                    $('#miTabla tbody tr').each(function (index) {
-                        if (index < data.length) {
-                            var form = $(this).find('td');
-                            $(form[0]).find('input').val(data[index].Nombre);
-                            $(form[1]).find('input').val(data[index].correo);
-                            $(form[2]).find('select').val(data[index].CodCostoPorAsistente);
-                            $(form[3]).find('input').val(data[index].monto);
+
+    //para cargar automaticamente los datos de los inputs de los selects
+    $(document).ready(function () {
+        // Función para agregar la casilla de verificación a un campo 'Nombre'
+        function addCheckboxToField(field) {
+            // Solo agrega la casilla de verificación si el campo 'Nombre' no tiene una ya
+
+            if (field.prev('br').length === 0 && field.next('.form-check').length === 0) {
+                field.before('<br>');
+                field.after('<div class="form-check"><input class="form-check-input toggle-nombre-input" type="checkbox" id="flexCheckIndeterminate"><label class="form-check-label" for="flexCheckIndeterminate">Ingresar un nuevo asistente</label></div>');
+            }
+        }
+
+        $('.nombreasistente').each(function () {
+            addCheckboxToField($(this));
+        });
+
+        $(document).on('change', '.toggle-nombre-input', function (e) {
+            var checkbox = $(this);
+            var field = checkbox.parent().prev();
+
+            if (field.is('select')) {
+                var input = $('<input type="text" class="form-control nombreasistente-input">');
+                input.val(field.val());
+                field.hide(); // oculta el select
+                field.after(input); // agrega el input después del select
+                checkbox.next().text('Escoger de la lista de asistentes');
+
+            } else if (field.next().is('input')) {
+                console.log("si entra")
+                var input = field.next();
+                var option = $('<option></option>').val(input.val()).text(input.val());
+                field.empty(); // limpia el select
+                field.append(option); // agrega una nueva opción al select con el valor del input
+                field.val(input.val()); // selecciona la nueva opción
+                input.remove(); // elimina el input
+                field.show(); // muestra el select
+                checkbox.next().text('Cambiar a texto');
+            }
+
+            var currentForm = $(this).closest('tr');
+            currentForm.find('input[name$="-correo"]').val('');
+            currentForm.find('input[name$="-monto"]').val('');
+            currentForm.find('.nombreasistente').val(''); // limpia el select
+        });
+
+
+        // Actualiza el valor del select cada vez que se cambia el valor del campo de entrada
+        $(document).on('input', '.nombreasistente-input', function () {
+            var input = $(this);
+            var select = input.prev();
+            select.empty(); // vacía el select
+            var option = $('<option></option>').val(input.val()).text(input.val());
+            select.append(option); // agrega una nueva opción al select con el valor del input
+            select.val(input.val()); // selecciona la opción con este valor
+        });
+
+        // Tus eventos existentes deberían funcionar con los nuevos campos de entrada de texto
+        $(document).on('change', '.codcostoporasistente', function () {
+            var selectedTipo = $(this).val();
+            var currentForm = $(this).closest('tr');
+            currentForm.find('input[name$="-correo"]').val('');
+            currentForm.find('input[name$="-monto"]').val('');
+            var nombreasistenteField = currentForm.find('.nombreasistente');
+
+            // Solo realiza la solicitud AJAX si el campo 'Nombre' es un select
+            if (nombreasistenteField.is('select') && nombreasistenteField.is(':visible')) {
+                fetch('/servicios/asistentes/obtener/lista/' + selectedTipo)
+                    .then(response => response.json())
+                    .then(data => {
+                        var nombreSelect = currentForm.find('.nombreasistente');
+                        nombreSelect.empty();
+                        data.forEach(function (item) {
+                            nombreSelect.append($('<option></option>').val(item.Nombre).text(item.Nombre));
+                        });
+
+                        if (data.length === 1) {
+                            currentForm.find('input[name$="-correo"]').val(data[0].correo);
+                            currentForm.find('input[name$="-monto"]').val(data[0].monto);
                         }
                     });
-                });
+            }
+        });
+
+        $(document).on('change', '.nombreasistente', function () {
+            var selectedNombre = $(this).val();
+            var currentForm = $(this).closest('tr');
+
+            // Solo realiza la solicitud AJAX si el campo 'Nombre' es un select
+            if (currentForm.find('.nombreasistente').is('select')) {
+                fetch('/servicios/asistentes/obtener/asistente/' + selectedNombre)
+                    .then(response => response.json())
+                    .then(data => {
+                        currentForm.find('input[name$="-correo"]').val(data.correo);
+                        currentForm.find('.monto').val(data.monto);
+                    });
+            }
+        });
+
+        // Cuando se agrega un nuevo formulario, añade una casilla de verificación al campo 'Nombre'
+        $('.formset_row').formset({
+            addText: 'Agregar',
+            deleteText: '<i class="fa fa-trash"></i>',
+            prefix: 'asistentes_set',
+            addCssClass: 'btn btn-success formset-add-button',
+            added: function (row) {
+                addCheckboxToField(row.find('.nombreasistente'));
+            }
         });
     });
-    $(document).ready(function () {
-        // Cuando el formulario se envía...
-        $('#id_del_formulario').submit(function (event) {
-            // Itera sobre cada 'tr' en el 'tbody'
-            $('#miTabla tbody tr').each(function () {
-                var isEmpty = true;
-                // Itera sobre cada 'td' en este 'tr'
-                $(this).find('td').each(function () {
-                    // Si el 'input' dentro de este 'td' no está vacío, entonces este 'tr' no está vacío
-                    if ($(this).find('input').val() !== '') {
-                        isEmpty = false;
-                        // Rompe el ciclo .each() ya que no necesitamos verificar más 'td'
-                        return false;
-                    }
-                });
-                // Si todos los 'input' en los 'td' están vacíos, elimina este 'tr'
-                if (isEmpty) {
-                    $(this).remove();
-                }
-            });
-            // Continúa con la presentación del formulario
-        });
-    });
+
+
+
 
 </script>
 {% endblock content %}

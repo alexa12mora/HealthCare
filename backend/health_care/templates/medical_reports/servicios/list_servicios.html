@@ -6,7 +6,7 @@
 
 
 <!-- Carga de jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
 <!-- [ Main Content ] start -->
 <!--[ Recent Patients ] start-->
 <div class="container">
@@ -198,23 +198,5 @@
         miTabla.searchBuilder.container().prependTo(table.table().container());
     });
 
-
-
-    function deleteservices(id) {
-        // Solicitar al servidor eliminar el servicio con el ID proporcionado
-        $.ajax({
-            type: "POST",
-            url: "{% url 'delete_servicio' 0 %}".replace('0', id),
-            data: {
-                csrfmiddlewaretoken: '{{ csrf_token }}',
-            },
-            success: function () {
-                $('#row-' + id).remove();
-            },
-            error: function () {
-                alert('Error al eliminar.');
-            },
-        });
-    }
 </script>
 {% endblock content %}

@@ -972,6 +972,37 @@ def get_asistentes(request, pk):
     asistentes_data = [{'Nombre': a.Nombre, 'correo': a.correo, 'CodCostoPorAsistente': a.CodCostoPorAsistente_id, 'monto': a.monto} for a in unique_asistentes.values()]
     return JsonResponse(asistentes_data, safe=False)
 
+#recupera la lista de asistentes de la vista create_service
+@login_required(login_url='/accounts/login/')
+def trae_asistentes(request, pk):
+    # Obtiene el medico actual
+    medico = Medico.objects.get(correo=request.user.email)
+    listservicios = servicios.objects.filter(codMedico=medico)
+    asistentes = Asistentes.objects.filter(CodCostoPorAsistente=pk, servicio__in=listservicios).distinct('correo') 
+    unique_asistentes = {}
+    for asistente in asistentes:
+        unique_asistentes[asistente.correo] = asistente
+
+    asistentes_data = [{'Nombre': a.Nombre, 'correo': a.correo, 'CodCostoPorAsistente': a.CodCostoPorAsistente_id, 'monto': a.monto} for a in unique_asistentes.values()]
+    return JsonResponse(asistentes_data, safe=False)
+
+#recupera un asistente de la vista create_service
+@login_required(login_url='/accounts/login/')
+def trae_asistente(request, correo):
+    # Obtiene el medico actual
+    medico = Medico.objects.get(correo=request.user.email)
+    listservicios = servicios.objects.filter(codMedico=medico)
+    asistente = Asistentes.objects.filter(Nombre=correo, servicio__in=listservicios).first()
+
+    print("================================")
+    if asistente is not None:
+        asistente_data = {'Nombre': asistente.Nombre, 'correo': asistente.correo, 'CodCostoPorAsistente': asistente.CodCostoPorAsistente_id, 'monto': asistente.monto}
+    else:
+        asistente_data = {}
+
+    return JsonResponse(asistente_data,safe=False)
+
+
 
 #hay que arreglar que solo se filtren los datos que pertencen al doc, en este casonm la lista de tipos de precoo de asistencia cuando se va crear un asistente
 @login_required(login_url='/accounts/login/')
@@ -1004,7 +1035,7 @@ def create_servicio(request):
             return redirect('list_servicios')
         else:
             print("NO SOL VALIDOS")
-            print(formset.errors)
+            print(form.errors)
     else:
         form = serviciosForm(request.user,initial={'EstadoPago': 'Pendiente'})
         formset = AsistentesFormSet(form_kwargs={'user': request.user})  # pasa el usuario actual al formset
@@ -1062,12 +1093,11 @@ def update_servicio(request, pk):
             print(formset.errors)
     else:
         form = serviciosForm(request.user,instance=servicio)
-        asistentes = servicio.asistentes_set.all()
+        asistentes = asistentes = servicio.asistentes_set.all()
         formset = AsistentesFormSet(instance=servicio, queryset=asistentes, form_kwargs={'user': request.user})   
         factura_form = FacturasForm(instance=servicio.facturas_set.first())
-        formset.extra=0
         if servicio.MedioPago == 'Credito':
-           factura_form = FacturasForm(instance=servicio.facturas_set.first())       
+           factura_form = FacturasForm(instance=servicio.facturas_set.first())    
     context = {
         'segment': 'servicios',
         'form': form,
@@ -1309,7 +1339,8 @@ def procesar_pagos_individual (request,reporte_pk):
     }
     return render(request, 'medical_reports/servicios/generarpagos.html')
     
- #reporte   
+ #reporte  
+from decimal import Decimal,ROUND_DOWN 
 @login_required(login_url='/accounts/login/')    
 def reporteserviciospagados(request):
     lista_asistentes = []
@@ -1320,10 +1351,11 @@ def reporteserviciospagados(request):
             end_date = request.POST.get('rango_fecha_fin')
             start_date = request.POST.get('rango_fecha_inicio')
             asistente_datos = request.POST.get('asistente_datos')
-            if start_date and end_date and asistente_datos:
+            if start_date and end_date and asistente_datos:           
                 asistente = Asistentes.objects.filter(correo=asistente_datos).first()
                 reportes_asistente = Reporte.objects.filter(Asistente__correo=asistente.correo, EstadoCierre=True, Medico=medico)
-                if reportes_asistente.exists():
+                if reportes_asistente.exists():       
+                    print("ENTRA AL SEGUDNO IFFF ")  
                     asistente_existente = any(item['asistente'].correo == asistente.correo for item in lista_asistentes)
                     if not asistente_existente:
                         asistente_info = {
@@ -1353,7 +1385,9 @@ def reporteserviciospagados(request):
                                             asistentes_servicios[asistente_key] = {'asistente': asistente_servicio, 'servicios_montos': {}, 'montos': []}
                                         if servicio not in asistentes_servicios[asistente_key]['servicios_montos']:
                                             asistentes_servicios[asistente_key]['servicios_montos'][servicio] = asistente_servicio.monto
-                                            asistentes_servicios[asistente_key]['montos'].append(asistente_servicio.monto)                                 
+                                            asistentes_servicios[asistente_key]['montos'].append(asistente_servicio.monto)  
+                                monto_iva = sum(asistentes_servicios[reporte.Asistente.correo]['montos']) * Decimal('0.04')
+                                monto_iva = monto_iva.quantize(Decimal('1.'), rounding=ROUND_DOWN)                               
                                 reporte_info = {
                                     'reporte': reporte,
                                     'asistente': asistentes_servicios[reporte.Asistente.correo]['asistente'],
@@ -1361,14 +1395,23 @@ def reporteserviciospagados(request):
                                     'medico':medico,
                                     'factura_asistente':factura_asistente,             
                                     'pago_asistente': pago_asistente,
-                                    'montototal': sum(asistentes_servicios[reporte.Asistente.correo]['montos']),# Agregar el pago_asistente
+                                    'montototal': sum(asistentes_servicios[reporte.Asistente.correo]['montos']),
+                                    'montoiva': monto_iva,
+                                    'montoFinal': sum(asistentes_servicios[reporte.Asistente.correo]['montos']) + monto_iva,
                                 }
                                 asistente_info['reportes'].append(reporte_info)
+                                
                         lista_asistentes.append(asistente_info)
-                    print(lista_asistentes)
+                    print("ENTRA AQUI 1")
                     lista =  servicios.objects.filter(codMedico=medico.codMedico)                                                               
-                    asistentes_select = Asistentes.objects.filter(servicio__in=lista).distinct('correo')          
-        else:   
+                    asistentes_select = Asistentes.objects.filter(servicio__in=lista).distinct('correo')   
+                else:
+                    print("ENTRA al else de que no exixte")
+                    lista =  servicios.objects.filter(codMedico=medico.codMedico)                                                               
+                    asistentes_select = Asistentes.objects.filter(servicio__in=lista).distinct('correo')  
+                           
+        else: 
+            print("ENTRA AQUI 2")  
             lista =  servicios.objects.filter(codMedico=medico.codMedico)                                                               
             asistentes_select = Asistentes.objects.filter(servicio__in=lista).distinct('correo')
         context = {
@@ -1514,4 +1557,51 @@ def reporte_utilidad_pagos(request):
         'utilidad_total': utilidad_total,
     }
     return render(request, 'medical_reports/servicios/reporteutilidad.html', context)
+
+
+#actualizar datos asistente
+@login_required(login_url='/accounts/login/')
+@login_required(login_url='/accounts/login/')
+def lista_asistentes(request):
+    if Medico.objects.filter(correo=request.user.email).exists():
+        medico = Medico.objects.get(correo=request.user.email)
+        servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+        asistentes_list = Asistentes.objects.filter(servicio__in=servicios_list).distinct('correo')     
+    else:
+        pass
+
+    # Crear un formulario para cada asistente
+    form_list = [AsistentesForm2(instance=asistente) for asistente in asistentes_list]
+
+    if request.method == 'POST':
+        # Encuentra el formulario que se envió
+        for form in form_list:
+            if form.instance.pk == int(request.POST['pk']):
+                # Actualiza el asistente con los datos del formulario
+                form = AsistentesForm2(request.POST, instance=form.instance)
+                if form.is_valid():
+                    # Guarda el nombre original antes de la actualización
+                    original_nombre = form.instance.Nombre
+                    form.save()
+
+                    # Actualiza todos los asistentes con el mismo nombre
+                    Asistentes.objects.filter(Nombre=original_nombre).update(
+                        Nombre=form.instance.Nombre,
+                        correo=form.instance.correo,
+                    )
+
+                    servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+                    asistentes_list = Asistentes.objects.filter(servicio__in=servicios_list).distinct('correo') 
+                    form_list = [AsistentesForm2(instance=asistente) for asistente in asistentes_list]
+                    
+
+    context = {
+        'segment': 'Lista asistentes',
+        'servicios_list': servicios_list,
+        'asistentes_list': asistentes_list,
+        'form_list': form_list,  # Añadir la lista de formularios al contexto
+    }
+    return render(request, 'medical_reports/asistentes/editAsistentes.html', context)
+
+
 

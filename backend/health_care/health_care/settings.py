@@ -32,7 +32,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085', 'http:
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS = [  
     'admin_datta.apps.AdminDattaConfig',
     "django.contrib.admin",
     "django.contrib.auth",
@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     # Tooling API-GEN
     'django_api_gen',            # Django API GENERATOR  # <-- NEW
     'rest_framework',            # Include DRF           # <-- NEW 
-    'rest_framework.authtoken',  # Include DRF Auth      # <-- NEW   
+    'rest_framework.authtoken',
+    # Include DRF Auth      # <-- NEW   
 ]
 
 MIDDLEWARE = [
@@ -191,4 +192,3 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-ALLOWED_HOSTS = ['18.222.177.115', 'localhost']

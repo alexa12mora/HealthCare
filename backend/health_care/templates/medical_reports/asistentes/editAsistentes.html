@@ -1,0 +1,149 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Carga de jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container">
+  <div class="row">
+      <div class="col-12">
+          <div class="card Recent-Users">
+              <div class="card-header">
+                <h5>Lista de asistentes</h5>
+              </div>
+          </div>
+      </div>
+      <div class="col-12">
+          <div class="card Recent-Users">
+              <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table" id="miTabla">
+                      <thead>
+                        <tr>
+                          <th scope="col"></th>
+                          <th scope="col">Nombre</th>
+                          <th scope="col">Correo</th>
+                          <th scope="col">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for form in form_list %}
+                        <tr>
+                          <form method="post">
+                            {% csrf_token %}
+                            <td> <input type="hidden" name="pk" value="{{ form.instance.pk }}"></td>
+                            <td>{{ form.Nombre }}</td>
+                            <td>{{ form.correo }}</td>
+                            <td><button type="submit" class="btn btn-primary">Actualizar</button></td>
+                          </form>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<style>
+  /* Estilos para simular un botón */
+  .btn-like {
+    display: inline-block;
+    padding: 6px 12px;
+    /* Puedes ajustar el padding según el tamaño deseado */
+    border-radius: 4px;
+    /* Para redondear los bordes */
+    text-decoration: none;
+    color: #fff;
+    /* Color del texto */
+    background-color: #C70039;
+    /* Color de fondo del botón */
+    border: none;
+    /* Quitamos el borde */
+    cursor: pointer;
+  }
+
+  .btn-like:hover {
+    background-color: #C70039;
+    /* Color de fondo al pasar el ratón por encima */
+  }
+
+  .btn-like:focus {
+    outline: none;
+    /* Quitamos el contorno al enfocar */
+  }
+</style>
+<script>
+  $(document).ready(function () {
+    var miTabla = $('#miTabla').DataTable({
+      "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
+        searchBuilder: {
+          add: 'Añadir',
+          condition: 'Condición',
+          clearAll: 'Borrar todo',
+          delete: 'Eliminar',
+          deleteTitle: 'Eliminar título',
+          data: 'Columna',
+          left: 'Izquierda',
+          leftTitle: 'Título izquierdo',
+          logicAnd: 'Y',
+          logicOr: 'O',
+          right: 'Derecha',
+          rightTitle: 'Título derecho',
+          title: {
+            0: 'Filtros',
+            _: 'Filtros (%d)'
+          },
+          value: 'Opción',
+          conditions: {
+            "date": {
+              "after": "Después",
+              "before": "Antes",
+              "between": "Entre",
+              "empty": "Vacío",
+              "equals": "Igual a",
+              "not": "No",
+              "notBetween": "No entre",
+              "notEmpty": "No vacío"
+            },
+            "number": {
+              ">=": ">=",
+              "<=": "<=",
+              "<>": "<>",
+              "=": "=",
+              ">": ">",
+              "<": "<",
+              between: "Entre",
+              empty: "Vacío",
+              equals: "Igual a",
+              notBetween: "No entre",
+              notEmpty: "No vacío"
+            },
+            // ... otras condiciones
+          }
+        }
+      },
+      responsive: true,
+      autoFill: true,
+      "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+      colReorder: true,
+      dom: 'Qfrtip',
+      searchBuilder: true,
+    });
+
+    $('#miTabla_length select').on('change', function () {
+      var selectedValue = $(this).val();
+      if (selectedValue === '5') {
+        miTabla.page.len(5).draw();
+      }
+    });
+    miTabla.searchBuilder.container().prependTo(table.table().container());
+  });
+</script>
+
+{% endblock content %}

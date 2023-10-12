@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -109,8 +109,14 @@ urlpatterns = [
   #obtener todos los asistentes por tipo de servicio
   path('servicios/asistentes/obtener/<int:pk>/', views.get_asistentes, name='get_asistentes'),
   #obtener costo de cada asistente dependiendo del tipo de asistente
-   path('asistente/obtener/monto/costo/<int:cod_costo_servicio_id>/', views.obtener_monto_costo_asistente, name='obtener_monto_costo_asistente'),
+  path('asistente/obtener/monto/costo/<int:cod_costo_servicio_id>/', views.obtener_monto_costo_asistente, name='obtener_monto_costo_asistente'),
   
+  #recupera la lista de asistentes de la vista create_service
+  path('servicios/asistentes/obtener/lista/<int:pk>/', views.trae_asistentes, name='trae_asistentes'),
+  #recupera solo un asistente de la vista create_service
+  path('servicios/asistentes/obtener/asistente/<str:correo>/', views.trae_asistente, name='trae_asistente'),
+  #lista de asistentes
+  path('asistentes/lista', views.lista_asistentes, name='lista_asistentes'),
   
   #pago individual
   path('servicios/pagos/<int:reporte_pk>', views.procesar_pagos_individual, name='procesar_pagos_individual'),
@@ -122,5 +128,8 @@ urlpatterns = [
   
   # Facturas Asistentes
   path('actualizar/factura/<int:reporte_id>', views.actualizar_factura, name='actulizar_factura'),
+  
+  
+  path("select2/", include("django_select2.urls")),
 ]
 

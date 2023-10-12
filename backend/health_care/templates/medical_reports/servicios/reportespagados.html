@@ -6,16 +6,12 @@
 
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
 
 </head>
-<!-- Carga de jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- [ Main Content ] start -->
+
 <!--[ Recent Patients ] start-->
 <div class="container">
     <div class="row">
@@ -31,24 +27,11 @@
         </div>
 
         <div class="col-12">
-            <div class="alert-container">
-                {% if messages %}
-                {% for message in messages %}
-                <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}"
-                    role="alert">
-                    {{ message }}
-                </div>
-                {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="col-12">
             <div class="card Recent-Users">
-                <div class="card-body">
+                <div class="card-header">
                     <form method="post" class="row g-3 needs-validation" novalidate>
                         {% csrf_token %}
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="validationCustom04" class="form-label">Nombre del asistente</label>
                             <select class="mb-3 form-control" name="asistente_datos" required>
                                 <option>Seleccione un nombre</option>
@@ -60,7 +43,7 @@
                                 Campo requerido
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="validationCustom02" class="form-label">Fecha inicio</label>
                             <input type="date" class="form-control" id="rango_fecha_inicio" name="rango_fecha_inicio"
                                 required>
@@ -68,7 +51,7 @@
                                 Campo requerido
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="validationCustom02" class="form-label">Fecha cierre</label>
                             <input type="date" class="form-control" id="rango_fecha_fin" name="rango_fecha_fin"
                                 required>
@@ -77,62 +60,101 @@
                             </div>
                         </div>
 
-                        <div class="col-2">
+                        <div class="col-3" style="margin-top: 7px;">
                             <br />
-                            <button type="submit" class="btn btn-primary mb-2">Generar</button>
+                            <button type="submit" class="btn btn-primary mb-2">Generar reporte</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered " id="miTabla">
+        <div class="col-12">
+            <div class="card Recent-Users">
+                {% if lista_asistentes%}
+                <div class="card-body">
+                    <a><i class="fas fa-print text-primary text-c-green f-30 m-r-8 b"
+                            data-asistente="{{rep.reporte.pk}}"></i>
+                    </a>
+                    <div class="table-responsive" id="miTabla">
+                        <div class="container">
+                            <div class="text-center">
+                                <img src="{% static 'assets/images/surgy1.2.png' %}" class="rounded" alt="..."
+                                    style="max-width: 35%; margin-bottom: 10px;">
+                            </div>
+                        </div>
+                        <table class="table table-bordered ">
+                            {% for asi_inf in lista_asistentes %}
                             <thead>
                                 <tr>
-                                    <th scope="col">DESCARGAS</th>
+                                    <th scope="col" class="text-center text-uppercase">REPORTE SERVICIOS PAGADOS A
+                                        {{asi_inf.asistente.Nombre}}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for asi_inf in lista_asistentes %}
+
                                 {% for rep in asi_inf.reportes %}
                                 <tr class="unread">
                                     <td>
                                         <table class="table">
                                             <thead>
+                                                <tr class="table-success">
+                                                    <th colspan="4">Reporte fecha pago:
+                                                        {{rep.pago_asistente.FechaPago|date:"d/m/Y"}}, número
+                                                        dereferencia: {{rep.pago_asistente.descFactura}}</th>
+                                                </tr>
                                                 <tr>
-                                                    <th scope="col">Fecha</th>
-                                                    <th scope="col">Tipo</th>
+                                                    <th scope="col">Fecha servicio</th>
+                                                    <th scope="col">Servicio asociado</th>
                                                     <th scope="col">Paciente</th>
                                                     <th scope="col">Monto</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                {% for servicio,monto in rep.servicios.items %}
                                                 <tr>
-                                                    <th scope="row">1</th>
-                                                    <td>Mark</td>
-                                                    <td>Otto</td>
-                                                    <td>@mdo</td>
+                                                    <th scope="row">{{ servicio.Fecha|date:"d/m/Y" }}</th>
+                                                    <td>{{ servicio.CodCostoOperacion }}</td>
+                                                    <td>{{ servicio.NombrePaciente }}</td>
+                                                    <td style="color:blue">${{monto}}</td>
                                                 </tr>
+                                                {% endfor %}
                                                 <tr>
-                                                    <th scope="row">2</th>
-                                                    <td>Jacob</td>
-                                                    <td>Thornton</td>
-                                                    <td>@fat</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">3</th>
-                                                    <td>Larry</td>
-                                                    <td>the Bird</td>
-                                                    <td>@twitter</td>
+                                                    <th colspan="3">Fecha factura por asistente:
+                                                        {{rep.factura_asistente.FechaEmision|date:"d/m/Y" }},
+                                                        número de referencia: {{rep.factura_asistente.descFactura }}
+                                                    </th>
+                                                    <th>
+                                                        <h6 style="color:blue">Subtotal: $ {{ rep.montototal }}</h6>
+                                                        <h6 style="color:blue">IVA 4%: $ {{ rep.montoiva }}</h6>
+                                                        <h7 style="color:blue">Total: $ {{ rep.montoFinal }}</h7>
+
+                                                    </th>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </td>
                                 </tr>
                                 {% endfor %}
+                                <tr class="table-success">
+                                    <th colspan="4">Reporte fecha pago: {{rep.pago_asistente.FechaPago|date:"d/m/Y"}},
+                                        número de referencia: {{rep.pago_asistente.descFactura}}</th>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
+                {% else %}
+
+                <div class="col-12">
+                    <div class="alert alert-success" role="alert" id="myAlert">
+                        No hay datos para mostrar
+                    </div>
+                </div>
+
+                {% endif %}
+
             </div>
         </div>
     </div>
@@ -164,117 +186,79 @@
         outline: none;
         /* Quitamos el contorno al enfocar */
     }
+
+    .table {
+        /* Tus estilos para .table */
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+    }
+
+    .table-bordered {
+        /* Tus estilos para .table-bordered */
+        border: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody+tbody {
+        border-top: 2px solid #dee2e6;
+    }
+
+    .table-success {
+        background-color: #c3e6cb;
+    }
+
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #miTabla,
+        #miTabla * {
+            visibility: visible;
+        }
+
+        #miTabla {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            width: 112% !important;
+            margin-left: 1.5%;
+            margin-right: auto;
+        }
+
+        #miTabla td,
+        #miTabla th {
+            width: 100% !important;
+        }
+
+        #miTabla thead tr {
+            background-color: #21734F;
+            /* Agrega esta línea */
+        }
+    }
 </style>
 
+
 <script>
+
     $(document).ready(function () {
-        var miTabla = $('#miTabla').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
-                searchBuilder: {
-                    add: 'Añadir',
-                    condition: 'Condición',
-                    clearAll: 'Borrar todo',
-                    delete: 'Eliminar',
-                    deleteTitle: 'Eliminar título',
-                    data: 'Columna',
-                    left: 'Izquierda',
-                    leftTitle: 'Título izquierdo',
-                    logicAnd: 'Y',
-                    logicOr: 'O',
-                    right: 'Derecha',
-                    rightTitle: 'Título derecho',
-                    title: {
-                        0: 'Filtros',
-                        _: 'Filtros (%d)'
-                    },
-                    value: 'Opción',
-                    conditions: {
-                        "date": {
-                            "after": "Después",
-                            "before": "Antes",
-                            "between": "Entre",
-                            "empty": "Vacío",
-                            "equals": "Igual a",
-                            "not": "No",
-                            "notBetween": "No entre",
-                            "notEmpty": "No vacío"
-                        },
-                        "number": {
-                            ">=": ">=",
-                            "<=": "<=",
-                            "<>": "<>",
-                            "=": "=",
-                            ">": ">",
-                            "<": "<",
-                            between: "Entre",
-                            empty: "Vacío",
-                            equals: "Igual a",
-                            notBetween: "No entre",
-                            notEmpty: "No vacío"
-                        },
-                        // ... otras condiciones
-                    }
-                }
-            },
-            responsive: true,
-            autoFill: true,
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
-            colReorder: true,
-            dom: 'Qfrtip',
-            searchBuilder: true,
-            dom: 'Bfrtip', // Define donde se colocarán los botones
-            buttons: [
-
-                {
-                    extend: 'excel',
-                    text: 'Excel'
-                },
-                {
-                    extend: 'pdf',
-                    text: 'PDF'
-                },
-                {
-                    extend: 'print',
-                    text: 'Imprimir'
-                }
-            ]
-        });
-
-        $('#miTabla_length select').on('change', function () {
-            var selectedValue = $(this).val();
-            if (selectedValue === '5') {
-                miTabla.page.len(5).draw();
-            }
-        });
-        miTabla.searchBuilder.container().prependTo(table.table().container());
-    });
-    $(document).ready(function () {
-        $('.fa-print').click(function () {
-            // Get the corresponding item's name
-            var itemName = $(this).data('asistente');
-            console.log(itemName)
-
-            // Get the element to print
-            var printableElement = document.getElementById(itemName);
-
-            // Save the original display style
-            var originalDisplay = printableElement.style.display;
-
-            // Set the display style to 'block'
-            printableElement.style.display = 'block';
-
-            printJS({
-                printable: itemName,
-                type: 'html',
-                showModal: true,
-                modalMessage: 'Preparando documento...'
-            });
-
-            // Restore the original display style
-            printableElement.style.display = originalDisplay;
+        $('.fa-print').click(function (event) {
+            event.preventDefault();
+            window.print();
         });
     });
+
+
+
+
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {
         'use strict'

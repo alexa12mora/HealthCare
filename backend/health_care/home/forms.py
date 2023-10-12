@@ -101,15 +101,27 @@ class CostosPorAsistenteForm(forms.ModelForm):
             'MontoCosto': forms.NumberInput(attrs={'class': 'form-control'}),
             'codMedico': forms.HiddenInput(), 
         }
+        
+
+
+class AsistentesForm2(forms.ModelForm):
+    class Meta:
+        model = Asistentes
+        fields = ['Nombre', 'correo']
+        widgets = {
+            'Nombre': forms.TextInput(attrs={'class': 'form-control nombreasistente', 'required': False,'readonly': True}),
+            'correo': forms.EmailInput(attrs={'class': 'form-control', 'required': False}),   
+        }    
+     
 
 class AsistentesForm(forms.ModelForm):
     class Meta:
         model = Asistentes
-        fields = ['Nombre', 'correo', 'CodCostoPorAsistente', 'monto']
+        fields = ['CodCostoPorAsistente','Nombre', 'correo', 'monto']
+
         widgets = {
-            'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'correo': forms.EmailInput(attrs={'class': 'form-control'}),
             'CodCostoPorAsistente': forms.Select(attrs={'class': 'form-control codcostoporasistente'}),
+            'correo': forms.EmailInput(attrs={'class': 'form-control'}),   
             'monto': forms.NumberInput(attrs={'class': 'form-control monto'}),
         }
 
@@ -118,6 +130,14 @@ class AsistentesForm(forms.ModelForm):
         super(AsistentesForm, self).__init__(*args, **kwargs)
         self.fields['CodCostoPorAsistente'].queryset = CostosPorAsistente.objects.filter(codMedico=user)  # filtra por el usuario actual
 
+        # Aquí es donde estableces las opciones para el campo 'Nombre'
+        if self.instance and self.instance.pk: 
+            self.fields['Nombre'].queryset = Asistentes.objects.filter(pk=self.instance.pk)
+            self.fields['Nombre'].widget = forms.TextInput(attrs={'class': 'form-control nombreasistente'})
+        else:
+            print("ENTRA AL QUE NO TIENE INSTANCIA VAICA ")
+            self.fields['Nombre'].widget = forms.Select(attrs={'class': 'form-control nombreasistente'})
+
 AsistentesFormSet = forms.inlineformset_factory(
     servicios,
     Asistentes,
@@ -125,7 +145,10 @@ AsistentesFormSet = forms.inlineformset_factory(
     extra=1,
     can_delete=True,
     can_delete_extra=True
-)    
+)
+
+
+
 class EmisorForm(forms.ModelForm):
     class Meta:
         model = Emisor
@@ -164,7 +187,7 @@ class CostosDeOperacionesForm(forms.ModelForm):
         }
 
 class serviciosForm(forms.ModelForm):
-    CodAseguradora = forms.ModelChoiceField(queryset=Aseguradoras.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
+    CodAseguradora = forms.ModelChoiceField(queryset=Aseguradoras.objects.none(), required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     CodBanco = forms.ModelChoiceField(queryset=Emisor.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
     codMedico = forms.ModelChoiceField(queryset=Medico.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
     CodCostoOperacion = forms.ModelChoiceField(queryset=CostosDeOperaciones.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
@@ -189,7 +212,7 @@ class serviciosForm(forms.ModelForm):
         
     def __init__(self, user, *args, **kwargs):
         super(serviciosForm, self).__init__(*args, **kwargs)
-        fecha_actual = date.today().strftime('%Y-%m-%d')
+        fecha_actual = date.today()
         self.fields['Fecha'].initial = fecha_actual  
         self.fields['numFactura'].initial = '1'
         if user.is_authenticated and Medico.objects.filter(correo=user.email).exists():

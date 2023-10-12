@@ -65,7 +65,7 @@ class servicios(models.Model):
     NombrePaciente = models.CharField(max_length=100)
     MontoTotal = models.DecimalField(max_digits=10, decimal_places=1)
     MedioPago = models.CharField(max_length=20)
-    CodAseguradora = models.ForeignKey(Aseguradoras, on_delete=models.CASCADE)
+    CodAseguradora = models.ForeignKey(Aseguradoras, on_delete=models.CASCADE, blank=True, null=True)
     CodHospital = models.ForeignKey(Hospitales, on_delete=models.CASCADE,default=1)
     CodBanco = models.ForeignKey(Emisor, on_delete=models.CASCADE)
     EstadoPago = models.CharField(max_length=20)

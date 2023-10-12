@@ -29,18 +29,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12">
-            <div class="alert-container">
-                {% if messages %}
-                {% for message in messages %}
-                <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}"
-                    role="alert">
-                    {{ message }}
-                </div>
-                {% endfor %}
-                {% endif %}
-            </div>
-        </div>
+
         <div class="col-12">
             <div class="alert alert-success" role="alert" id="myAlert">
                 El proceso de completar los pagos se efectúa una vez que los asistentes hayan proporcionado sus
@@ -163,8 +152,8 @@
                                                                     class="text-white">
                                                                     <tr>
                                                                         <th scope="col">FECHA</th>
-                                                                        <th scope="col">TIPO DE SERVICIO</th>
-                                                                        <th scope="col">NOMBRE DEL PACIENTE</th>
+                                                                        <th scope="col">TIPO</th>
+                                                                        <th scope="col">PACIENTE</th>
                                                                         <th scope="col">HOSPITAL</th>
                                                                         <th scope="col">ASEGURADORA</th>
                                                                         <th scope="col">$MONTO</th>
@@ -178,7 +167,7 @@
                                                                         <td scope="row">{{s.CodCostoOperacion}}</td>
                                                                         <td scope="row">{{s.NombrePaciente}}</td>
                                                                         <td scope="row">{{s.CodHospital}}</td>
-                                                                        <td scope="row">{{s.CodAseguradora}}</td>
+                                                                        <td scope="row">{% if s.CodAseguradora %}{{s.CodAseguradora}}{% endif %}</td>
                                                                         <td scope="row"> ${{n}}</td>
                                                                     </tr>
                                                                     {% endfor %}
