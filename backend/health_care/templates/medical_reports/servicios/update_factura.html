@@ -44,6 +44,8 @@
                             {{servicios.Fecha|date:"d/m/Y"}}| Nombre del paciente: {{servicios.NombrePaciente}} | Monto:
                             ${{monto}} </a>
                         {% endfor %}
+                        <a href="#" class="list-group-item list-group-item-action">IVA: 
+                            ${{prueba.iva}} </a>
                     </div>
                     <div class="mb-12">
                         <label for="disabledTextInput" class="form-label">Nombre del asistente</label>
@@ -53,7 +55,7 @@
                     <div class="mb-12">
                         <label for="disabledTextInput" class="form-label">Monto a pagar al asistente</label>
                         <input type="text" id="disabledTextInput" class="form-control" disabled
-                            value="$ {{ prueba.montototal}}">
+                            value="$ {{ prueba.montoTotal}}">
                     </div>
                     <div class="mb-12">
                         <label for="exampleInputEmail1" class="form-label">Fecha de ingreso de factura</label>

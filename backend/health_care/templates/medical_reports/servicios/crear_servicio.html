@@ -29,421 +29,427 @@
 
 {% endblock extrastyle %}
 <div class="row">
+    <!--[ Daily Appointments ] start-->
     <div class="col-md-6 col-xl-12">
-        <div class="card daily-appointments">
-            <div class="card-header">
-                <h5>Nuevo servicio</h5>
+        <form method="post" class="needs-validation" novalidate id="id_del_formulario">
+            {% csrf_token %}
+            <div class="col-md-6 col-xl-12">
+                <div class="card daily-appointments">
+                    <div class="card-header">
+                        <h5>Datos generales del servicio</h5>
+                    </div>
+                    <div class="card-block">
 
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="validationCustom01" class="form-label">Fecha</label>
+                                {{ form.Fecha }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="validationCustom02" class="form-label">Tipo de servicio</label>
+                                {{ form.CodCostoOperacion }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="validationCustom02" class="form-label">Médico principal</label>
+                                {{ form.codMedico }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="validationCustom02" class="form-label">Nombre del paciente</label>
+                                {{ form.NombrePaciente }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="validationCustom02" class="form-label">Forma de pago</label>
+                                {{ form.MedioPago }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="validationCustom02" class="form-label">Hospital</label>
+                                {{ form.CodHospital }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="validationCustom02" class="form-label">Emisor</label>
+                                {{ form.CodBanco }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="validationCustom02" class="form-label">Aseguradora</label>
+                                {{ form.CodAseguradora }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="validationCustom02" class="form-label"> $ Monto total</label>
+                                {{ form.MontoTotal }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="validationCustom02" class="form-label">Número de factura de Médico</label>
+                                {{ form.numFactura }}
+                                <div class="invalid-feedback">
+                                    Campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <div class="col-md-12">
+                <div class="card Recent-Users">
+                    <div class="card-header">
+                        <h5>Asociar asistentes al servicio</h5>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table" id="miTabla" data-is-update="{{ is_update|yesno:'true,false'}}">
+                                        {{ formset.management_form }}
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Nombre del asistente</th>
+                                                <th>Correo</th>
+                                                <th>Monto</th>
+                                                <th>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for form in formset %}
+                                            <tr class="{% cycle 'row1' 'row2' %} formset_row">
+                                                {% for field in form.visible_fields %}
+                                                <td class="d-block d-md-table-cell">
+                                                    {# ...contenido del td... #}
+                                                    {{ field }}
+                                                </td>
+                                                {% endfor %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" id="facturaForm">
+                <div class="card Recent-Users">
+                    <div class="card-header">
+                        <h5>Factura por aseguradora</h5>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Fecha de pago por la
+                                    aseguradora</label>
+                                {{ factura_form.FechaPago }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Número de factura</label>
+                                {{ factura_form.NumeroFactura }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card Recent-Users">
+                    <div class="card-header">
+                        {% if servicio.EstadoCierre%}
+
+                        <div class="float-left">
+                            <a href="{% url 'list_servicios' %}" type="button" class="btn btn-primary btn-sm"
+                                style="margin-top: 10px;">
+                                Regresar
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="float-left">
+                            <input type="submit" value="Guardar" class="btn btn-success" style="margin-top: 10px;">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-    <form method="post" class="needs-validation" novalidate id="id_del_formulario">
-        {% csrf_token %}
-        <div class="col-md-6 col-xl-12">
-            <div class="card daily-appointments">
-                <div class="card-header">
-                    <h5>Datos generales del servicio</h5>
-                </div>
-                <div class="card-block">
+    <style>
+        .formset-add-button {
+            margin: 10px 10px;
+        }
 
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label for="validationCustom01" class="form-label">Fecha</label>
-                            {{ form.Fecha }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="validationCustom02" class="form-label">Tipo de servicio</label>
-                            {{ form.CodCostoOperacion }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="validationCustom02" class="form-label">Médico principal</label>
-                            {{ form.codMedico }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <label for="validationCustom02" class="form-label">Nombre del paciente</label>
-                            {{ form.NombrePaciente }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="validationCustom02" class="form-label">Forma de pago</label>
-                            {{ form.MedioPago }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="validationCustom02" class="form-label">Hospital</label>
-                            {{ form.CodHospital }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="validationCustom02" class="form-label">Emisor</label>
-                            {{ form.CodBanco }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="validationCustom02" class="form-label">Aseguradora</label>
-                            {{ form.CodAseguradora }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
+        .formset-delete-button {
+            margin: 10px 15px;
+        }
+    </style>
+    <style>
+        /* Estilos para simular un botón */
+        .btn-like {
+            display: inline-block;
+            padding: 6px 12px;
+            /* Puedes ajustar el padding según el tamaño deseado */
+            border-radius: 4px;
+            /* Para redondear los bordes */
+            text-decoration: none;
+            color: #fff;
+            /* Color del texto */
+            background-color: #C70039;
+            /* Color de fondo del botón */
+            border: none;
+            /* Quitamos el borde */
+            cursor: pointer;
+        }
 
-                        <div class="col-md-6">
-                            <label for="validationCustom02" class="form-label"> $ Monto total</label>
-                            {{ form.MontoTotal }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="validationCustom02" class="form-label">Número de factura de Médico</label>
-                            {{ form.numFactura }}
-                            <div class="invalid-feedback">
-                                Campo es requerido
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        .btn-like:hover {
+            background-color: #C70039;
+            /* Color de fondo al pasar el ratón por encima */
+        }
 
-        <div class="col-md-12">
-            <div class="card Recent-Users">
-                <div class="card-header">
-                    <h5>Asociar asistentes al servicio</h5>
-                </div>
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <table class="table" id="miTabla" data-is-update="{{ is_update|yesno:" true,false" }}">
-                                {{ formset.management_form }}
-                                <thead>
-                                    <tr>
-                                        <th>Tipo</th>
-                                        <th>Nombre del asistente</th>
-                                        <th>Correo</th>
-                                        <th>Monto</th>
-                                        <th>Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for form in formset %}
-                                    <tr class="{% cycle 'row1' 'row2' %} formset_row">
-                                        {% for field in form.visible_fields %}
-                                        <td>
-                                            {# Include the hidden fields in the form #}
-                                            {% if forloop.first %}
-
-                                            {% endif %}
-                                            {{ field }}
-                                        </td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-12" id="facturaForm">
-            <div class="card Recent-Users">
-                <div class="card-header">
-                    <h5>Factura por aseguradora</h5>
-                </div>
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="form-label">Fecha de pago por la
-                                aseguradora</label>
-                            {{ factura_form.FechaPago }}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Número de factura</label>
-                            {{ factura_form.NumeroFactura }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div class="card Recent-Users">
-                <div class="card-header">
-                    {% if servicio.EstadoCierre%}
-
-                    <div class="float-left">
-                        <a href="{% url 'list_servicios' %}" type="button" class="btn btn-primary btn-sm"
-                            style="margin-top: 10px;">
-                            Regresar
-                        </a>
-                    </div>
-                    {% else %}
-                    <div class="float-left">
-                        <input type="submit" value="Guardar" class="btn btn-success" style="margin-top: 10px;">
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-    </form>
-</div>
-<style>
-    .formset-add-button {
-        margin: 10px 10px;
-    }
-
-    .formset-delete-button {
-        margin: 10px 15px;
-    }
-</style>
-<style>
-    /* Estilos para simular un botón */
-    .btn-like {
-        display: inline-block;
-        padding: 6px 12px;
-        /* Puedes ajustar el padding según el tamaño deseado */
-        border-radius: 4px;
-        /* Para redondear los bordes */
-        text-decoration: none;
-        color: #fff;
-        /* Color del texto */
-        background-color: #C70039;
-        /* Color de fondo del botón */
-        border: none;
-        /* Quitamos el borde */
-        cursor: pointer;
-    }
-
-    .btn-like:hover {
-        background-color: #C70039;
-        /* Color de fondo al pasar el ratón por encima */
-    }
-
-    .btn-like:focus {
-        outline: none;
-        /* Quitamos el contorno al enfocar */
-    }
-</style>
+        .btn-like:focus {
+            outline: none;
+            /* Quitamos el contorno al enfocar */
+        }
+    </style>
 
 
-<script>
-    $(document).ready(function () {
+    <script>
+
+        $(document).ready(function () {
+            if ($(window).width() < 768) {
+                $('#miTabla thead').addClass('d-none d-md-table-row');
+            }
+        });
+    
+        $(window).resize(function () {
+            if ($(window).width() < 768) {
+                $('#miTabla thead').addClass('d-none d-md-table-row');
+            } else {
+                $('#miTabla thead').removeClass('d-none d-md-table-row');
+            }
+        });
+        $(document).ready(function () {
 
 
-        // Delegación de eventos para los selects
-        $('#miTabla').on('change', '.codcostoporasistente', function () {
-            var selectCostoPorAsistente = this;
-            var selectedOption = selectCostoPorAsistente.options[selectCostoPorAsistente.selectedIndex];
-            var codCostoPorAsistenteId = selectedOption.value;
-            var montoField = $(this).closest('tr').find('.monto');  // Encuentra el campo 'monto' en la misma fila
-            fetch(`/asistente/obtener/monto/costo/${codCostoPorAsistenteId}/`)
+            // Delegación de eventos para los selects
+            $('#miTabla').on('change', '.codcostoporasistente', function () {
+                var selectCostoPorAsistente = this;
+                var selectedOption = selectCostoPorAsistente.options[selectCostoPorAsistente.selectedIndex];
+                var codCostoPorAsistenteId = selectedOption.value;
+                var montoField = $(this).closest('tr').find('.monto');  // Encuentra el campo 'monto' en la misma fila
+                fetch(`/asistente/obtener/monto/costo/${codCostoPorAsistenteId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        montoField.val(data.monto);  // Actualiza el valor del campo 'monto'
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener el monto del costo de operación:', error);
+                    });
+            });
+
+
+        });
+
+
+        document.getElementById('id_CodCostoOperacion').addEventListener('change', function () {
+            const selectCostoOperacion = this;
+            const selectedOption = selectCostoOperacion.options[selectCostoOperacion.selectedIndex];
+            const codCostoOperacionId = selectedOption.value;
+            fetch(`/obtener/monto/costo/${codCostoOperacionId}/`)
                 .then(response => response.json())
                 .then(data => {
-                    montoField.val(data.monto);  // Actualiza el valor del campo 'monto'
+                    document.getElementById('id_MontoTotal').value = data.monto;
                 })
                 .catch(error => {
                     console.error('Error al obtener el monto del costo de operación:', error);
                 });
-        });
+        }, { passive: false });
 
 
-    });
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict'
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
 
-
-    document.getElementById('id_CodCostoOperacion').addEventListener('change', function () {
-        const selectCostoOperacion = this;
-        const selectedOption = selectCostoOperacion.options[selectCostoOperacion.selectedIndex];
-        const codCostoOperacionId = selectedOption.value;
-        fetch(`/obtener/monto/costo/${codCostoOperacionId}/`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('id_MontoTotal').value = data.monto;
-            })
-            .catch(error => {
-                console.error('Error al obtener el monto del costo de operación:', error);
-            });
-    }, { passive: false });
-
-
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (function () {
-        'use strict'
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.querySelectorAll('.needs-validation')
-
-        // Loop over them and prevent submission
-        Array.prototype.slice.call(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })()
-</script>
-<script>
-    // Función para mostrar u ocultar el formulario de Factura por aseguradora
-    function toggleFacturaForm() {
-        const medioPagoSelect = document.getElementById('id_MedioPago');
-        const facturaForm = document.getElementById('facturaForm');
-        const numFacturaInput = document.getElementById('id_numFactura');
-
-        if (medioPagoSelect.value === 'Contado') {
-            facturaForm.style.display = 'none';
-            numFacturaInput.removeAttribute('readonly');
-        } else {
-            numFacturaInput.setAttribute('readonly', 'readonly');
-            facturaForm.style.display = 'block';
-        }
-    }
-
-    // Ejecutar la función al cargar la página
-    document.addEventListener('DOMContentLoaded', function () {
-        toggleFacturaForm();
-    });
-
-    // Ejecutar la función cuando cambie el valor del campo "Medio de pago"
-    document.getElementById('id_MedioPago').addEventListener('change', function () {
-        toggleFacturaForm();
-    });
-    // Espera a que el documento esté listo
-
-
-    //para cargar automaticamente los datos de los inputs de los selects
-    $(document).ready(function () {
-        // Función para agregar la casilla de verificación a un campo 'Nombre'
-        function addCheckboxToField(field) {
-            // Solo agrega la casilla de verificación si el campo 'Nombre' no tiene una ya
-
-            if (field.prev('br').length === 0 && field.next('.form-check').length === 0) {
-                field.before('<br>');
-                field.after('<div class="form-check"><input class="form-check-input toggle-nombre-input" type="checkbox" id="flexCheckIndeterminate"><label class="form-check-label" for="flexCheckIndeterminate">Ingresar un nuevo asistente</label></div>');
-            }
-        }
-
-        $('.nombreasistente').each(function () {
-            addCheckboxToField($(this));
-        });
-
-        $(document).on('change', '.toggle-nombre-input', function (e) {
-            var checkbox = $(this);
-            var field = checkbox.parent().prev();
-
-            if (field.is('select')) {
-                var input = $('<input type="text" class="form-control nombreasistente-input">');
-                input.val(field.val());
-                field.hide(); // oculta el select
-                field.after(input); // agrega el input después del select
-                checkbox.next().text('Escoger de la lista de asistentes');
-
-            } else if (field.next().is('input')) {
-                console.log("si entra")
-                var input = field.next();
-                var option = $('<option></option>').val(input.val()).text(input.val());
-                field.empty(); // limpia el select
-                field.append(option); // agrega una nueva opción al select con el valor del input
-                field.val(input.val()); // selecciona la nueva opción
-                input.remove(); // elimina el input
-                field.show(); // muestra el select
-                checkbox.next().text('Cambiar a texto');
-            }
-
-            var currentForm = $(this).closest('tr');
-            currentForm.find('input[name$="-correo"]').val('');
-            currentForm.find('input[name$="-monto"]').val('');
-            currentForm.find('.nombreasistente').val(''); // limpia el select
-        });
-
-
-        // Actualiza el valor del select cada vez que se cambia el valor del campo de entrada
-        $(document).on('input', '.nombreasistente-input', function () {
-            var input = $(this);
-            var select = input.prev();
-            select.empty(); // vacía el select
-            var option = $('<option></option>').val(input.val()).text(input.val());
-            select.append(option); // agrega una nueva opción al select con el valor del input
-            select.val(input.val()); // selecciona la opción con este valor
-        });
-
-        // Tus eventos existentes deberían funcionar con los nuevos campos de entrada de texto
-        $(document).on('change', '.codcostoporasistente', function () {
-            var selectedTipo = $(this).val();
-            var currentForm = $(this).closest('tr');
-            currentForm.find('input[name$="-correo"]').val('');
-            currentForm.find('input[name$="-monto"]').val('');
-            var nombreasistenteField = currentForm.find('.nombreasistente');
-
-            // Solo realiza la solicitud AJAX si el campo 'Nombre' es un select
-            if (nombreasistenteField.is('select') && nombreasistenteField.is(':visible')) {
-                fetch('/servicios/asistentes/obtener/lista/' + selectedTipo)
-                    .then(response => response.json())
-                    .then(data => {
-                        var nombreSelect = currentForm.find('.nombreasistente');
-                        nombreSelect.empty();
-                        data.forEach(function (item) {
-                            nombreSelect.append($('<option></option>').val(item.Nombre).text(item.Nombre));
-                        });
-
-                        if (data.length === 1) {
-                            currentForm.find('input[name$="-correo"]').val(data[0].correo);
-                            currentForm.find('input[name$="-monto"]').val(data[0].monto);
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
                         }
-                    });
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+    <script>
+        // Función para mostrar u ocultar el formulario de Factura por aseguradora
+        function toggleFacturaForm() {
+            const medioPagoSelect = document.getElementById('id_MedioPago');
+            const facturaForm = document.getElementById('facturaForm');
+            const numFacturaInput = document.getElementById('id_numFactura');
+
+            if (medioPagoSelect.value === 'Contado') {
+                facturaForm.style.display = 'none';
+                numFacturaInput.removeAttribute('readonly');
+            } else {
+                numFacturaInput.setAttribute('readonly', 'readonly');
+                facturaForm.style.display = 'block';
             }
+        }
+
+        // Ejecutar la función al cargar la página
+        document.addEventListener('DOMContentLoaded', function () {
+            toggleFacturaForm();
         });
 
-        $(document).on('change', '.nombreasistente', function () {
-            var selectedNombre = $(this).val();
-            var currentForm = $(this).closest('tr');
+        // Ejecutar la función cuando cambie el valor del campo "Medio de pago"
+        document.getElementById('id_MedioPago').addEventListener('change', function () {
+            toggleFacturaForm();
+        });
+        // Espera a que el documento esté listo
 
-            // Solo realiza la solicitud AJAX si el campo 'Nombre' es un select
-            if (currentForm.find('.nombreasistente').is('select')) {
-                fetch('/servicios/asistentes/obtener/asistente/' + selectedNombre)
-                    .then(response => response.json())
-                    .then(data => {
-                        currentForm.find('input[name$="-correo"]').val(data.correo);
-                        currentForm.find('.monto').val(data.monto);
-                    });
+
+        //para cargar automaticamente los datos de los inputs de los selects
+        $(document).ready(function () {
+            // Función para agregar la casilla de verificación a un campo 'Nombre'
+            function addCheckboxToField(field) {
+                // Solo agrega la casilla de verificación si el campo 'Nombre' no tiene una ya
+
+                if (field.prev('br').length === 0 && field.next('.form-check').length === 0) {
+                    field.before('<br>');
+                    field.after('<div class="form-check"><input class="form-check-input toggle-nombre-input" type="checkbox" id="flexCheckIndeterminate"><label class="form-check-label" for="flexCheckIndeterminate">Ingresar un nuevo asistente</label></div>');
+                }
             }
+
+            $('.nombreasistente').each(function () {
+                addCheckboxToField($(this));
+            });
+
+            $(document).on('change', '.toggle-nombre-input', function (e) {
+                var checkbox = $(this);
+                var field = checkbox.parent().prev();
+
+                if (field.is('select')) {
+                    var input = $('<input type="text" class="form-control nombreasistente-input">');
+                    input.val(field.val());
+                    field.hide(); // oculta el select
+                    field.after(input); // agrega el input después del select
+                    checkbox.next().text('Escoger de la lista de asistentes');
+
+                } else if (field.next().is('input')) {
+                    console.log("si entra")
+                    var input = field.next();
+                    var option = $('<option></option>').val(input.val()).text(input.val());
+                    field.empty(); // limpia el select
+                    field.append(option); // agrega una nueva opción al select con el valor del input
+                    field.val(input.val()); // selecciona la nueva opción
+                    input.remove(); // elimina el input
+                    field.show(); // muestra el select
+                    checkbox.next().text('Cambiar a texto');
+                }
+
+                var currentForm = $(this).closest('tr');
+                currentForm.find('input[name$="-correo"]').val('');
+                currentForm.find('input[name$="-monto"]').val('');
+                currentForm.find('.nombreasistente').val(''); // limpia el select
+            });
+
+
+            // Actualiza el valor del select cada vez que se cambia el valor del campo de entrada
+            $(document).on('input', '.nombreasistente-input', function () {
+                var input = $(this);
+                var select = input.prev();
+                select.empty(); // vacía el select
+                var option = $('<option></option>').val(input.val()).text(input.val());
+                select.append(option); // agrega una nueva opción al select con el valor del input
+                select.val(input.val()); // selecciona la opción con este valor
+            });
+
+            // Tus eventos existentes deberían funcionar con los nuevos campos de entrada de texto
+            $(document).on('change', '.codcostoporasistente', function () {
+                var selectedTipo = $(this).val();
+                var currentForm = $(this).closest('tr');
+                currentForm.find('input[name$="-correo"]').val('');
+                currentForm.find('input[name$="-monto"]').val('');
+                var nombreasistenteField = currentForm.find('.nombreasistente');
+
+                // Solo realiza la solicitud AJAX si el campo 'Nombre' es un select
+                if (nombreasistenteField.is('select') && nombreasistenteField.is(':visible')) {
+                    fetch('/servicios/asistentes/obtener/lista/' + selectedTipo)
+                        .then(response => response.json())
+                        .then(data => {
+                            var nombreSelect = currentForm.find('.nombreasistente');
+                            nombreSelect.empty();
+                            data.forEach(function (item) {
+                                nombreSelect.append($('<option></option>').val(item.Nombre).text(item.Nombre));
+                            });
+
+                            if (data.length === 1) {
+                                currentForm.find('input[name$="-correo"]').val(data[0].correo);
+                                currentForm.find('input[name$="-monto"]').val(data[0].monto);
+                            }
+                        });
+                }
+            });
+
+            $(document).on('change', '.nombreasistente', function () {
+                var selectedNombre = $(this).val();
+                var currentForm = $(this).closest('tr');
+
+                // Solo realiza la solicitud AJAX si el campo 'Nombre' es un select
+                if (currentForm.find('.nombreasistente').is('select')) {
+                    fetch('/servicios/asistentes/obtener/asistente/' + selectedNombre)
+                        .then(response => response.json())
+                        .then(data => {
+                            currentForm.find('input[name$="-correo"]').val(data.correo);
+                            currentForm.find('.monto').val(data.monto);
+                        });
+                }
+            });
+
+            // Cuando se agrega un nuevo formulario, añade una casilla de verificación al campo 'Nombre'
+            $('.formset_row').formset({
+                addText: 'Agregar',
+                deleteText: '<i class="fa fa-trash"></i>',
+                prefix: 'asistentes_set',
+                addCssClass: 'btn btn-success formset-add-button',
+                added: function (row) {
+                    addCheckboxToField(row.find('.nombreasistente'));
+                }
+            });
         });
 
-        // Cuando se agrega un nuevo formulario, añade una casilla de verificación al campo 'Nombre'
-        $('.formset_row').formset({
-            addText: 'Agregar',
-            deleteText: '<i class="fa fa-trash"></i>',
-            prefix: 'asistentes_set',
-            addCssClass: 'btn btn-success formset-add-button',
-            added: function (row) {
-                addCheckboxToField(row.find('.nombreasistente'));
-            }
-        });
-    });
 
 
 
-
-</script>
-{% endblock content %}
+    </script>
+    {% endblock content %}

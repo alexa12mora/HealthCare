@@ -118,7 +118,12 @@ class AsistentesForm(forms.ModelForm):
     class Meta:
         model = Asistentes
         fields = ['CodCostoPorAsistente','Nombre', 'correo', 'monto']
-
+        labels = {
+            'CodCostoPorAsistente': 'Código de costo por asistente',
+            'Nombre': 'Nombre',
+            'correo': 'Correo',
+            'monto': 'Monto',
+        }
         widgets = {
             'CodCostoPorAsistente': forms.Select(attrs={'class': 'form-control codcostoporasistente'}),
             'correo': forms.EmailInput(attrs={'class': 'form-control'}),   
@@ -137,6 +142,8 @@ class AsistentesForm(forms.ModelForm):
         else:
             print("ENTRA AL QUE NO TIENE INSTANCIA VAICA ")
             self.fields['Nombre'].widget = forms.Select(attrs={'class': 'form-control nombreasistente'})
+
+
 
 AsistentesFormSet = forms.inlineformset_factory(
     servicios,

@@ -11,7 +11,6 @@
     <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 </head>
 <!-- Carga de jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -178,11 +177,19 @@
 
                                                     <div class="row">
                                                         <div class="col-xl-3">
-                                                            <p class="text-black float-start"><span
-                                                                    class="text-black me-3">
-                                                                    Total: </span><span style="font-size: 19px;">$
-                                                                    {{r.montototal}}</span>
+                                                            <p class="text-black float-start"><span class="text-black me-3">
+                                                                    Total: </span><span style="font-size: 15px;">${{r.montototal}}</span>
                                                             </p>
+                                                            <p class="text-black float-start"><span
+                                                                class="text-black me-3">
+                                                                IVA: </span><span style="font-size: 15px;">$
+                                                                {{r.montoiva}}</span>
+                                                        </p>
+                                                        <p class="text-black float-start"><span
+                                                            class="text-black me-3">
+                                                            Monto Total: </span><span style="font-size: 17px;">$
+                                                            {{r.montoFinal}}</span>
+                                                    </p>
                                                         </div>
                                                     </div>
                                                 </div>
