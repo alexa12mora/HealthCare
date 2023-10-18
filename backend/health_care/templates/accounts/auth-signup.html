@@ -59,5 +59,35 @@
     <i class="icon feather icon-sun" id="theme-indicator"></i>
     <input type="checkbox" id="theme-switch" class="d-none">
 </label>
+<script>
+    window.onload = function() {
+        var userType = document.querySelector("select[name='user_type']");
+        var medico = document.querySelector("select[name='medico']");
+        // Crea un elemento 'label'
+        var medicoLabel = document.createElement("label");
+        medicoLabel.setAttribute("class", "form-label");  // Agrega la clase 'form-label' de Bootstrap
+        // Añade el texto a la etiqueta
+        medicoLabel.innerHTML = "Seleccione el médico con el que está asociado";
+        // Añade la etiqueta antes del campo 'medico'
+        medico.parentNode.insertBefore(medicoLabel, medico);
+        // Oculta el campo 'medico' y su etiqueta cuando se carga la página
+        if (userType.value == 'medico') {
+            medico.style.display = 'none';
+            medicoLabel.style.display = 'none';
+        }
+        userType.onchange = function() {
+            if (userType.value == 'medico') {
+                medico.style.display = 'none';
+                medicoLabel.style.display = 'none';
+            } else {
+                medico.style.display = 'block';  // Cambia 'block' a 'block'
+                medicoLabel.style.display = 'block';  // Cambia 'block' a 'block'
+            }
+        }
+    }
+    
+    
+    </script>
+    
 
 {% endblock content %}

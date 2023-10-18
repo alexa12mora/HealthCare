@@ -43,9 +43,10 @@ class CustomRegistrationForm(UserCreationForm):
         ('secretaria', 'Secretaria')
     )
     user_type = forms.ChoiceField(choices=USER_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    medico = forms.ModelChoiceField(queryset=Medico.objects.all(),required=False,label="Escoge al médico", widget=forms.Select(attrs={'class': 'form-control', 'id': 'medico'}))
     class Meta:
         model = User
-        fields = ('username', 'email',)
+        fields = ('username', 'email', 'password1', 'password2','user_type', 'medico' )
         widgets = {
             'username': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -55,6 +56,7 @@ class CustomRegistrationForm(UserCreationForm):
                 'class': 'form-control',
                 'placeholder': 'Correo electrónico'
             })
+            
         }
         
 class CustomUserPasswordResetForm(PasswordResetForm):
@@ -222,9 +224,13 @@ class serviciosForm(forms.ModelForm):
         fecha_actual = date.today()
         self.fields['Fecha'].initial = fecha_actual  
         self.fields['numFactura'].initial = '1'
-        if user.is_authenticated and Medico.objects.filter(correo=user.email).exists():
-            medico =  Medico.objects.get(correo=user.email)
-            print(medico)
+        if user.is_authenticated:
+            if Medico.objects.filter(correo=user.email).exists():
+                medico = Medico.objects.get(correo=user.email)
+            elif Secretaria.objects.filter(correo=user.email).exists():
+                secretaria = Secretaria.objects.get(correo=user.email)
+                medico = Medico.objects.get(codMedico=secretaria.medico_id)
+  # Redirige a una página de error si el usuario no es ni médico ni secretaria
             self.fields['codMedico'].queryset = Medico.objects.filter(codMedico=medico.codMedico)
             self.fields['CodAseguradora'].queryset = Aseguradoras.objects.filter(codMedico=medico.codMedico)
             self.fields['CodBanco'].queryset = Emisor.objects.filter(codMedico=medico.codMedico)
@@ -233,6 +239,8 @@ class serviciosForm(forms.ModelForm):
             if self.instance.EstadoCierre:
                 for field_name, field in self.fields.items():
                     field.widget.attrs['disabled'] = True
+                    
+                    
 
 class FacturasForm(forms.ModelForm):
     class Meta:

@@ -9,10 +9,12 @@ class Medico(models.Model):
     def __str__(self):
         return self.Nombre
     
-class Secreataria(models.Model):
+    
+class Secretaria(models.Model):
     codSecretaria = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=100)
     correo = models.CharField(max_length=100)
+    medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.Nombre

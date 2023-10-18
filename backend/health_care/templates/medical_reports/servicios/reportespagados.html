@@ -94,15 +94,18 @@
                             <tbody>
 
                                 {% for rep in asi_inf.reportes %}
+
                                 <tr class="unread">
                                     <td>
                                         <table class="table">
                                             <thead>
+                                                {% if asi_inf.reportes %}
                                                 <tr class="table-success">
                                                     <th colspan="4">Reporte fecha pago:
                                                         {{rep.pago_asistente.FechaPago|date:"d/m/Y"}}, número
                                                         dereferencia: {{rep.pago_asistente.descFactura}}</th>
                                                 </tr>
+                                                {% endif %}
                                                 <tr>
                                                     <th scope="col">Fecha servicio</th>
                                                     <th scope="col">Servicio asociado</th>
@@ -135,11 +138,9 @@
                                         </table>
                                     </td>
                                 </tr>
+
                                 {% endfor %}
-                                <tr class="table-success">
-                                    <th colspan="4">Reporte fecha pago: {{rep.pago_asistente.FechaPago|date:"d/m/Y"}},
-                                        número de referencia: {{rep.pago_asistente.descFactura}}</th>
-                                </tr>
+
                                 {% endfor %}
                             </tbody>
                         </table>
