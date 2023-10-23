@@ -193,6 +193,7 @@ class CostosDeOperacionesForm(forms.ModelForm):
             'NombreOperacion': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoCosto': forms.NumberInput(attrs={'class': 'form-control'}),
             'codMedico': forms.HiddenInput(),
+            
         }
 
 class serviciosForm(forms.ModelForm):
@@ -212,7 +213,7 @@ class serviciosForm(forms.ModelForm):
         model = servicios
         fields = ['Fecha', 'NombrePaciente', 'MontoTotal', 'MedioPago', 'CodAseguradora', 'CodBanco','CodHospital', 'EstadoPago', 'codMedico', 'CodCostoOperacion', 'numFactura']
         widgets = {
-            'Fecha': forms.DateInput(attrs={'class': 'form-control'}),
+            'Fecha': forms.DateInput(attrs={'class': 'form-control','type': 'date'}),
             'NombrePaciente': forms.TextInput(attrs={'class': 'form-control'}),
             'MontoTotal': forms.NumberInput(attrs={'class': 'form-control'}),
             'numFactura': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_numFactura'}),
@@ -247,7 +248,7 @@ class FacturasForm(forms.ModelForm):
         model = Facturas
         fields = ['FechaPago', 'NumeroFactura']
         widgets = {
-            'FechaPago': forms.DateInput(attrs={'class': 'form-control','placeholder': 'Formato: dd/mm/yyyy'}),
+            'FechaPago': forms.DateInput(attrs={'class': 'form-control','placeholder': 'Formato: dd/mm/yyyy','type': 'date'}),
             'NumeroFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
     def __init__(self, *args, **kwargs):
@@ -267,7 +268,7 @@ class FacturasAsistentesForm(forms.ModelForm):
         model = FacturasAsistentes
         fields = ['FechaEmision','descFactura']
         widgets = {
-            'FechaEmision': forms.DateInput(attrs={'class': 'form-control','placeholder': 'Formato: dd/mm/yyyy'}),
+            'FechaEmision': forms.DateInput(attrs={'class': 'form-control','placeholder': 'Formato: dd/mm/yyyy','type': 'date'}),
             'descFactura': forms.TextInput(attrs={'class': 'form-control'}),
         }
         
@@ -298,7 +299,7 @@ class ReporteForm(forms.ModelForm):
         model = Reporte
         fields = ['FechaReporte', 'Servicios', 'Medico', 'Asistente']
         widgets = {
-            'FechaReporte': forms.DateInput(attrs={'class': 'form-control'}),
+            'FechaReporte': forms.DateInput(attrs={'class': 'form-control','type': 'date'}),
             'Servicios': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'Medico': forms.Select(attrs={'class': 'form-control'}),
             'Asistente': forms.Select(attrs={'class': 'form-control'}),
