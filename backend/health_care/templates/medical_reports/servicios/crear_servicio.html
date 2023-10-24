@@ -143,6 +143,7 @@
                                                 {% for field in form.visible_fields %}
                                                 <td class="d-block d-md-table-cell">
                                                     {# ...contenido del td... #}
+                                                    <label class="form__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
                                                     {{ field }}
                                                 </td>
                                                 {% endfor %}
@@ -240,18 +241,23 @@
     <script>
 
         $(document).ready(function () {
-            if ($(window).width() < 768) {
-                $('#miTabla thead').addClass('d-none d-md-table-row');
+            function checkWidth() {
+                if ($(window).width() < 768) {
+                    $('#miTabla thead').addClass('d-none d-md-table-row');
+                    $('.form__label').show(); // Muestra las etiquetas
+                } else {
+                    $('#miTabla thead').removeClass('d-none d-md-table-row');
+                    $('.form__label').hide(); // Oculta las etiquetas
+                }
             }
+        
+            // Ejecuta la función al cargar la página
+            checkWidth();
+        
+            // Ejecuta la función cada vez que se redimensiona la ventana
+            $(window).resize(checkWidth);
         });
-    
-        $(window).resize(function () {
-            if ($(window).width() < 768) {
-                $('#miTabla thead').addClass('d-none d-md-table-row');
-            } else {
-                $('#miTabla thead').removeClass('d-none d-md-table-row');
-            }
-        });
+        
         $(document).ready(function () {
 
 

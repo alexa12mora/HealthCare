@@ -4,11 +4,37 @@
 {% block content %}
 <!-- Carga de jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+  body {
+    background-image: url("{% static 'assets/images/Fondo.png' %}");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-attachment: fixed;
+    background-size: 90% 100%;
+    /* Ajusta el tamaño de la imagen de fondo */
+    /* Agrega un filtro para oscurecer la imagen */
+    filter: brightness(75%);
 
+  }
+
+  /* Cuando la pantalla tiene 768px o menos de ancho, aplica estos estilos */
+  @media (max-width: 768px) {
+    body {
+      background-image: url("{% static 'assets/images/fondoMobile.jpg' %}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: 100% 100%;
+    }
+  }
+</style>
 <!-- [ Main Content ] start -->
 <div class="content-row">
-  <!-- Your content goes here -->
+
 </div>
 <!-- [ Main Content ] end -->
+
+
 
 {% endblock content %}

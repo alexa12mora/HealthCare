@@ -121,10 +121,10 @@ class AsistentesForm(forms.ModelForm):
         model = Asistentes
         fields = ['CodCostoPorAsistente','Nombre', 'correo', 'monto']
         labels = {
-            'CodCostoPorAsistente': 'Código de costo por asistente',
+            'CodCostoPorAsistente': 'Tipo asistente',
             'Nombre': 'Nombre',
-            'correo': 'Correo',
-            'monto': 'Monto',
+            'correo': 'Correo electrónico ',
+            'monto': 'Monto asociado',
         }
         widgets = {
             'CodCostoPorAsistente': forms.Select(attrs={'class': 'form-control codcostoporasistente'}),
