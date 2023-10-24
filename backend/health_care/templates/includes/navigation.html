@@ -30,12 +30,7 @@
     </ul>
     <ul class="navbar-nav ml-auto">
       <!-- Dark Mode -->
-      <li>
-        <label>
-          <i class="icon feather icon-sun" id="theme-indicator"></i>
-          <input type="checkbox" id="theme-switch" class="d-none">
-        </label>
-      </li>
+
       <!-- Notifications -->
 
       {% if not request.user.is_authenticated %}
@@ -53,7 +48,7 @@
             <i class="icon feather icon-settings"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right profile-notification">
-            <div class="pro-head">
+            <div class="pro-head" style="background-color:#21734F;">
 
               <span>{{ request.user.username }}</span>
               <a href="{% url 'logout' %}" class="dud-logout" title="Logout">
@@ -61,10 +56,8 @@
               </a>
             </div>
             <ul class="pro-body">
-              <li><a href="#" class="dropdown-item"><i class="feather icon-settings"></i>Configuración</a></li>
               <li><a href="{% url 'profile' %}" class="dropdown-item"><i class="feather icon-user"></i>
                   Mi perfil</a></li>
-              <li><a href="#" class="dropdown-item"><i class="feather icon-lock"></i> Bloquear pantalla</a></li>
               <li>
                 {% if request.user.is_superuser %}
                 <a href="{% url 'admin:password_change' %}" class="dropdown-item">
