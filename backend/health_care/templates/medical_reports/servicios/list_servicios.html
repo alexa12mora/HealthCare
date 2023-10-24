@@ -133,6 +133,8 @@
 <script>
     $(document).ready(function () {
         var miTabla = $('#miTabla').DataTable({
+            dom: '<"toolbar">BfrtipQ',
+
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
                 searchBuilder: {
@@ -185,8 +187,24 @@
             autoFill: true,
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
             colReorder: true,
-            dom: 'Qfrtip',
+            info: false,
             searchBuilder: true,
+            buttons: [
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    exportOptions: {
+                        columns: ':not(:last)' // Excluye la última columna
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir',
+                    exportOptions: {
+                        columns: ':not(:last)' // Excluye la última columna
+                    }
+                }
+            ],
         });
 
         $('#miTabla_length select').on('change', function () {
@@ -196,6 +214,7 @@
             }
         });
         miTabla.searchBuilder.container().prependTo(table.table().container());
+        $("div.toolbar").css("display", "flex");
     });
 
 </script>
