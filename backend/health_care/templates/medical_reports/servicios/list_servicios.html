@@ -86,6 +86,10 @@
                                             style="background-color: #007bff">
                                             Actualizar
                                         </a>
+                                        <a href="javascript:void(0);" class="label text-white f-12 btn-danger btn-like"
+                                            onclick="deleteServicio('{{ servicios.pk }}')">
+                                            <i class="feather icon-trash-2"></i>
+                                        </a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -93,10 +97,32 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog"
+                        aria-labelledby="confirmModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmModalLabel">Confirmar eliminación</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estás seguro de que quieres eliminar este servicio?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                    <button type="button" class="btn btn-primary">Si</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <style>
@@ -131,6 +157,33 @@
 
 
 <script>
+
+
+    function deleteServicio(id) {
+        // Mostrar el modal de confirmación
+        $('#confirmModal').modal('show');
+
+        // Si el usuario hace clic en "Save changes", solicitar al servidor eliminar el servicio
+        $('#confirmModal .btn-primary').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'eliminar_servicio' 0 %}".replace('0', id),
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function () {
+                    // Si la eliminación fue exitosa, redirigimos a list_servicios
+                    window.location.href = "{% url 'list_servicios' %}";
+                },
+                error: function () {
+                    alert('Error al eliminar el servicio.');
+                },
+            });
+        });
+    }
+
+
+
     $(document).ready(function () {
         var miTabla = $('#miTabla').DataTable({
             dom: '<"toolbar">BfrtipQ',

@@ -102,6 +102,10 @@ urlpatterns = [
   path('servicios/proceso/pagos/fechas', views.procesar_pagos, name='procesar_pagos'),
   path('servicios/reportes/descargar/<int:pk>/', views.descargar_reporte_pdf, name='descargar_reporte'),
   path('servicios/reportes/pagados', views.lista_reportes, name='lista_reportes'),
+  
+  #eliminar
+  
+  path('eliminar/servicio/<int:pk>/', views.eliminar_servicio, name='eliminar_servicio'),
   #reporte de servicios pagados a asistentes
   path('servicios/reportes/pagados/lista', views.reporteserviciospagados, name='lista_reportes_pagados'),
   path('servicios/reportes/utilidad', views.reporte_utilidad_pagos, name='reporte_utilidad_pagos'),

@@ -1634,4 +1634,18 @@ def lista_asistentes(request):
     return render(request, 'medical_reports/asistentes/editAsistentes.html', context)
 
 
+@login_required(login_url='/accounts/login/')
+@medico_required() 
+def eliminar_servicio(request, pk):
+    servicio = get_object_or_404(servicios, pk=pk)
+    if request.method == 'POST':
+        servicio.delete()
+        print("entra")
+        # Redireccionar a la página que muestra la lista actualizada de aseguradoras
+        return redirect('list_servicios')
+
+    # Si la petición no es POST, simplemente redireccionamos a la lista de aseguradoras
+    return redirect('list_servicios')
+
+
 
