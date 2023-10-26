@@ -34,13 +34,15 @@
                         <table class="table " id="miTabla">
                             <thead>
                                 <tr>
-                                    <th scope="col">FECHA</th>
-                                    <th scope="col">SERVICIO</th>
-
-                                    <th scope="col">FORMA DE PAGO</th>
-                                    <th scope="col">ESTADO DE PAGO</th>
-                                    <th scope="col">PROCESO </th>
-                                    <th scope="col">ACCIONES</th>
+                                    <th scope="col">Fecha</th>
+                                    <th scope="col">Servicio</th>
+                                    <th scope="col" class="print-only">Paciente</th>
+                                    <th scope="col" class="print-only">Emisor</th>
+                                    <th scope="col" class="print-only">Aseguradora</th>
+                                    <th scope="col">Forma pago</th>
+                                    <th scope="col">Estado pago</th>
+                                    <th scope="col">Proceso</th>
+                                    <th scope="col">Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -52,7 +54,15 @@
                                     <td>
                                         <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
                                     </td>
-
+                                    <td class="print-only">
+                                        <p class="m-0">{{ servicios.NombrePaciente }}</p>
+                                    </td>
+                                    <td class="print-only">
+                                        <p class="m-0">{{ servicios.CodBanco }}</p>
+                                    </td>
+                                    <td class="print-only">
+                                        <p class="m-0">{{ servicios.CodAseguradora|default_if_none:"" }}</p>
+                                    </td>
                                     <td>
                                         <p class="m-0">{{ servicios.MedioPago }}</p>
                                     </td>
@@ -152,7 +162,20 @@
         outline: none;
         /* Quitamos el contorno al enfocar */
     }
+
+    @media screen {
+        .print-only {
+            display: none;
+        }
+    }
+
+    @media print {
+        .no-print {
+            display: none;
+        }
+    }
 </style>
+
 
 
 
@@ -247,17 +270,18 @@
                     extend: 'pdf',
                     text: 'PDF',
                     exportOptions: {
-                        columns: ':not(:last)' // Excluye la última columna
+                        columns: [0, 1, 2, 3, 4, 6] // Incluye solo las columnas especificadas
                     }
                 },
                 {
                     extend: 'print',
                     text: 'Imprimir',
                     exportOptions: {
-                        columns: ':not(:last)' // Excluye la última columna
+                        columns: [0, 1, 2, 3, 4, 6] // Incluye solo las columnas especificadas
                     }
                 }
-            ],
+            ]
+
         });
 
         $('#miTabla_length select').on('change', function () {
