@@ -34,50 +34,51 @@
                         <table class="table " id="miTabla">
                             <thead>
                                 <tr>
-                                    <th scope="col">Fecha</th>
-                                    <th scope="col">Servicio</th>
-                                    <th scope="col" class="print-only">Paciente</th>
-                                    <th scope="col" class="print-only">Emisor</th>
-                                    <th scope="col" class="print-only">Aseguradora</th>
-                                    <th scope="col">Forma pago</th>
-                                    <th scope="col">Estado pago</th>
-                                    <th scope="col">Proceso</th>
-                                    <th scope="col">Acción</th>
+                                    <th scope="col small-text">Fecha</th>
+                                    <th scope="col small-text">Servicio</th>
+                                    <th scope="col small-text" class="print-only">Paciente</th>
+                                    <th scope="col small-text" class="print-only">Emisor</th>
+                                    <th scope="col small-text" class="print-only">Aseguradora</th>
+                                    <th scope="col small-text">Forma pago</th>
+                                    <th scope="col small-text">Estado pago</th>
+                                    <th scope="col small-text">Proceso</th>
+                                    <th scope="col small-text">Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for servicios in servicios_list %}
                                 <tr class="unread">
                                     <td>
-                                        <p class="m-0">{{ servicios.Fecha }}</p>
+                                        <p class="m-0 small-text">{{ servicios.Fecha }}</p>
                                     </td>
                                     <td>
-                                        <p class="m-0">{{ servicios.CodCostoOperacion }}</p>
+                                        <p class="m-0 small-text">{{ servicios.CodCostoOperacion }}</p>
                                     </td>
                                     <td class="print-only">
-                                        <p class="m-0">{{ servicios.NombrePaciente }}</p>
+                                        <p class="m-0 small-text">{{ servicios.NombrePaciente }}</p>
                                     </td>
                                     <td class="print-only">
-                                        <p class="m-0">{{ servicios.CodBanco }}</p>
+                                        <p class="m-0 small-text">{{ servicios.CodBanco }}</p>
                                     </td>
                                     <td class="print-only">
-                                        <p class="m-0">{{ servicios.CodAseguradora|default_if_none:"" }}</p>
+                                        <p class="m-0 small-text">{{ servicios.CodAseguradora|default_if_none:"" }}</p>
                                     </td>
                                     <td>
-                                        <p class="m-0">{{ servicios.MedioPago }}</p>
+                                        <p class="m-0 small-text">{{ servicios.MedioPago }}</p>
                                     </td>
                                     <td>
-                                        <p class="m-0">{{ servicios.EstadoPago }}</p>
+                                        <p class="m-0 small-text">{{ servicios.EstadoPago }}</p>
                                     </td>
                                     <td>
                                         {% if servicios.EstadoCierre%}
 
                                         <p class="m-0 text-c-blue"><i
-                                                class="fas fa-circle text-c-green f-10 m-r-15"></i>
+                                                class="fas fa-circle text-c-green f-10 m-r-15  small-text"></i>
                                             Cerrado</p>
                                         {% else %}
 
-                                        <p class="m-0 text-c-red"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>
+                                        <p class="m-0 text-c-red"><i
+                                                class="fas fa-circle text-c-red f-10 m-r-15 small-text"></i>
                                             En proceso</p>
                                         {% endif %}
                                     </td>
@@ -85,14 +86,14 @@
                                         {% if servicios.EstadoCierre%}
 
                                         <a href="{% url 'update_servicio' servicios.pk %}"
-                                            class="label  text-white f-12 btn-primary"
+                                            class="label  text-white f-12 btn-primary small-text"
                                             style="background-color: #21734F">
                                             Ver datos
                                         </a>
                                         {% else %}
 
                                         <a href="{% url 'update_servicio' servicios.pk %}"
-                                            class="label  text-white f-12 btn-primary"
+                                            class="label  text-white f-12 btn-primary small-text"
                                             style="background-color: #007bff">
                                             Actualizar
                                         </a>
@@ -173,6 +174,11 @@
         .no-print {
             display: none;
         }
+    }
+
+    .small-text {
+        font-size: 13px;
+        /* Ajusta este valor a tu preferencia */
     }
 </style>
 
