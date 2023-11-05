@@ -183,10 +183,18 @@ def logout_view(request):
 @login_required(login_url='/accounts/login/')
 def profile(request):
   user = request.user
+  medico = get_object_or_404(Medico, correo=user.email)
   if request.method == 'POST':
       user_form = UserForm(request.POST, instance=user)
       if user_form.is_valid():
           user_form.save()
+          medico.correo = user.email
+          print(medico.correo )
+          medico.save()
+          storage = messages.get_messages(request)
+          for message in storage:
+              pass
+          messages.success(request, '¡Correo actualizado con éxito!')
           return redirect('profile')
           
   else:
