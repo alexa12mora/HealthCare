@@ -27,7 +27,6 @@
                     <a href="{% url 'create_servicio' %}" class="btn btn-secondary">
                         Nuevo servicio
                     </a>
-
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -49,7 +48,7 @@
                                 {% for servicios in servicios_list %}
                                 <tr class="unread">
                                     <td>
-                                        <p class="m-0 small-text">{{ servicios.Fecha }}</p>
+                                        <p class="m-0 small-text">{{ servicios.Fecha|date:"Y/m/d"}}</p>
                                     </td>
                                     <td>
                                         <p class="m-0 small-text">{{ servicios.CodCostoOperacion }}</p>
@@ -186,9 +185,6 @@
     }
 </style>
 
-
-
-
 <script>
 
 
@@ -218,6 +214,7 @@
 
 
     $(document).ready(function () {
+
         var miTabla = $('#miTabla').DataTable({
             dom: '<"toolbar">BfrtipQ',
 
@@ -274,7 +271,8 @@
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
             colReorder: true,
             info: false,
-            "ordering": false,
+            "order": [[0, "desc"]],
+
             searchBuilder: true,
             buttons: [
                 {

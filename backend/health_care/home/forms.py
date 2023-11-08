@@ -208,7 +208,6 @@ class serviciosForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     CodHospital = forms.ModelChoiceField(queryset=Hospitales.objects.none(), widget=forms.Select(attrs={'class': 'form-control'}))
-    
     class Meta:
         model = servicios
         fields = ['Fecha', 'NombrePaciente', 'MontoTotal', 'MedioPago', 'CodAseguradora', 'CodBanco','CodHospital', 'EstadoPago', 'codMedico', 'CodCostoOperacion', 'numFactura']
@@ -225,6 +224,10 @@ class serviciosForm(forms.ModelForm):
         fecha_actual = date.today()
         self.fields['Fecha'].initial = fecha_actual  
         self.fields['numFactura'].initial = '1'
+        if self.instance and self.instance.Fecha:
+            # Formatea la fecha al formato 'YYYY-MM-DD'
+           self.initial['Fecha'] = self.instance.Fecha.strftime('%Y-%m-%d')
+
         if user.is_authenticated:
             if Medico.objects.filter(correo=user.email).exists():
                 medico = Medico.objects.get(correo=user.email)

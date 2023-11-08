@@ -840,7 +840,7 @@ def lista_reportes(request):
             montototal = 0 
             medico = reporte.Medico
             asistente = reporte.Asistente
-            servicios = reporte.Servicios.all()
+            servicios = reporte.Servicios.all().order_by('-Fecha')
             for servicio in servicios:
                 if not servicio.EstadoCierre:
                     asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
@@ -950,7 +950,7 @@ def reporte_por_med_servicios_no_pagados(request):
     else:
         return redirect('error_page')  # Redirige a una página de error si el usuario no es ni médico ni secretaria
     if medico:
-        servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
+        servicios_medico = servicios.objects.filter(codMedico=medico.codMedico).order_by('-Fecha')
         asistentes_servicios = {}
         for servicio in servicios_medico:
             if servicio.MedioPago == 'Credito' and servicio.EstadoPago == 'Pendiente':
@@ -1333,23 +1333,11 @@ def list_servicios(request):
     else:
         return redirect('error_page')  # Redirige a una página de error si el usuario no es ni médico ni secretaria
     if medico:     
-        servicios_list = servicios.objects.filter(codMedico=medico.codMedico)
+        servicios_list = servicios.objects.filter(codMedico=medico.codMedico).order_by('-Fecha')
         for servicio in servicios_list:
-            servicio.Fecha = servicio.Fecha.strftime("%d/%m/%Y")
             servicio.asistentes = Asistentes.objects.filter(servicio=servicio)
-            #for asistente in servicio.asistentes:
-               # factura = FacturasAsistentes.objects.filter(CodAsistente=asistente).first()
-               # asistente.factura = factura
-        for  a in servicios_list:  
-           print(a.asistentes)
     else:
         pass
-    start_date = request.GET.get('start_date')
-    end_date = request.GET.get('end_date')
-    if start_date and end_date:
-        start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
-        end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-        servicios_list = servicios_list.filter(Fecha__range=[start_date, end_date])
     formset = AsistentesFormSet(request.POST)
     form = serviciosForm(request.user)
     context = {
@@ -1502,7 +1490,7 @@ def reporteserviciospagados(request):
                                 medico = reporte.Medico           
                                 asistente = reporte.Asistente 
                                 factura_asistente = FacturasAsistentes.objects.get(CodReporte=reporte)        
-                                ser = reporte.Servicios.all()   
+                                ser = reporte.Servicios.all().order_by('-Fecha')
                                 # Crear un nuevo diccionario para cada reporte
                                 asistentes_servicios = {}        
                                 for servicio in ser:
