@@ -88,14 +88,14 @@
                                 </thead>
                                 <tbody>
                                     <div class="table-responsive">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered" id="tablaServiciosPendientesPago">
                                             <thead>
                                                 <tr>
                                                     <th scope="col" class="text-center text-uppercase" colspan="5">
                                                         Servicios Pendientes de Pago </th>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="col">Seleccion</th>
+                                                    <th scope="col">Servicios seleccionados</th>
                                                     <th scope="col">Servicio</th>
                                                     <th scope="col">Fecha</th>
                                                     <th scope="col">Paciente</th>
@@ -115,7 +115,7 @@
                                                 {% endfor %}
                                                 {% if reporte_info.servicios.montototal is not None %}
                                                 <tr>
-                                                    <th colspan="5">
+                                                    <th colspan="5" id="totalserviciospendientespago">
                                                         <h6 style="color:blue">Total servicios pendientes de pago: $
                                                             {{reporte_info.servicios.montototal }}</h6>
                                                     </th>
@@ -128,21 +128,18 @@
                                                     </th>
                                                 </tr>
                                                 {% endif %}
-
-
-
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="table-responsive">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered" id="tablaServiciosPendientesCobro">
                                             <thead>
                                                 <tr>
                                                     <th scope="col" class="text-center text-uppercase" colspan="5">
                                                         Servicios Pendientes de Cobro</th>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="col">Seleccion</th>
+                                                    <th scope="col">Servicios seleccionados</th>
                                                     <th scope="col">Servicio</th>
                                                     <th scope="col">Fecha</th>
                                                     <th scope="col">Paciente</th>
@@ -163,7 +160,7 @@
                                                 {% if reporte_info.total_cobros is not None %}
                                                 <tr>
                                                     <th colspan="5">
-                                                        <h6 style="color:blue">Total servicios pendientes de cobro: $
+                                                        <h6 style="color:blue" id="totalserviciospendientescobro">Total servicios pendientes de cobro: $
                                                             {{reporte_info.total_cobros}} </h6>
                                                     </th>
                                                 </tr>
@@ -179,7 +176,7 @@
                                             </tbody>
                                             <tr>
                                                 <th scope="col" class="text-uppercase text-center" colspan="5">
-                                                    <h6 style="color:blue">Balance Pendiente: $
+                                                    <h6 style="color:blue" id="balance-pendiente">Balance Pendiente: $
                                                         {{reporte_info.diferencia}}</h6>
                                                 </th>
                                             </tr>
@@ -302,6 +299,9 @@
 <script>
 
     $(document).ready(function () {
+
+
+
         $.getJSON("{% url 'get_clientes' %}", function (data) {
             var select = $("#selectclientes");
             select.empty();
@@ -319,13 +319,22 @@
             estilo += "table, th, td { border: 1px solid black; padding: 8px; }";
             estilo += "th, td { text-align: left; }";
             estilo += "</style>";
-
+        
             // Selecciona la tabla y su contenedor por su ID
-
             var logo = document.getElementById("logo");
             logo.style.display = "block";
-            var tablaHTML = document.getElementById("tablaContenedor").innerHTML;
-
+        
+            // Crea una copia de la tabla y elimina las filas no seleccionadas
+            var tabla = document.getElementById("tablaContenedor").cloneNode(true);
+            var filas = tabla.getElementsByTagName("tr");
+            for (var i = filas.length - 1; i >= 0; i--) {
+                var casilla = filas[i].getElementsByTagName("input")[0];
+                if (casilla && !casilla.checked) {
+                    filas[i].parentNode.removeChild(filas[i]);
+                }
+            }
+            var tablaHTML = tabla.innerHTML;
+        
             // Crea un nuevo documento para la impresión
             var nuevaVentana = window.open("", "_blank");
             nuevaVentana.document.write('<html><head><title>Tabla Descargada</title>');
@@ -340,6 +349,7 @@
             nuevaVentana.print();
             logo.style.display = "none";
         });
+        
 
         document.getElementById('miFormulario').addEventListener('submit', function (event) {
             event.preventDefault();  // Evita que se envíe el formulario de la forma predeterminada
@@ -401,5 +411,36 @@
             });
         }, false);
     })();
+
+    $(document).ready(function() {
+        $('input[type="checkbox"]').change(function() {
+            var totalPendientePago = 0;
+            var totalPendienteCobro = 0;
+            // Sumar los montos de los servicios seleccionados en la tabla de pendientes de pago
+            $('#tablaServiciosPendientesPago input[type="checkbox"]:checked').each(function() {
+                console.log("SI ENTRA")
+                var monto = parseFloat($(this).closest('tr').find('td:last').text().replace('$', ''));
+                totalPendientePago += monto;
+            });
+    
+            // Sumar los montos de los servicios seleccionados en la tabla de pendientes de cobro
+            $('#tablaServiciosPendientesCobro input[type="checkbox"]:checked').each(function() {
+                var monto = parseFloat($(this).closest('tr').find('td:last').text().replace('$', ''));
+                totalPendienteCobro += monto;
+            });
+    
+            // Calcular la diferencia
+            var diferencia = totalPendientePago - totalPendienteCobro;
+    
+            // Actualizar el balance pendiente
+            $('#balance-pendiente').text('Balance Pendiente: $' + diferencia.toFixed(2));
+            // Actualizar el total de servicios pendientes de pago
+        $('#totalserviciospendientespago').text('Total servicios pendientes de pago: $' + totalPendientePago.toFixed(2));
+
+        // Actualizar el total de servicios pendientes de cobro
+        $('#totalserviciospendientescobro').text('Total servicios pendientes de cobro: $' + totalPendienteCobro.toFixed(2));
+        });
+    });
+    
 </script>
 {% endblock content %}
