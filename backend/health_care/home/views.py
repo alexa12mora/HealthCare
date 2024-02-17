@@ -1760,34 +1760,63 @@ def servicios_deudas_medicos(request):
         cliente = request.POST.get('selectclientes')
         if cliente and cliente != 'Todos' and cliente != 'Seleccione un cliente':
             asistente = Asistentes.objects.filter(Nombre=cliente).first()
+
             if asistente:
-                reportes = Reporte.objects.filter(Medico=medico,EstadoCierre=False,Asistente=asistente)
+                reportes = Reporte.objects.filter(Medico=medico, EstadoCierre=False, Asistente__correo=asistente.correo)
+                servicios_list = servicios.objects.filter(EstadoFactura=False,EstadoPago="Pagado", codMedico=medico.pk,asistentes__Nombre=cliente)
+                print("LISTA")
+                print(servicios_list)
                 if reportes:     
                     for reporte in reportes:
                         dict1 = reporte_servicio_individual(medico.pk,reporte.CodReporte)
+                        for servicio in servicios_list:
+                            asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
+                            for asistente in asistentes_servicio:
+                                asistente_key = asistente.correo 
+                                if asistente_key not in asistentes_servicios:
+                                    asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios_montos': {}, 'montos': []}
+                                if servicio not in asistentes_servicios[asistente_key]['servicios_montos']:
+                                    asistentes_servicios[asistente_key]['servicios_montos'][servicio] = asistente.monto
+                                    asistentes_servicios[asistente_key]['montos'].append(asistente.monto)        
+                        for asistente_key in asistentes_servicios:
+                            asistentes_servicios[asistente_key]['montototal'] = sum(asistentes_servicios[asistente_key]['montos'])                      
+                        for datos in asistentes_servicios.values():
+                            if isinstance(datos['servicios_montos'], dict):
+                                for servicio, monto in datos['servicios_montos'].items():
+                                    if dict1['servicios']:
+                                        if servicio not in dict1['servicios']:
+                                            dict1['servicios'][servicio] = monto
+                                        else:
+                                            dict1['servicios'][servicio] += monto        
+                        # Ahora, calculamos la suma total de los montos
+                        if dict1['servicios']:
+                            dict1['montototal'] = sum(dict1['servicios'].values())
+                        else:
+                            dict1['montototal'] = 0
                 else:
-                    notification = "No hay servicios pendientes de pago"      
-                servicios_list = servicios.objects.filter(EstadoFactura=False,EstadoPago="Pagado", codMedico=medico.pk,asistentes__Nombre=cliente) 
-                for servicio in servicios_list:
-                    asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
-                    for asistente in asistentes_servicio:
-                        asistente_key = asistente.correo 
-                        if asistente_key not in asistentes_servicios:
-                            asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios_montos': {}, 'montos': []}
-                        if servicio not in asistentes_servicios[asistente_key]['servicios_montos']:
-                            asistentes_servicios[asistente_key]['servicios_montos'][servicio] = asistente.monto
-                            asistentes_servicios[asistente_key]['montos'].append(asistente.monto)        
-                for asistente_key in asistentes_servicios:
-                    asistentes_servicios[asistente_key]['montototal'] = sum(asistentes_servicios[asistente_key]['montos'])                      
-                for datos in asistentes_servicios.values():
-                    if isinstance(datos['servicios_montos'], dict):
-                        for servicio, monto in datos['servicios_montos'].items():
-                            if servicio not in dict1['servicios']:
-                                dict1['servicios'][servicio] = monto
-                            else:
-                                dict1['servicios'][servicio] += monto            
-                # Ahora, calculamos la suma total de los montos
-                dict1['montototal'] = sum(dict1['servicios'].values())                  
+                    if servicios_list:
+                        print("*******************************")
+                        print(servicios_list)
+                        for servicio in servicios_list:
+                            asistentes_servicio = Asistentes.objects.filter(servicio=servicio)
+                            for asistente in asistentes_servicio:
+                                asistente_key = asistente.correo 
+                                if asistente_key not in asistentes_servicios:
+                                    asistentes_servicios[asistente_key] = {'asistente': asistente, 'servicios_montos': {}, 'montos': []}
+                                if servicio not in asistentes_servicios[asistente_key]['servicios_montos']:
+                                    asistentes_servicios[asistente_key]['servicios_montos'][servicio] = asistente.monto
+                                    asistentes_servicios[asistente_key]['montos'].append(asistente.monto)        
+                        for asistente_key in asistentes_servicios:
+                            asistentes_servicios[asistente_key]['montototal'] = sum(asistentes_servicios[asistente_key]['montos'])
+                        print("*******************************")
+                        print(asistentes_servicios)
+                        dict1 = {
+                            'reporte': None,
+                            'medico': medico,
+                            'asistente':asistentes_servicios[asistente.correo]['asistente'],
+                            'servicios': asistentes_servicios[asistente.correo]['servicios_montos'],
+                            'montototal':sum(asistentes_servicios[asistente.correo]['montos']),
+                        }                    
             else:
                 notification = "No existen servicios asociados pendientes de pago para este cliente"    
             list_cobros = Cobros.objects.filter(Medico=medico.codMedico,NombreDelCliente=cliente,Estado=False).order_by('-FechaCreacion')   
@@ -1802,8 +1831,6 @@ def servicios_deudas_medicos(request):
                     'total_cobros':total_cobros,  
                     'diferencia':diferencia,    
             }     
-            print(dict1) 
-            print(list_cobros) 
         else:
             notification = "No hay datos disponibles para ese cliente"
     else:
@@ -1824,7 +1851,6 @@ def servicios_deudas_crear_reporte(request):
     servicios_del_reporte = {}
     medico = get_medico(user)
     band = True
-    notification = ""
     if not medico:
         return redirect('error_page') 
     if request.method == 'POST': 
@@ -1836,21 +1862,29 @@ def servicios_deudas_crear_reporte(request):
         seleccionados1 = request.POST.getlist('seleccionados1')
         seleccionados2 = request.POST.getlist('seleccionados2')
         seleccionados1 = [int(id) for id in seleccionados1]
+        seleccionados2 = [int(id) for id in seleccionados2]
         if seleccionados1 and seleccionados2:
             if cliente and cliente != 'Todos' and cliente != 'Seleccione un cliente' or reportepk:
+                print("entra")
                 asistente = Asistentes.objects.filter(Nombre=cliente).first()
                 if asistente:
-                    reporte = Reporte.objects.get(Medico=medico,EstadoCierre=False,Asistente=asistente,CodReporte=reportepk)         
+                    try:
+                        reporte = Reporte.objects.get(Medico=medico, EstadoCierre=False, Asistente__correo=asistente.correo, CodReporte=reportepk)
+                    except Reporte.DoesNotExist:
+                        reporte = None
+                        print("No se encontró el reporte con el código proporcionado.")
+                    except Exception as e:
+                        reporte = None
+                        print(f"Ocurrió un error al intentar obtener el reporte: {e}")
                     servicios_list = servicios.objects.filter(EstadoFactura=False, EstadoPago="Pagado", codMedico=medico.pk, asistentes__Nombre=cliente, pk__in=seleccionados1)
                     if reporte:  
                         try:         
                             # Agregar cada servicio no en el reporte y actualizar su estado de factura
                             servicios_del_reporte = reporte.Servicios.all()
                             servicios_no_seleccionados = servicios_del_reporte.exclude(pk__in=seleccionados1)
-                            print("************SERVICIOS SELECCIONADOS DE servicios_list")
+                            print("LISTA SIN REPORTE")
                             print(servicios_list)
-                            
-                            print("************SERVICIOS servicios_no_seleccionados DE servicios_no_seleccionados")
+                            print("NO SELECCIONADOS")
                             print(servicios_no_seleccionados)
                             if servicios_list:   
                                 for servicio in servicios_list:
@@ -1869,14 +1903,10 @@ def servicios_deudas_crear_reporte(request):
                                 )
                                 nuevo_reporte.save()    
                                 for servicio in servicios_no_seleccionados:
-                                    nuevo_reporte.Servicios.add(servicio)
-                                print("************nuevo_reporte*************************")
-                                print(nuevo_reporte)
-                                    
+                                    nuevo_reporte.Servicios.add(servicio)    
                             reporte.estado = True
                             reporte.EstadoCierre = True
                             reporte.save()
-                            
                             reporteServiciosPorDeuda = ReporteServiciosPorDeuda.objects.create(
                                 FechaReporte=datetime.now(),
                                 Medico=medico,
@@ -1884,13 +1914,11 @@ def servicios_deudas_crear_reporte(request):
                                 Reporte = reporte,
                                 MontoDiferencia = montoDiferencia_decimal
                             )
-                            
                             reporteServiciosPorDeuda.save()
                             servicios_del_reporteviejo = reporte.Servicios.all()
                             for servicio in servicios_del_reporteviejo:
                                 servicio.EstadoCierre = True  # Actualizar estado de factura del servicio
                                 servicio.save()
-                            seleccionados2 = [int(id) for id in seleccionados2]
                             list_cobros = Cobros.objects.filter(Medico=medico.codMedico, NombreDelCliente=cliente, Estado=False, pk__in=seleccionados2).order_by('-FechaCreacion')
                             for cobro in list_cobros:
                                 cobro.Estado = True
@@ -1930,6 +1958,9 @@ def servicios_deudas_crear_reporte(request):
                             return redirect("servicios_deudas_medicos")
                         except Reporte.DoesNotExist:
                             print("NO se creo")  
+            else:
+                print("brinca")
+                    
         else:
             band = True
                           

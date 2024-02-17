@@ -49,12 +49,11 @@
                         <form method="post" action="{% url 'servicios_deudas_crear_reporte' %}" novalidate
                             id="miFormulario">
                             {% csrf_token %}
-                            <input type="hidden" name="nombre"
-                                value="{{reporte_info.servicios.asistente.Nombre}}"><input type="hidden"
-                                name="reporteid" value="{{reporte_info.servicios.reporte.CodReporte}}"><input
-                                type="hidden" name="montodiferencia" value="{{reporte_info.diferencia}}"><button
-                                type="submit" class="btn btn-lg btn-primary">Crear reporte</button><button type="button"
-                                class="btn btn-secondary btn-lg" id="descargar">Descargar</button>
+                            <input type="hidden" name="nombre" value="{{reporte_info.servicios.asistente.Nombre}}">
+                            <input type="hidden" name="reporteid" value="{{reporte_info.servicios.reporte.CodReporte}}">
+                            <input type="hidden" name="montodiferencia" value="{{reporte_info.diferencia}}">
+                            <button type="submit" class="btn btn-lg btn-primary">Crear reporte</button>
+                            <button type="button" class="btn btn-secondary btn-lg" id="descargar">Descargar</button>
                         </form>
                         {% endif %}
                     </div>
@@ -65,7 +64,7 @@
 
                     <div class="alert alert-danger" role="alert">
                         Para que la información pueda procesarse, es necesario seleccionar los servicios pendientes de
-                        pago y los servicios pendientes de cobr
+                        pago y los servicios pendientes de cobro
                     </div>
                     {% endif %}
 
