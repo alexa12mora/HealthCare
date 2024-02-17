@@ -1,0 +1,405 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<!-- Carga de jQuery -->
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<!-- [ Main Content ] start -->
+<!--[ Recent Patients ] start-->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <div class="float-left">
+                        <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 24%; "
+                            class="float-left">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" id="facturaForm">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Seleccione nombre de un cliente para mostrar los resultados</h5>
+                </div>
+                <div class="card-body ">
+                    <form method="post" action="{% url 'servicios_deudas_medicos' %}" class="row g-3 needs-validation"
+                        novalidate id="formfilter">
+                        {% csrf_token %}
+                        <div class="input-group mb-3"><select class="form-control rounded" id="selectclientes"
+                                name="selectclientes"></select>
+                            <div class="invalid-feedback">Campo requerido</div>
+                            <div class="input-group-append"><button type="submit" class="btn btn-info ">Generar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-12" id="facturaForm">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <div class="float-left">
+                        {% if reporte_info.servicios.servicios|length > 0 and reporte_info.list_cobros|length > 0 %}
+
+                        <form method="post" action="{% url 'servicios_deudas_crear_reporte' %}" novalidate
+                            id="miFormulario">
+                            {% csrf_token %}
+                            <input type="hidden" name="nombre"
+                                value="{{reporte_info.servicios.asistente.Nombre}}"><input type="hidden"
+                                name="reporteid" value="{{reporte_info.servicios.reporte.CodReporte}}"><input
+                                type="hidden" name="montodiferencia" value="{{reporte_info.diferencia}}"><button
+                                type="submit" class="btn btn-lg btn-primary">Crear reporte</button><button type="button"
+                                class="btn btn-secondary btn-lg" id="descargar">Descargar</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="container" style="margin-top: 2%;padding-bottom: 2%;">
+
+                    {% if band %}
+
+                    <div class="alert alert-danger" role="alert">
+                        Para que la información pueda procesarse, es necesario seleccionar los servicios pendientes de
+                        pago y los servicios pendientes de cobr
+                    </div>
+                    {% endif %}
+
+                    <div class="row" id="tablaContenedor">
+
+
+                        <div class="text-center" id="logo" style="display: none;">
+                            <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 30%;"
+                                class="text-center">
+                        </div>
+                        <br />
+                        <div class="table-responsive">
+                            <table class="table" id="tableid">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center text-uppercase"
+                                            style="color: white; background-color: #3F4D67;"> REPORTE SERVICIOS
+                                            PENDIENTES PARA {{reporte_info.servicios.asistente.Nombre}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="text-center text-uppercase" colspan="5">
+                                                        Servicios Pendientes de Pago </th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col">Seleccion</th>
+                                                    <th scope="col">Servicio</th>
+                                                    <th scope="col">Fecha</th>
+                                                    <th scope="col">Paciente</th>
+                                                    <th scope="col">$ Monto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for servicios,monto in reporte_info.servicios.servicios.items %}
+                                                <tr id="{{servicios.CodProcedimiento}}">
+                                                    <td><input type="checkbox" name="servicio1"
+                                                            value="{{servicios.CodProcedimiento}}"></td>
+                                                    <td>{{ servicios.CodCostoOperacion }}</td>
+                                                    <td>{{ servicios.Fecha }}</td>
+                                                    <td>{{ servicios.NombrePaciente }}</td>
+                                                    <td style="color:blue">$ {{ monto }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                                {% if reporte_info.servicios.montototal is not None %}
+                                                <tr>
+                                                    <th colspan="5">
+                                                        <h6 style="color:blue">Total servicios pendientes de pago: $
+                                                            {{reporte_info.servicios.montototal }}</h6>
+                                                    </th>
+                                                </tr>
+                                                {% else %}
+                                                <tr>
+                                                    <th colspan="5">
+                                                        <h6 style="color:blue">Total servicios pendientes de pago: $ 0
+                                                        </h6>
+                                                    </th>
+                                                </tr>
+                                                {% endif %}
+
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="text-center text-uppercase" colspan="5">
+                                                        Servicios Pendientes de Cobro</th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col">Seleccion</th>
+                                                    <th scope="col">Servicio</th>
+                                                    <th scope="col">Fecha</th>
+                                                    <th scope="col">Paciente</th>
+                                                    <th scope="col">$ Monto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for servicio in reporte_info.list_cobros %}
+                                                <tr id="{{servicio.NumCobro}}">
+                                                    <td><input type="checkbox" name="servicio2" value="{{servicio.pk}}">
+                                                    </td>
+                                                    <td> {{ servicio.TipoCirugia }}</td>
+                                                    <td> {{ servicio.FechaCreacion }}</td>
+                                                    <td> {{ servicio.NombrepacienteAsociado }}</td>
+                                                    <td style="color:blue">$ {{ servicio.MontoCobrar }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                                {% if reporte_info.total_cobros is not None %}
+                                                <tr>
+                                                    <th colspan="5">
+                                                        <h6 style="color:blue">Total servicios pendientes de cobro: $
+                                                            {{reporte_info.total_cobros}} </h6>
+                                                    </th>
+                                                </tr>
+                                                {% else %}
+                                                <tr>
+                                                    <th colspan="5">
+                                                        <h6 style="color:blue">Total servicios pendientes de cobro: $ 0
+                                                        </h6>
+                                                    </th>
+                                                </tr>
+                                                {% endif %}
+
+                                            </tbody>
+                                            <tr>
+                                                <th scope="col" class="text-uppercase text-center" colspan="5">
+                                                    <h6 style="color:blue">Balance Pendiente: $
+                                                        {{reporte_info.diferencia}}</h6>
+                                                </th>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </tbody>
+                                <br />
+                                <tr>
+                                    <th scope="col">
+                                        <h6 class="text-center text-uppercase font-weight-bold">Este término representa
+                                            la
+                                            cantidad que
+                                            queda por cobrar por los servicios del médico, después de restar los pagos
+                                            pendientes. Es
+                                            importante tener en cuenta que un balance positivo indica que hay más cobros
+                                            pendientes que
+                                            pagos, mientras que un balance negativo indica que hay más pagos pendientes
+                                            que
+                                            cobros. Si el
+                                            balance es cero, entonces los cobros y pagos están equilibrados. </h6>
+                                    </th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+
+    .table {
+        /* Tus estilos para .table */
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+    }
+
+    .table-bordered {
+        /* Tus estilos para .table-bordered */
+        border: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody+tbody {
+        border-top: 2px solid #dee2e6;
+    }
+
+    .table-success {
+        background-color: #c3e6cb;
+    }
+
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #miTabla,
+        #miTabla * {
+            visibility: visible;
+        }
+
+        #miTabla {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            width: 112% !important;
+            margin-left: 1.5%;
+            margin-right: auto;
+        }
+
+        #miTabla td,
+        #miTabla th {
+            width: 100% !important;
+        }
+
+        #miTabla thead tr {
+            background-color: #21734F;
+            /* Agrega esta línea */
+        }
+    }
+</style>
+
+<script>
+
+    $(document).ready(function () {
+        $.getJSON("{% url 'get_clientes' %}", function (data) {
+            var select = $("#selectclientes");
+            select.empty();
+            select.append('<option disabled:true>Seleccione un cliente</option>');
+
+            $.each(data, function (index, value) {
+                select.append('<option>' + value + '</option>');
+            });
+
+        });
+        document.getElementById("descargar").addEventListener("click", function () {
+            // Establece estilos para la impresión
+            var estilo = "<style>";
+            estilo += "table { width: 100%; border-collapse: collapse; }";
+            estilo += "table, th, td { border: 1px solid black; padding: 8px; }";
+            estilo += "th, td { text-align: left; }";
+            estilo += "</style>";
+
+            // Selecciona la tabla y su contenedor por su ID
+
+            var logo = document.getElementById("logo");
+            logo.style.display = "block";
+            var tablaHTML = document.getElementById("tablaContenedor").innerHTML;
+
+            // Crea un nuevo documento para la impresión
+            var nuevaVentana = window.open("", "_blank");
+            nuevaVentana.document.write('<html><head><title>Tabla Descargada</title>');
+            // Incluye los estilos y el contenido de la tabla en el nuevo documento
+            nuevaVentana.document.write(estilo);
+            nuevaVentana.document.write('</head><body>');
+            nuevaVentana.document.write(tablaHTML);
+            nuevaVentana.document.write('</body></html>');
+            // Cierra la escritura en el nuevo documento
+            nuevaVentana.document.close();
+            // Imprime el nuevo documento
+            nuevaVentana.print();
+            logo.style.display = "none";
+        });
+
+        document.getElementById('miFormulario').addEventListener('submit', function (event) {
+            event.preventDefault();  // Evita que se envíe el formulario de la forma predeterminada
+
+            var seleccionados1 = [];
+            var casillas1 = document.getElementsByName('servicio1');
+            for (var i = 0; i < casillas1.length; i++) {
+                if (casillas1[i].checked) {
+                    seleccionados1.push(casillas1[i].value);
+                }
+            }
+
+            var seleccionados2 = [];
+            var casillas2 = document.getElementsByName('servicio2');
+            for (var i = 0; i < casillas2.length; i++) {
+                if (casillas2[i].checked) {
+                    seleccionados2.push(casillas2[i].value);
+                }
+            }
+
+            var formulario = document.getElementById('miFormulario');
+            seleccionados1.forEach(function (id) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'seleccionados1';
+                input.value = id;
+                formulario.appendChild(input);
+            });
+
+            seleccionados2.forEach(function (id) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'seleccionados2';
+                input.value = id;
+                formulario.appendChild(input);
+            });
+
+            formulario.submit();
+        });
+
+
+    });
+
+
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock content %}

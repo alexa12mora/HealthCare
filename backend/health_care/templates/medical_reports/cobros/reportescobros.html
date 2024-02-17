@@ -1,0 +1,412 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<!-- Carga de jQuery -->
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<!-- [ Main Content ] start -->
+<!--[ Recent Patients ] start-->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <div class="float-left">
+                        <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 30%; "
+                            class="float-left">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-12" id="facturaForm">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Lista de reportes de servicios pendientes de pago o pagados</h5>
+                </div>
+                <div class="card-body "><h5 class="text-primary">Filtros, Seleccione la opción que desea buscar entre las siguientes opciones :</h5>
+                    <br/>
+                    <form method="post" action="{% url 'repo_servicios_por_cobrar' %}" class="row g-3 needs-validation" novalidate id="formfilter">
+                        {% csrf_token %}
+                        <div class="col-md-3">
+                            <label for="validationCustom02" class="form-label">Clientes</label>
+                            <select class="form-control"  id="selectclientes" name="selectclientes">
+                               
+                              </select>
+                            <div class="invalid-feedback">
+                                Campo requerido
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="validationCustom02" class="form-label">Estado del pago</label>
+                            <select class="form-control"  id="selectEstado" name="selectEstado">
+                                <option disabled selected>Seleccione entre pagado o pendiente de pago</option>
+                                <option value="True">Pagado</option>
+                                <option value="False">Pendiente de pago</option>
+                              </select>
+                            <div class="invalid-feedback">
+                                Campo requerido
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="validationCustom02" class="form-label">Fecha inicio</label>
+                            <input type="date" class="form-control" id="rango_fecha_inicio" name="rango_fecha_inicio" >
+                           
+                        </div>
+                        <div class="col-md-3">
+                            <label for="validationCustom02" class="form-label">Fecha cierre</label>
+                            <input type="date" class="form-control" id="rango_fecha_fin" name="rango_fecha_fin" >  
+                        </div>
+
+                        <div class="col-md-3">
+                            <br/>                       
+                            <button type="submit" class="btn btn-primary mb-2" onclick="limpiarCampos()">Generar</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-body ">
+                    <div class="table-responsive">
+                        <table class="table " id="miTabla">
+                            <thead>
+                                <tr>
+                                    <th scope="col small-text">Fecha</th>
+                                    <th scope="col small-text">Tipo servicio</th>
+                                    <th scope="col small-text">Nombre cliente</th>
+                                    <th scope="col small-text" >Nombre paciente</th>
+                                    <th scope="col small-text" >Monto</th>
+                                    <th scope="col small-text" >Estado</th>
+                                    <th scope="col small-text" >Detalles Pago</th>                           
+                                    <th scope="col small-text">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>                               
+                                {% for cobros in servicios_list %}
+                                <div class="modal fade" id="modal{{ cobros.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title text-center" id="exampleModalLabel">Modificar registro de cobro</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                            <form method="post" class="needs-validation" method="post" action="{% url 'update_cobros' cobros.pk %}" novalidate>
+                                                <div class="modal-body">       
+                                                    {% csrf_token %}
+                                                        
+                                                            <div class="card-header">
+                                                                <h5>Datos generales</h5>
+                                                            </div>
+                                                            
+                                                            <div class="card-body ">
+                                                                <div class="col-md-12">
+                                                                    <label for="validationCustom01" class="form-label">Fecha</label>
+                                                                    {{ cobros.form.FechaCreacion }}
+                                                                    <div class="invalid-feedback">
+                                                                        Campo es requerido
+                                                                    </div>
+                                                                </div>  <div class="col-md-12">
+                                                                    <label for="validationCustom01" class="form-label">Nombre del Cliente</label>
+                                                                    {{ cobros.form.NombreDelCliente }}
+                                                                    <div class="invalid-feedback">
+                                                                        Campo es requerido
+                                                                    </div>
+                                                                </div>  <div class="col-md-12">
+                                                                    <label for="validationCustom01" class="form-label">Nombre paciente asociado</label>
+                                                                    {{ cobros.form.NombrepacienteAsociado }}
+                                                                    <div class="invalid-feedback">
+                                                                        Campo es requerido
+                                                                    </div>
+                                                                </div>  <div class="col-md-12">
+                                                                    <label for="validationCustom01" class="form-label">Monto a cobrar</label>
+                                                                    {{ cobros.form.MontoCobrar }}
+                                                                    <div class="invalid-feedback">
+                                                                        Campo es requerido
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <label for="validationCustom01" class="form-label">Tipo de servicio</label>
+                                                                    {{ cobros.form.TipoCirugia }}
+                                                                    <div class="invalid-feedback">
+                                                                        Campo es requerido
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                       
+
+                                                        
+                                                            <div class="card-header">
+                                                                <h5>Pago</h5>
+                                                            </div>
+                                                            
+                                                            <div class="card-body ">
+                                                                <div class="col-md-12">
+                                                                    <label  class="form-label">Fecha de Pago</label>
+                                                                    {{ cobros.form.FechaPago }}
+                                                                 
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <label  class="form-label">Número de referencia Banco</label>
+                                                                    {{ cobros.form.numReferenciaBanco }}                  
+                                                                </div>
+                                                            </div>
+                                                            
+                                                     
+                                                </div>
+                                                <div class="modal-footer">
+                                                    {% if cobros.Estado%}
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                    {% else %}
+                                                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                    {% endif %}      
+                                                    </div>
+                                            </form>
+                                    </div>
+                                    </div>
+                                </div>
+                                <tr class="unread">
+                                    <td>
+                                        <p class="m-0 small-text">{{ cobros.FechaCreacion|date:"Y/m/d"}}</p>
+                                    </td>
+                                    <td>
+                                        <p class="m-0 small-text">{{ cobros.TipoCirugia }}</p>
+                                    </td>
+                                    <td >
+                                        <p class="m-0 small-text">{{ cobros.NombreDelCliente }}</p>
+                                    </td>
+                                    <td >
+                                        <p class="m-0 small-text">{{ cobros.NombrepacienteAsociado }}</p>
+                                    </td>
+
+                                    <td >
+                                        <p class="text-primary" >  ${{ cobros.MontoCobrar }}</p>
+                                    
+                                    </td>
+                           
+                                    <td>
+                                        {% if cobros.Estado%}
+                                        <p class="m-0 text-c-blue"><i
+                                                class="fas fa-circle text-c-green f-10 m-r-15  small-text"></i>
+                                            Pagado</p>
+                                        {% else %}
+
+                                        <p class="m-0 text-c-red"><i
+                                                class="fas fa-circle text-c-red f-10 m-r-15 small-text"></i>
+                                            Pendiente de pago</p>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if cobros.FechaPago %}
+                                            <h6 style="color:black">Fecha Pago: $ {{ cobros.FechaPago }}</h6>
+                                        {% else %}
+                                            <h6 style="color:black">Fecha Pago: No disponible</h6>
+                                        {% endif %}
+                                        {% if cobros.numReferenciaBanco %}
+                                            <h6 style="color:black">Referencia Banco: {{ cobros.numReferenciaBanco }}</h6>
+                                        {% else %}
+                                            <h6 style="color:black">Referencia Banco: No disponible</h6>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if cobros.Estado%}
+                                        <a href="#" type="button" data-toggle="modal" data-target="#modal{{ cobros.pk }}" class="label text-white f-12 btn-success small-text"
+                                            style="background-color: #21734F">
+                                            Ver datos
+                                        </a>
+                                        {% else %}
+
+                                        <a href="#" type="button" data-toggle="modal" data-target="#modal{{ cobros.pk }}" class="label text-white f-12 btn-success small-text">
+                                            Registrar pago
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td ></td> <!-- Agrega celdas vacías para completar el número de columnas -->
+                                    <td></td> <!-- Esto es opcional si quieres dejar una celda vacía en la quinta columna -->
+                                    <td></td> <!-- Esto es opcional si quieres dejar una celda vacía en la sexta columna -->
+                                    <td></td> <!-- Esto es opcional si quieres dejar una celda vacía en la séptima columna -->
+                                    <td>
+                                        <p class="text-primary" style="color: blue;">
+                                            Total Cobros: $ {{ total_cobros }}
+                                        </p>
+                                    </td>
+                                    <td></td> <!-- Esto es opcional si quieres dejar una celda vacía en la quinta columna -->
+                                    <td></td> <!-- Esto es opcional si quieres dejar una celda vacía en la sexta columna -->
+                                    <td></td> <!-- Esto es opcional si quieres dejar una celda vacía en la séptima columna -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>               
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+
+    @media screen {
+        .print-only {
+            display: none;
+        }
+    }
+
+    @media print {
+        .no-print {
+            display: none;
+        }
+    }
+
+    .small-text {
+        font-size: 13px;
+        /* Ajusta este valor a tu preferencia */
+    }
+
+    .black-text {
+        color: black !important;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        var miTabla = $('#miTabla').DataTable({
+            dom: '<"toolbar">Bfrtip',
+
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json",
+            },
+            responsive: true,
+            autoFill: true,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+            colReorder: true,
+            info: true,
+            "order": [[0, "desc"]],
+            buttons: [
+            {
+                extend: 'pdf',
+                text: 'PDF',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4] // Incluye solo las columnas especificadas
+                },
+                customize: function (doc) {
+                    var tableNode;
+                    for (var i = 0; i < doc.content.length; i++) {
+                        if (doc.content[i].table !== undefined) {
+                            tableNode = doc.content[i];
+                            break;
+                        }
+                    }
+                    if (tableNode) {
+                        // Centrar todas las celdas de la tabla
+                        tableNode.table.widths = Array(tableNode.table.body[0].length + 1).join('*').split('');
+                        tableNode.layout.hLineWidth = function(i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 2 : 1;
+                        };
+                        tableNode.layout.vLineWidth = function(i, node) {
+                            return (i === 0 || i === node.table.widths.length) ? 2 : 1;
+                        };
+                        tableNode.layout.hLineColor = function(i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        };
+                        tableNode.layout.vLineColor = function(i, node) {
+                            return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+                        };
+                        tableNode.layout.paddingLeft = function(i, node) { return 4; };
+                        tableNode.layout.paddingRight = function(i, node) { return 4; };
+                    }
+                }
+            },
+                {
+                    extend: 'print',
+                    text: 'Imprimir',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4] // Incluye solo las columnas especificadas
+                    },
+                    customize: function (win) {
+                        $(win.document.body)
+                            .css('font-size', '15pt')
+                            .css('color', 'black');
+
+
+                        $(win.document.body).find('table')
+                            .addClass('compact')
+                            .css('font-size', 'inherit');
+                    }
+                },
+            ]
+
+        });
+        $.getJSON("{% url 'get_clientes' %}", function(data) {
+            var select = $("#selectclientes");
+            select.empty();
+            select.append('<option disabled:true>Seleccione un cliente</option>');
+            
+            $.each(data, function(index, value) {
+                select.append('<option>' + value + '</option>');
+            });
+            select.append('<option value="Todos">Todos</option>');
+            
+        });
+        $('#miTabla_length select').on('change', function () {
+            var selectedValue = $(this).val();
+            if (selectedValue === '5') {
+                miTabla.page.len(5).draw();
+            }
+        });
+        miTabla.searchBuilder.container().prependTo(table.table().container());
+        $("div.toolbar").css("display", "flex");
+    });
+
+
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+</script>
+{% endblock content %}

@@ -39,11 +39,10 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django_select2",
     "django.contrib.staticfiles",
     'crispy_forms',
-    'crispy_bootstrap4',
     #'admin_volt.apps.AdminVoltConfig',
-    'bootstrap4',
     "drf_spectacular",
     "home",
     'django_dyn_dt',             # <-- NEW: Dynamic_DT

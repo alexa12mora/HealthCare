@@ -309,4 +309,63 @@ class ReporteForm(forms.ModelForm):
         }
 
 
+from django import forms
+from datetime import date
 
+class CobrosForm(forms.ModelForm):
+    class Meta:
+        model = Cobros
+        fields = ['FechaCreacion', 'NombreDelCliente', 'NombrepacienteAsociado', 'MontoCobrar', 'TipoCirugia','FechaPago','numReferenciaBanco']
+        widgets = {
+            'FechaCreacion': forms.DateInput(attrs={'class': 'form-control','type': 'date','required': True}),           
+            'NombreDelCliente': forms.Select(attrs={'class': 'form-control', 'id': 'nombre_cliente_select'}),
+            'NombrepacienteAsociado': forms.TextInput(attrs={'class': 'form-control'}),
+            'MontoCobrar': forms.NumberInput(attrs={'class': 'form-control'}),
+            'TipoCirugia': forms.Select(attrs={'class': 'form-control', 'id': 'nombre_servicio_select'}),
+            'FechaPago': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'numReferenciaBanco': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        
+    def __init__(self,user, *args, **kwargs):
+        super(CobrosForm, self).__init__(*args, **kwargs)
+        fecha_actual = date.today()
+        self.fields['FechaCreacion'].initial = fecha_actual  
+        self.fields['FechaPago'].initial = fecha_actual  
+        if self.instance and self.instance.FechaCreacion:
+            # Formatea la fecha al formato 'YYYY-MM-DD'
+           self.initial['FechaCreacion'] = self.instance.FechaCreacion.strftime('%Y-%m-%d')
+        if self.instance and self.instance.FechaPago:
+            # Formatea la fecha al formato 'YYYY-MM-DD'
+           self.initial['FechaPago'] = self.instance.FechaPago.strftime('%Y-%m-%d')
+        
+        
+        if user.is_authenticated:  
+            if Medico.objects.filter(correo=user.email).exists():
+                medico = Medico.objects.get(correo=user.email)
+            elif Secretaria.objects.filter(correo=user.email).exists():
+                secretaria = Secretaria.objects.get(correo=user.email)
+                medico = Medico.objects.get(codMedico=secretaria.medico_id)
+         
+            # Obtener los nombres únicos de los asistentes del médico actual
+            nombres_asistentes = Asistentes.objects.filter(servicio__codMedico=medico.codMedico).values_list('Nombre', flat=True).distinct('correo')
+
+            # Crear una lista de opciones para el campo NombreDelCliente
+            opciones_cliente = [(nombre, nombre) for nombre in nombres_asistentes]
+
+            # Agregar la opción "Agregar Nuevo" a la lista de opciones
+            opciones_cliente.append(('Agregar Nuevo', 'Agregar Nuevo'))
+
+            # Actualizar las opciones del campo NombreDelCliente en el widget
+            self.fields['NombreDelCliente'].widget.choices = opciones_cliente
+
+            # Obtener los nombres únicos de los servicios del médico actual
+            nombre_operaciones = servicios.objects.filter(codMedico=medico.codMedico).values_list('CodCostoOperacion__NombreOperacion', flat=True).distinct()
+
+            # Crear una lista de opciones para el campo TipoCirugia
+            opciones_servicios = [(nombre, nombre) for nombre in nombre_operaciones]
+
+            # Agregar la opción "Agregar Nuevo" a la lista de opciones
+            opciones_servicios.append(('Agregar Nuevo', 'Agregar Nuevo'))
+
+            # Actualizar las opciones del campo TipoCirugia en el widget
+            self.fields['TipoCirugia'].widget.choices = opciones_servicios

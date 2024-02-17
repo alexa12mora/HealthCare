@@ -131,3 +131,29 @@ class PagosAsistentes(models.Model):
     descFactura = models.CharField(null=True,max_length=100,blank=True)
     def __str__(self):
         return f"CodReporte {self.CodReporte}"
+
+class Cobros(models.Model):
+    NumCobro = models.AutoField(primary_key=True)
+    FechaCreacion = models.DateField(null=True, blank=True)
+    FechaPago = models.DateField(null=True, blank=True)
+    NombreDelCliente = models.CharField(max_length=20)
+    NombrepacienteAsociado = models.CharField(max_length=20)
+    MontoCobrar = models.DecimalField(max_digits=10, decimal_places=1)
+    TipoCirugia = models.CharField(max_length=20)
+    Medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
+    numReferenciaBanco = models.CharField(max_length=30,blank=True)
+    Estado = models.BooleanField(default=False)
+    def __str__(self):
+        return f"Factura {self.NumCobro}"
+    
+    
+    
+class ReporteServiciosPorDeuda(models.Model):
+    CodReporte = models.AutoField(primary_key=True)
+    FechaReporte = models.DateField()
+    Medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
+    Asistente = models.ForeignKey(Asistentes, on_delete=models.CASCADE)
+    Reporte = models.ForeignKey(Reporte, on_delete=models.CASCADE)
+    MontoDiferencia = models.DecimalField(max_digits=10, decimal_places=1)
+    def __str__(self):
+        return f"ReporteServiciosPorDeuda {self.CodReporte}" 

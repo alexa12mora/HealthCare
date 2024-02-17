@@ -1,0 +1,464 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<!-- Carga de jQuery -->
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<!-- [ Main Content ] start -->
+<!--[ Recent Patients ] start-->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <div class="float-left">
+                        <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 30%; "
+                            class="float-left">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" id="facturaForm">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Registro de nuevos servicios de cobro</h5>
+                </div>
+                <div class="card-body ">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                        Crear nuevo registro
+                      </button>
+                    <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                     
+                        <form method="post" class="needs-validation" novalidate name="filter_form">
+                        <div class="modal-body">
+                            
+                                {% csrf_token %}
+
+                                <div class="card-header">
+                                    <h5>Datos generales</h5>
+                                </div>
+                                
+                                <div class="card-body ">
+                                    <div class="col-md-12">
+                                        <label for="validationCustom01" class="form-label">Fecha</label>
+                                        {{ form.FechaCreacion }}
+                                        <div class="invalid-feedback">
+                                            Campo es requerido
+                                        </div>
+                                    </div>  <div class="col-md-12">
+                                        <label for="validationCustom01" class="form-label">Nombre del Cliente</label>
+                                        {{ form.NombreDelCliente }}
+                                        <div class="invalid-feedback">
+                                            Campo es requerido
+                                        </div>
+                                    </div>  <div class="col-md-12">
+                                        <label for="validationCustom01" class="form-label">Nombre paciente asociado</label>
+                                        {{ form.NombrepacienteAsociado }}
+                                        <div class="invalid-feedback">
+                                            Campo es requerido
+                                        </div>
+                                    </div>  <div class="col-md-12">
+                                        <label for="validationCustom01" class="form-label">Monto a cobrar</label>
+                                        {{ form.MontoCobrar }}
+                                        <div class="invalid-feedback">
+                                            Campo es requerido
+                                        </div>
+                                    </div>
+            
+                                    <div class="col-md-12">
+                                        <label for="validationCustom01" class="form-label">Tipo de servicio</label>
+                                        {{ form.TipoCirugia }}
+                                        <div class="invalid-feedback">
+                                            Campo es requerido
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="card-header">
+                                    <h5>Datos pago</h5>
+                                </div>
+                                
+                                <div class="card-body ">
+                                    <div class="col-md-12">
+                                        <label  class="form-label">Fecha de Pago</label>
+                                        {{ form.FechaPago }}
+                                     
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label  class="form-label">Número de referencia Banco</label>
+                                        {{ form.numReferenciaBanco }}                  
+                                    </div>
+
+                                </div>
+
+                                
+                               
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                    </form>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="col-md-12" id="facturaForm">
+            <div class="card Recent-Users">
+                <div class="card-header">
+                    <h5>Lista de registros</h5>
+                </div>
+          
+                <div class="card-body ">
+                    <div class="table-responsive">
+                        <table class="table " id="miTabla">
+                            <thead>
+                                <tr>
+                                    <th scope="col small-text">Fecha</th>
+                                    <th scope="col small-text">Tipo servicio</th>
+                                    <th scope="col small-text">Nombre cliente</th>
+                                    <th scope="col small-text" >Nombre paciente</th>
+                                    <th scope="col small-text" >Monto</th>
+                                    <th scope="col small-text" >Estado</th>
+                                    <th scope="col small-text">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>                               
+                                {% for cobros in servicios_list %}
+                                <div class="modal fade" id="modal{{ cobros.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title text-center" id="exampleModalLabel">Modificar registro de cobro</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <form method="post" class="needs-validation" method="post" action="{% url 'update_cobros' cobros.pk %}" novalidate name="update_form">
+                                            <div class="modal-body">       
+                                                {% csrf_token %}
+                                                    
+                                                        <div class="card-header">
+                                                            <h5>Datos generales</h5>
+                                                        </div>
+                                                        
+                                                        <div class="card-body ">
+                                                            <div class="col-md-12">
+                                                                <label for="validationCustom01" class="form-label">Fecha</label>
+                                                                {{ cobros.form.FechaCreacion }}
+                                                                <div class="invalid-feedback">
+                                                                    Campo es requerido
+                                                                </div>
+                                                            </div>  <div class="col-md-12">
+                                                                <label for="validationCustom01" class="form-label">Nombre del Cliente</label>
+                                                                {{ cobros.form.NombreDelCliente }}
+                                                                <div class="invalid-feedback">
+                                                                    Campo es requerido
+                                                                </div>
+                                                            </div>  <div class="col-md-12">
+                                                                <label for="validationCustom01" class="form-label">Nombre paciente asociado</label>
+                                                                {{ cobros.form.NombrepacienteAsociado }}
+                                                                <div class="invalid-feedback">
+                                                                    Campo es requerido
+                                                                </div>
+                                                            </div>  <div class="col-md-12">
+                                                                <label for="validationCustom01" class="form-label">Monto a cobrar</label>
+                                                                {{ cobros.form.MontoCobrar }}
+                                                                <div class="invalid-feedback">
+                                                                    Campo es requerido
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <label for="validationCustom01" class="form-label">Tipo de servicio</label>
+                                                                {{ cobros.form.TipoCirugia }}
+                                                                <div class="invalid-feedback">
+                                                                    Campo es requerido
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                   
+
+                                                    
+                                                        <div class="card-header">
+                                                            <h5>Pago</h5>
+                                                        </div>
+                                                        
+                                                        <div class="card-body ">
+                                                            <div class="col-md-12">
+                                                                <label  class="form-label">Fecha de Pago</label>
+                                                                {{ cobros.form.FechaPago }}
+                                                             
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <label  class="form-label">Número de referencia Banco</label>
+                                                                {{ cobros.form.numReferenciaBanco }}                  
+                                                            </div>
+                                                        </div>
+                                                        
+                                                 
+                                            </div>
+                                            <div class="modal-footer">
+                                                {% if cobros.Estado%}
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                {% else %}
+                                                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                {% endif %}      
+                                                </div>
+                                        </form>
+                                    </div>
+                                    </div>
+                                </div>
+                                <tr class="unread">
+                                    <td>
+                                        <p class="m-0 small-text">{{ cobros.FechaCreacion|date:"Y/m/d"}}</p>
+                                    </td>
+                                    <td>
+                                        <p class="m-0 small-text">{{ cobros.TipoCirugia }}</p>
+                                    </td>
+                                    <td >
+                                        <p class="m-0 small-text">{{ cobros.NombreDelCliente }}</p>
+                                    </td>
+                                    <td >
+                                        <p class="m-0 small-text">{{ cobros.NombrepacienteAsociado }}</p>
+                                    </td>
+
+                                    <td >
+                                        <p class="m-0 small-text">{{ cobros.MontoCobrar }}</p>
+                                    </td>
+                                    <td>
+                                        {% if cobros.Estado%}
+                                        <p class="m-0 text-c-blue"><i
+                                                class="fas fa-circle text-c-green f-10 m-r-15  small-text"></i>
+                                            Pagado</p>
+                                        {% else %}
+
+                                        <p class="m-0 text-c-red"><i
+                                                class="fas fa-circle text-c-red f-10 m-r-15 small-text"></i>
+                                            Pendiente de pago</p>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if cobros.Estado%}
+                                        <a href="#" type="button" data-toggle="modal" data-target="#modal{{ cobros.pk }}" class="label text-white f-12 btn-success small-text"
+                                            style="background-color: #21734F">
+                                            Ver datos
+                                        </a>
+                                        {% else %}
+
+                                        <a href="#" type="button" data-toggle="modal" data-target="#modal{{ cobros.pk }}" class="label text-white f-12 btn-success small-text">
+                                            Actualizar
+                                        </a>
+                                        
+                                        <!-- Modal -->
+                                        
+                                        <a href="javascript:void(0);" class="label text-white f-12 btn-danger btn-like"
+                                            onclick="deleteServicio('{{ cobros.pk }}')">
+                                            <i class="feather icon-trash-2"></i>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog"
+                        aria-labelledby="confirmModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmModalLabel">Confirmar eliminación</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estás seguro de que quieres eliminar este registro?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                    <button type="button" class="btn btn-primary">Si</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    /* Estilos para simular un botón */
+    .btn-like {
+        display: inline-block;
+        padding: 3px 11px;
+        /* Puedes ajustar el padding según el tamaño deseado */
+        border-radius: 4px;
+        /* Para redondear los bordes */
+        text-decoration: none;
+        color: #fff;
+        /* Color del texto */
+        background-color: #C70039;
+        /* Color de fondo del botón */
+        border: none;
+        /* Quitamos el borde */
+        cursor: pointer;
+    }
+
+    .btn-like:hover {
+        background-color: #C70039;
+        /* Color de fondo al pasar el ratón por encima */
+    }
+
+    .btn-like:focus {
+        outline: none;
+        /* Quitamos el contorno al enfocar */
+    }
+
+    @media screen {
+        .print-only {
+            display: none;
+        }
+    }
+
+    @media print {
+        .no-print {
+            display: none;
+        }
+    }
+
+    .small-text {
+        font-size: 13px;
+        /* Ajusta este valor a tu preferencia */
+    }
+
+    .black-text {
+        color: black !important;
+    }
+</style>
+
+<script>
+    function deleteServicio(id) {
+        // Mostrar el modal de confirmación
+        $('#confirmModal').modal('show');
+
+        // Si el usuario hace clic en "Save changes", solicitar al servidor eliminar el servicio
+        $('#confirmModal .btn-primary').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'eliminar_servicio_cobro' 0 %}".replace('0', id),
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function () {
+                    // Si la eliminación fue exitosa, redirigimos a list_servicios
+                    window.location.href = "{% url 'list_servicios_por_cobrar' %}";
+                },
+                error: function () {
+                    alert('Error al eliminar el servicio.');
+                },
+            });
+        });
+    }
+
+    $(document).ready(function () {
+
+        var miTabla = $('#miTabla').DataTable({
+           
+
+            
+            responsive: true,
+            autoFill: true,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+            colReorder: true,
+            info: false,
+            "order": [[0, "desc"]],
+
+           
+
+        });
+
+         // Obtener los nombres de cliente del DataTable y cargarlos en el select
+    var nombresClientes = [];
+    miTabla.column(2).nodes().each(function(node) {
+        nombresClientes.push($(node).find('p').text().trim());
+    });
+    $(document).ready(function() {
+        $('#nombre_cliente_select').change(function() {
+            if ($(this).val() === 'Agregar Nuevo') {
+                $('#nombre_cliente_select').replaceWith('<input type="text" class="form-control" id="nombre_cliente_input" name="NombreDelCliente">');
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        $('#nombre_servicio_select').change(function() {
+            if ($(this).val() === 'Agregar Nuevo') {
+                $('#nombre_servicio_select').replaceWith('<input type="text" class="form-control" id="nombre_servicio_select" name="NombreDelServicio">');
+            }
+        });
+    });
+
+
+    var selectClientes = $('#selectclientes');
+    selectClientes.empty(); // Limpiar select antes de agregar opciones
+
+    // Agregar opción predeterminada "Seleccione"
+    selectClientes.append($('<option>', {
+        value: '',
+        text: 'Seleccione',
+        disabled: true,
+        selected: true
+    }));
+
+    // Agregar nombres de clientes al select
+    $.each(nombresClientes, function(index, nombre) {
+        selectClientes.append($('<option>', {
+            value: nombre,
+            text: nombre
+        }));
+    });
+
+
+
+        $('#miTabla_length select').on('change', function () {
+            var selectedValue = $(this).val();
+            if (selectedValue === '5') {
+                miTabla.page.len(5).draw();
+            }
+        });
+        miTabla.searchBuilder.container().prependTo(table.table().container());
+        $("div.toolbar").css("display", "flex");
+    });
+
+
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+</script>
+{% endblock content %}

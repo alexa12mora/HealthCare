@@ -133,7 +133,21 @@ urlpatterns = [
   # Facturas Asistentes
   path('actualizar/factura/<int:reporte_id>', views.actualizar_factura, name='actulizar_factura'),
   
+  #Cobros
+  path('servicios/cobros/lista', views.  list_servicios_por_cobrar, name='list_servicios_por_cobrar'),
+  path('servicios/reportes/cobros', views.  repo_servicios_por_cobrar, name='repo_servicios_por_cobrar'),
+  path('eliminar/servicio/cobro/<int:pk>/', views.eliminar_servicio_cobro, name='eliminar_servicio_cobro'),
+  path('cobros/servicio/cobro/<int:pk>/', views.update_cobros, name='update_cobros'),
+  path('get_clientes/', views.get_Clientes, name='get_clientes'),
   
-  path("select2/", include("django_select2.urls")),
+  
+  #Matchs
+  path('servicios/deudas', views.servicios_deudas_medicos, name='servicios_deudas_medicos'),
+  path('servicios/deudas/reportes', views.servicios_deudas_crear_reporte, name='servicios_deudas_crear_reporte'),
+  
+  #others
+  path('select2/', include('django_select2.urls')),
+  path('servicios/error', views.error_apge, name='error_page'),
+
 ]
 

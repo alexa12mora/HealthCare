@@ -101,9 +101,14 @@
                                             <thead>
                                                 {% if asi_inf.reportes %}
                                                 <tr class="table-success">
+                                                    {% if rep.pago_asistente %}
                                                     <th colspan="4">Reporte fecha pago:
                                                         {{rep.pago_asistente.FechaPago|date:"d/m/Y"}}, número
                                                         dereferencia: {{rep.pago_asistente.descFactura}}</th>
+                                                    
+                                                    {% else %}
+                                                    <th colspan="4">Reporte fecha pago: No existe fecha de pago</th>
+                                                    {% endif %}
                                                 </tr>
                                                 {% endif %}
                                                 <tr>
@@ -123,15 +128,18 @@
                                                 </tr>
                                                 {% endfor %}
                                                 <tr>
+                                                    {% if rep.factura_asistente.descFactura is not None %}
                                                     <th colspan="3">Fecha factura por asistente:
                                                         {{rep.factura_asistente.FechaEmision|date:"d/m/Y" }},
                                                         número de referencia: {{rep.factura_asistente.descFactura }}
                                                     </th>
+                                 
+                                                    {% endif %}
+                                                    
                                                     <th>
                                                         <h6 style="color:blue">Subtotal: $ {{ rep.montototal }}</h6>
                                                         <h6 style="color:blue">IVA 4%: $ {{ rep.montoiva }}</h6>
                                                         <h7 style="color:blue">Total: $ {{ rep.montoFinal }}</h7>
-
                                                     </th>
                                                 </tr>
                                             </tbody>

@@ -89,11 +89,11 @@
         <li data-username="form elements advance componant validation masking wizard picker select"
           class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
           <a href="{% url 'list_servicios' %}" class="nav-link "><span class="pcoded-micon"><i style="color:white"
-                class="feather icon-file-plus"></i></span><span class="pcoded-mtext">Servicios</span></a>
+                class="feather icon-file-plus"></i></span><span class="pcoded-mtext">Nuevo servicio</span></a>
         </li>
 
         <li class="nav-item pcoded-menu-caption">
-          <label>REPORTES</label>
+          <label>REPORTES CUENTAS POR PAGAR</label>
         </li>
 
         <li data-username="form elements advance componant validation masking wizard picker select"
@@ -107,23 +107,46 @@
           class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
           <a href="{% url 'reportessinpago_descarga' %}" class="nav-link "><span class="pcoded-micon"><i
                 style="color:white" class="feather icon-file-text"></i></span><span class="pcoded-mtext">Servicios
-              pendientes de
-              pago por aseguradora</span></a>
+              pendiente de
+              pago aseguradora</span></a>
         </li>
         <li data-username="form elements advance componant validation masking wizard picker select"
           class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
           <a href="{% url 'lista_reportes_pagados' %}" class="nav-link "><span class="pcoded-micon"><i
                 style="color:white" class="feather icon-file-text"></i></span><span class="pcoded-mtext"> Reporte
               servicios
-              pagados a asistentes</span></a>
+              pagados </span></a>
         </li>
         <li data-username="form elements advance componant validation masking wizard picker select"
           class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
           <a href="{% url 'reporte_utilidad_pagos' %}" class="nav-link "><span class="pcoded-micon"><i
-                style="color:white" class="feather icon-server"></i></span><span class="pcoded-mtext">Utilidad en
+                style="color:white" class="feather icon-server"></i></span><span class="pcoded-mtext">Utilidad 
               servicios
               completados</span></a>
         </li>
+
+        <li class="nav-item pcoded-menu-caption">
+          <label>REPORTES CUENTAS POR COBRAR</label>
+        </li>
+        <li data-username="form elements advance componant validation masking wizard picker select"
+        class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+        <a href="{% url 'list_servicios_por_cobrar' %}" class="nav-link "><span class="pcoded-micon"><i style="color:white"
+              class="feather icon-file-plus"></i></span><span class="pcoded-mtext">Registro de servicios por cobrar</span></a>
+
+        <li data-username="form elements advance componant validation masking wizard picker select"
+          class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+          <a href="{% url 'repo_servicios_por_cobrar' %}" class="nav-link "><span class="pcoded-micon"><i
+                style="color:white" class="feather icon-file-text"></i></span><span class="pcoded-mtext">Reporte servicios por cobrar</span></a>
+        </li>
+       
+        <li class="nav-item pcoded-menu-caption">
+          <label>Gestión deudas entre médicos</label>
+        </li>
+        <li data-username="form elements advance componant validation masking wizard picker select"
+        class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+        <a href="{% url 'servicios_deudas_medicos' %}" class="nav-link "><span class="pcoded-micon"><i
+              style="color:white" class="feather icon-file-text"></i></span><span class="pcoded-mtext">Reportes</span></a>
+      </li>
         <li class="nav-item pcoded-menu-caption">
           <label>MIS DATOS</label>
         </li>
