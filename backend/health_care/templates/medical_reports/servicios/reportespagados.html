@@ -77,12 +77,6 @@
                             data-asistente="{{rep.reporte.pk}}"></i>
                     </a>
                     <div class="table-responsive" id="miTabla">
-                        <div class="container">
-                            <div class="text-center">
-                                <img src="{% static 'assets/images/surgy1.2.png' %}" class="rounded" alt="..."
-                                    style="max-width: 35%; margin-bottom: 10px;">
-                            </div>
-                        </div>
                         <table class="table table-bordered ">
                             {% for asi_inf in lista_asistentes %}
                             <thead>
@@ -227,32 +221,32 @@
         body * {
             visibility: hidden;
         }
-
+    
         #miTabla,
         #miTabla * {
             visibility: visible;
         }
-
+    
         #miTabla {
-            position: fixed;
-            left: 0;
-            right: 0;
+            position: fixed; /* Cambia 'relative' a 'absolute' */
             top: 0;
-            width: 112% !important;
-            margin-left: 1.5%;
-            margin-right: auto;
+            left: 0;
+            width: 100%; /* Ajusta el ancho al 100% */
+            height: 100%; /* Ajusta la altura al 100% */
+            margin: 0; /* Elimina los márgenes */
+           
         }
-
+    
         #miTabla td,
         #miTabla th {
-            width: 100% !important;
+            width: auto !important; /* Cambia el ancho a 'auto' */
         }
-
+    
         #miTabla thead tr {
             background-color: #21734F;
-            /* Agrega esta línea */
         }
     }
+    
 </style>
 
 
