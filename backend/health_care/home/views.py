@@ -824,18 +824,17 @@ def obtener_asistentes_servicios(medico_pk):
 
 @login_required(login_url='/accounts/login/')
 def lista_reportes(request):
-    # Verificar si el usuario es un médico
-    user = request.user
-    medico = get_medico(user)
-    if not medico:
-        return redirect('error_page')  # Redirige a una página de error si el usuario no es ni médico ni secretaria
-    if medico:
-        reportes = Reporte.objects.filter(Medico=medico,EstadoCierre=False)
-       # lista_de_reportes_prueba = get_reporte_servicios(medico.pk)
+    try:
+        # Verificar si el usuario es un médico
+        user = request.user
+        medico = get_medico(user)
+        if not medico:
+            return redirect('error_page')  # Redirige a una página de error si el usuario no es ni médico ni secretaria
+        
+        reportes = Reporte.objects.filter(Medico=medico, EstadoCierre=False)
         lista_reportes = []
         asistentes_servicios = {}  
         for reporte in reportes:
-            montototal = 0 
             medico = reporte.Medico
             asistente = reporte.Asistente
             servicios = reporte.Servicios.all().order_by('-Fecha')
@@ -849,25 +848,29 @@ def lista_reportes(request):
                         # Verificar si el servicio ya está en la lista de servicios del asistente antes de agregarlo
                         if servicio not in asistentes_servicios[asistente_key]['servicios_montos']:
                             asistentes_servicios[asistente_key]['servicios_montos'][servicio] = asistente.monto
-                            asistentes_servicios[asistente_key]['montos'].append(asistente.monto)                     
-            monto_iva = sum(asistentes_servicios[reporte.Asistente.correo]['montos']) * Decimal('0.04')  
-            monto_iva = monto_iva.quantize(Decimal('1.'), rounding=ROUND_DOWN)                                   
-            reporte_info = {
-                'reporte': reporte,
-                'medico': medico,
-                'asistente': asistentes_servicios[reporte.Asistente.correo]['asistente'],
-                'servicios': asistentes_servicios[reporte.Asistente.correo]['servicios_montos'],
-                'montototal': sum(asistentes_servicios[reporte.Asistente.correo]['montos']),
-                'montoiva': monto_iva,
-                'montoFinal': sum(asistentes_servicios[reporte.Asistente.correo]['montos']) + monto_iva,
-            }    
+                            asistentes_servicios[asistente_key]['montos'].append(asistente.monto)      
+            if reporte.Asistente.correo in asistentes_servicios:               
+                monto_iva = sum(asistentes_servicios[reporte.Asistente.correo]['montos']) * Decimal('0.04')  
+                monto_iva = monto_iva.quantize(Decimal('1.'), rounding=ROUND_DOWN)                               
+                reporte_info = {
+                    'reporte': reporte,
+                    'medico': medico,
+                    'asistente': asistentes_servicios[reporte.Asistente.correo]['asistente'],
+                    'servicios': asistentes_servicios[reporte.Asistente.correo]['servicios_montos'],
+                    'montototal': sum(asistentes_servicios[reporte.Asistente.correo]['montos']),
+                    'montoiva': monto_iva,
+                    'montoFinal': sum(asistentes_servicios[reporte.Asistente.correo]['montos']) + monto_iva,
+                }    
             lista_reportes.append(reporte_info) 
         context = {
             'lista_reportes': lista_reportes,
         }
         return render(request, 'medical_reports/servicios/listadereportes.html', context)
-    else:
-        pass 
+    
+    except Exception as e:
+        print(e)  # Imprimir el error en la consola para debugging
+        return redirect('error_page')
+
                                   
 #lista de reportes con asistentes y servicios del asistente 
 def get_reporte_servicios(medico_pk):
