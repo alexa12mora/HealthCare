@@ -135,7 +135,7 @@ urlpatterns = [
   
   #Cobros
   path('servicios/cobros/lista', views.  list_servicios_por_cobrar, name='list_servicios_por_cobrar'),
-  path('servicios/reportes/cobros', views.  repo_servicios_por_cobrar, name='repo_servicios_por_cobrar'),
+  path('servicios/reportes/cobros', views.repo_servicios_por_cobrar, name='repo_servicios_por_cobrar'),
   path('eliminar/servicio/cobro/<int:pk>/', views.eliminar_servicio_cobro, name='eliminar_servicio_cobro'),
   path('cobros/servicio/cobro/<int:pk>/', views.update_cobros, name='update_cobros'),
   path('get_clientes/', views.get_Clientes, name='get_clientes'),

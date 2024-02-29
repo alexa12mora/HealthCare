@@ -32,7 +32,7 @@
                     <form method="post" class="row g-3 needs-validation" novalidate>
                         {% csrf_token %}
                         <div class="col-md-3">
-                            <label for="validationCustom04" class="form-label">Nombre del asistente</label>
+                            <label for="validationCustom04" class="form-label">Asistente</label>
                             <select class="mb-3 form-control" name="asistente_datos" required>
                                 <option>Seleccione un nombre</option>
                                 {% for asistente in asistentes_select %}
@@ -97,8 +97,9 @@
                                                 <tr class="table-success">
                                                     {% if rep.pago_asistente %}
                                                     <th colspan="4">Reporte fecha pago:
-                                                        {{rep.pago_asistente.FechaPago|date:"d/m/Y"}}, número
-                                                        dereferencia: {{rep.pago_asistente.descFactura}}</th>
+                                                        {{rep.pago_asistente.FechaPago|date:"d/m/Y"}}, Número
+                                                        dereferencia: {{rep.pago_asistente.descFactura|default_if_none:"Sin descripción"}}
+                                                    </th>
                                                     
                                                     {% else %}
                                                     <th colspan="4">Reporte fecha pago: No existe fecha de pago</th>
@@ -133,7 +134,7 @@
                                                     <th>
                                                         <h6 style="color:blue">Subtotal: $ {{ rep.montototal }}</h6>
                                                         <h6 style="color:blue">IVA 4%: $ {{ rep.montoiva }}</h6>
-                                                        <h7 style="color:blue">Total: $ {{ rep.montoFinal }}</h7>
+                                                        <h6 style="color:blue">Total: $ {{ rep.montoFinal }}</h6>
                                                     </th>
                                                 </tr>
                                             </tbody>
@@ -227,15 +228,21 @@
             visibility: visible;
         }
     
-        #miTabla {
-            position: fixed; /* Cambia 'relative' a 'absolute' */
-            top: 0;
-            left: 0;
-            width: 100%; /* Ajusta el ancho al 100% */
-            height: 100%; /* Ajusta la altura al 100% */
-            margin: 0; /* Elimina los márgenes */
-           
+        #miTablaContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
         }
+        
+        #miTabla {
+            position: absolute;
+            bottom: -100px; /* Ajustar la distancia desde la parte inferior según sea necesario */
+            width: 128%; /* Ajustar el ancho de la tabla según sea necesario */
+            height: auto; /* Altura automática */
+            margin: -300px;
+            z-index: 0;
+        }
+        
     
         #miTabla td,
         #miTabla th {
@@ -245,7 +252,9 @@
         #miTabla thead tr {
             background-color: #21734F;
         }
+
     }
+    
     
 </style>
 
@@ -253,14 +262,11 @@
 <script>
 
     $(document).ready(function () {
-        $('.fa-print').click(function (event) {
+        $('.fa-print').first().click(function (event) {
             event.preventDefault();
             window.print();
         });
     });
-
-
-
 
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {

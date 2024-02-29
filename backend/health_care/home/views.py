@@ -831,7 +831,7 @@ def lista_reportes(request):
         return redirect('error_page')  # Redirige a una página de error si el usuario no es ni médico ni secretaria
     if medico:
         reportes = Reporte.objects.filter(Medico=medico,EstadoCierre=False)
-        lista_de_reportes_prueba = get_reporte_servicios(medico.pk)
+       # lista_de_reportes_prueba = get_reporte_servicios(medico.pk)
         lista_reportes = []
         asistentes_servicios = {}  
         for reporte in reportes:
@@ -1425,7 +1425,6 @@ from decimal import Decimal,ROUND_DOWN
 @login_required(login_url='/accounts/login/')    
 def reporteserviciospagados(request):
     lista_asistentes = []
-    asistentes_servicios = {}  
     user = request.user
     medico = get_medico(user)
     if not medico:
@@ -1437,7 +1436,8 @@ def reporteserviciospagados(request):
             asistente_datos = request.POST.get('asistente_datos')
             if start_date and end_date and asistente_datos:           
                 asistente = Asistentes.objects.filter(correo=asistente_datos).first()
-                reportes_asistente = Reporte.objects.filter(Asistente__correo=asistente.correo, EstadoCierre=True, Medico=medico)
+                # Filtrar los reportes que tienen un pago asociado y que la fecha de pago esté entre start_date y end_date
+                reportes_asistente = Reporte.objects.filter(Asistente__correo=asistente.correo, EstadoCierre=True, Medico=medico, pagosasistentes__isnull=False, pagosasistentes__FechaPago__range=(start_date, end_date))
                 if reportes_asistente.exists():       
                     asistente_existente = any(item['asistente'].correo == asistente.correo for item in lista_asistentes)
                     if not asistente_existente: 
@@ -1446,6 +1446,7 @@ def reporteserviciospagados(request):
                             'reportes': [],
                         }
                         for reporte in reportes_asistente:
+                            asistentes_servicios = {}
                             try:
                               pago_asistente = PagosAsistentes.objects.get(CodReporte=reporte,FechaPago__range=(start_date, end_date))
                             except PagosAsistentes.DoesNotExist:
@@ -1456,8 +1457,7 @@ def reporteserviciospagados(request):
                                 factura_asistente = FacturasAsistentes.objects.get(CodReporte=reporte)
                             except FacturasAsistentes.DoesNotExist:
                                 factura_asistente = None     
-                            ser = reporte.Servicios.all().order_by('-Fecha')                 
-                            asistentes_servicios = {}        
+                            ser = reporte.Servicios.all().order_by('-Fecha')                                       
                             for servicio in ser:
                                 try:
                                     asistente_servicio = Asistentes.objects.get(servicio=servicio, correo=reporte.Asistente.correo)
@@ -1493,6 +1493,8 @@ def reporteserviciospagados(request):
         else: 
             lista =  servicios.objects.filter(codMedico=medico.codMedico)                                                               
             asistentes_select = Asistentes.objects.filter(servicio__in=lista).distinct('correo')
+        print("**********************************")
+        print(lista_asistentes)
         context = {
             'lista_asistentes': lista_asistentes,
             'asistentes_select':asistentes_select,
@@ -1742,8 +1744,9 @@ def get_Clientes(request):
 
 
 
-#Match
-
+#Match              
+    
+    
 @login_required(login_url='/accounts/login/')
 def servicios_deudas_medicos(request):
     notification = ""
@@ -1844,7 +1847,24 @@ def servicios_deudas_medicos(request):
     
     return render(request, 'medical_reports/RepDeudas/RepoDeudasMed.html', context)
 
-
+def sumservicios(reporte):
+    montoTotal = 0
+    asistentes_servicios = {}  
+    for servicio in reporte.Servicios.all():
+        try:
+            asistente_servicio = Asistentes.objects.get(servicio=servicio, correo=reporte.Asistente.correo)
+        except Asistentes.DoesNotExist:
+            asistente_servicio = None
+        if asistente_servicio:                            
+            asistente_key = asistente_servicio.correo
+            if asistente_key not in asistentes_servicios:
+                asistentes_servicios[asistente_key] = {'asistente': asistente_servicio, 'servicios_montos': {}, 'montos': []}
+            if servicio not in asistentes_servicios[asistente_key]['servicios_montos']:
+                asistentes_servicios[asistente_key]['servicios_montos'][servicio] = asistente_servicio.monto
+                asistentes_servicios[asistente_key]['montos'].append(asistente_servicio.monto)  
+    montoTotal = sum(asistentes_servicios[reporte.Asistente.correo]['montos'])
+    return montoTotal
+    
 @login_required(login_url='/accounts/login/')
 def servicios_deudas_crear_reporte(request):
     user = request.user
@@ -1915,15 +1935,26 @@ def servicios_deudas_crear_reporte(request):
                                 MontoDiferencia = montoDiferencia_decimal
                             )
                             reporteServiciosPorDeuda.save()
+                            
+                            pagoAsistente= PagosAsistentes.objects.create(
+                                CodReporte = reporte,
+                                CodAsistente = asistente,
+                                MontoPagado = sumservicios(reporte),
+                                FechaPago = datetime.now(),  
+                            )
+                            pagoAsistente.save()
                             servicios_del_reporteviejo = reporte.Servicios.all()
                             for servicio in servicios_del_reporteviejo:
                                 servicio.EstadoCierre = True  # Actualizar estado de factura del servicio
                                 servicio.save()
                             list_cobros = Cobros.objects.filter(Medico=medico.codMedico, NombreDelCliente=cliente, Estado=False, pk__in=seleccionados2).order_by('-FechaCreacion')
                             for cobro in list_cobros:
+                                cobro.FechaPago = datetime.now(),
                                 cobro.Estado = True
                                 cobro.save()
                             reporte.save()
+                            
+                            
                             return redirect("servicios_deudas_medicos")
                         except Reporte.DoesNotExist:
                             print("NO se creo")
@@ -1943,15 +1974,23 @@ def servicios_deudas_crear_reporte(request):
                                 servicio.save()  
                                 
                             reporteServiciosPorDeuda = ReporteServiciosPorDeuda.objects.create(
-                                FechaReporte=datetime.now(),
+                                FechaReporte=datetime.now().date(),
                                 Medico=medico,
                                 Asistente=asistente,
                                 Reporte = nuevo_reporte,
                                 MontoDiferencia = montoDiferencia_decimal
                             )
+                            pagoAsistente= PagosAsistentes.objects.create(
+                                CodReporte = nuevo_reporte,
+                                CodAsistente = asistente,
+                                MontoPagado = sumservicios(nuevo_reporte),
+                                FechaPago = datetime.now(),  
+                            )
+                            pagoAsistente.save()
                             seleccionados2 = [int(id) for id in seleccionados2]
                             list_cobros = Cobros.objects.filter(Medico=medico.codMedico, NombreDelCliente=cliente, Estado=False, pk__in=seleccionados2).order_by('-FechaCreacion')
                             for cobro in list_cobros:
+                                cobro.FechaPago = datetime.now().date()
                                 cobro.Estado = True
                                 cobro.save()
                             reporteServiciosPorDeuda.save()
