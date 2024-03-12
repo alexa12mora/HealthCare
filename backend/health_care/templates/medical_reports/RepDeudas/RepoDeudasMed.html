@@ -70,7 +70,7 @@
 
                     <div class="row" id="tablaContenedor">
 
-
+<h5>{{reporte_info.servicios.asistente.Nombre}}</h5>
                         <div class="text-center" id="logo" style="display: none;">
                             <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 30%;"
                                 class="text-center">
@@ -102,6 +102,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                
                                                 {% for servicios,monto in reporte_info.servicios.servicios.items %}
                                                 <tr id="{{servicios.CodProcedimiento}}">
                                                     <td><input type="checkbox" name="servicio1"
@@ -303,10 +304,12 @@
 
         $.getJSON("{% url 'get_clientes' %}", function (data) {
             var select = $("#selectclientes");
+           
             select.empty();
             select.append('<option disabled:true>Seleccione un cliente</option>');
 
             $.each(data, function (index, value) {
+                console.log(value)
                 select.append('<option>' + value + '</option>');
             });
 
