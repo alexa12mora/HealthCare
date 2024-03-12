@@ -739,15 +739,8 @@ def obtener_asistentes_servicios(medico_pk):
     servicios_medico = servicios.objects.filter(codMedico=medico.codMedico)
     asistentes_servicios = {}
     for servicio in servicios_medico:
-        print("============================================")
-        print(servicio.CodCostoOperacion)
-        print(servicio.EstadoFactura)
-        print("=======================================LISTA DE SERVICIOS=================================")
         if not servicio.EstadoCierre:
-            print(servicio)
-            print("=======================================eNTRA EstadoCierre=================================")
             if not servicio.EstadoFactura:
-                print("=======================================eNTRA EstadoFactura=================================")
                 if servicio.MedioPago == 'Credito' and servicio.EstadoPago == 'Pagado':
                     factura = Facturas.objects.filter(CodProcedimiento=servicio).first()
                     if factura and factura.estado:
@@ -1759,17 +1752,11 @@ def crearCierre(medico):
     list_rep = servicios.objects.filter(codMedico=medico,EstadoCierre=False)  
     if list_rep:
         for servicio in list_rep:
-            print("================servicio============================")
-            print(servicio)
             reportes_servicio = Reporte.objects.filter(Servicios=servicio)
-            print("================reportes_servicio============================")
-            print(reportes_servicio)
             if reportes_servicio:
                 if all(report.EstadoCierre for report in reportes_servicio):
                     servicio.EstadoCierre = True
                     servicio.save()   
-                    print("============================================")
-                    print("Deberia debería entrar aquí el servicio 129")
                         
 @login_required(login_url='/accounts/login/')
 def servicios_deudas_medicos(request):
@@ -1927,9 +1914,17 @@ def servicios_deudas_crear_reporte(request):
         seleccionados2 = request.POST.getlist('seleccionados2')
         seleccionados1 = [int(id) for id in seleccionados1]
         seleccionados2 = [int(id) for id in seleccionados2]
+        print("==========================reportepk============================")
+        print(reportepk)
+        print("==========================seleccionados1============================")
+        print(seleccionados1)
+        print("==========================seleccionados1============================")
+        print(cliente)
         if seleccionados1 and seleccionados2:
             if cliente and cliente != 'Todos' and cliente != 'Seleccione un cliente' or reportepk:
                 asistente = Asistentes.objects.filter(Nombre=cliente).first()
+                print("==========================seleccionados1============================")
+                print(asistente)
                 if asistente:
                     try:
                         reporte = Reporte.objects.get(Medico=medico, EstadoCierre=False, Asistente__correo=asistente.correo, CodReporte=reportepk)
@@ -1940,29 +1935,7 @@ def servicios_deudas_crear_reporte(request):
                         reporte = None
                         print(f"Ocurrió un error al intentar obtener el reporte: {e}")
                     servicios_list = servicios.objects.filter(EstadoFactura=False, EstadoPago="Pagado", codMedico=medico.pk, asistentes__Nombre=cliente, pk__in=seleccionados1)
-                    if reporte: 
-                            servicios_del_reporte = reporte.Servicios.all() # trae los servicios de ese reporte, caso seria servicio 0
-                            servicios_no_seleccionados = servicios_del_reporte.exclude(pk__in=seleccionados1) #buscamos los  servicios que no fueron seleccionados de ese reporte, en ese caso seria servicio 0
-                            if servicios_list:   #servicio 1
-                                for servicio in servicios_list:
-                                    reporte.Servicios.add(servicio)  # Agregar servicio al reporte
-                                    servicio.save()  # Guardar cambios en el servicio
-                            if servicios_no_seleccionados: # si hay, es el servicio 0
-                                for servicio in servicios_no_seleccionados:
-                                    reporte.Servicios.remove(servicio)   #quitamos al servicio 0
-                                nuevo_reporte = Reporte(FechaReporte=date.today(), Medico=medico,Asistente=asistente,estado=False,EstadoCierre=False)# creamos un nuevo reporte para servicio 0 
-                                nuevo_reporte.save()    
-                                for servicio in servicios_no_seleccionados:
-                                    nuevo_reporte.Servicios.add(servicio) 
-                                    nuevo_reporte.save()   
-                                # Crear una nueva factura para el nuevo reporte
-                                factura = FacturasAsistentes(CodReporte=nuevo_reporte, estado=False)
-                                factura.save()
-                            reporteServiciosPorDeuda = ReporteServiciosPorDeuda.objects.create( FechaReporte=datetime.now(),Medico=medico,Asistente=asistente,Reporte = reporte,MontoDiferencia = montoDiferencia_decimal)
-                            reporteServiciosPorDeuda.save()                  
-                            pagoAsistente= PagosAsistentes.objects.create(CodReporte = reporte,CodAsistente = asistente,MontoPagado = sumservicios(reporte),FechaPago = datetime.now(),  )
-                            pagoAsistente.save()
-                            #aqui hay que agregar al nuevo reporte la factura
+                    if reporte:      
                             asistentes_servicios_list = obtener_asistentes_servicios(medico.pk)
                             for item in asistentes_servicios_list:
                                 asistent = item['asistente']
@@ -1970,17 +1943,17 @@ def servicios_deudas_crear_reporte(request):
                                 correo_asistente = asistent.correo
                                 reporte_existente = Reporte.objects.filter(Asistente__correo=asistent.correo, estado=False, Medico = medico).first()
                                 if reporte_existente: 
+                                    print("================================")
+                                    print(reporte_existente)
                                     for servicio in servicios_asistente:
                                         if servicio not in reporte_existente.Servicios.all():
-                                            aux = Reporte.objects.filter(Servicios=servicio, Asistente__correo=correo_asistente).exists()
-                                            print(aux)
-                                            if not Reporte.objects.filter(Servicios=servicio, Asistente__correo=correo_asistente).exists():
+                                            print("Ya no deberia entrar aqui")
+                                            if not Reporte.objects.filter(Servicios=servicio, Asistente__correo=correo_asistente,EstadoCierre=False).exists():
                                                 servicio.EstadoFactura = True
                                                 servicio.save()
-                                                reporte_existente.Servicios.add(servicio)
-                                            else:
-                                                print("==================no hay entonces pasa=========================")            
+                                                reporte_existente.Servicios.add(servicio)     
                                 else:
+                                    print("Ya no deberia entrar aqui tampoco")
                                     nuevos_servicios = [servicio for servicio in servicios_asistente if not Reporte.objects.filter(Servicios=servicio, Asistente__correo=correo_asistente).exists()]
                                     if nuevos_servicios:  # Solo crear el reporte si hay nuevos servicios
                                         repo = Reporte(FechaReporte=date.today(),Medico=medico,Asistente=asistent,EstadoCierre=False)
@@ -1990,7 +1963,34 @@ def servicios_deudas_crear_reporte(request):
                                             servicio.save()
                                             repo.Servicios.add(servicio)
                                         factura = FacturasAsistentes(CodReporte=repo, estado=False)
-                                        factura.save()                               
+                                        factura.save()
+                            servicios_del_reporte = reporte.Servicios.all()
+                            servicios_list = servicios.objects.filter(EstadoPago="Pagado", codMedico=medico.pk, asistentes__Nombre=cliente, pk__in=seleccionados1)
+                            servicios_no_seleccionados = servicios_del_reporte.exclude(pk__in=seleccionados1)
+
+                            if servicios_no_seleccionados:
+                                print("Servicios  no seleccionados")
+                                print(servicios_no_seleccionados) # si hay, es el servicio 0
+                                for servicio in servicios_no_seleccionados:
+                                    reporte.Servicios.remove(servicio)   #quitamos al servicio 0
+                                nuevo_reporte = Reporte(FechaReporte=date.today(), Medico=medico,Asistente=asistente,estado=False,EstadoCierre=False)
+                                nuevo_reporte.save()
+                                print("Nuevo reporte ")
+                                print(nuevo_reporte) # si hay, es el servicio 0
+                                for servicio in servicios_no_seleccionados:
+                                    nuevo_reporte.Servicios.add(servicio) 
+                                    nuevo_reporte.save()   
+                                # Crear una nueva factura para el nuevo reporte
+                                factura = FacturasAsistentes(CodReporte=nuevo_reporte, estado=False)
+                                factura.save()
+                            reporte.estado = True
+                            reporte.EstadoCierre = True
+                            reporte.save()
+                            reporteServiciosPorDeuda = ReporteServiciosPorDeuda.objects.create( FechaReporte=datetime.now(),Medico=medico,Asistente=asistente,Reporte = reporte,MontoDiferencia = montoDiferencia_decimal)
+                            reporteServiciosPorDeuda.save()                  
+                            pagoAsistente= PagosAsistentes.objects.create(CodReporte = reporte,CodAsistente = asistente,MontoPagado = sumservicios(reporte),FechaPago = datetime.now(),  )
+                            pagoAsistente.save()
+                            #esto todo bien                                    
                             list_cobros = Cobros.objects.filter(Medico=medico.codMedico, NombreDelCliente=cliente, Estado=False, pk__in=seleccionados2).order_by('-FechaCreacion')
                             for cobro in list_cobros:
                                 cobro.FechaPago = datetime.now()
@@ -1999,12 +1999,10 @@ def servicios_deudas_crear_reporte(request):
                             for servicio in reporte.Servicios.all():
                                     servicio.EstadoFactura = True  # Actualizar estado de factura del servicio
                                     servicio.save()  # Guardar cambios en el servicio
-                            reporte.estado = True
-                            reporte.EstadoCierre = True
-                            reporte.save()
                             crearCierre(medico)
                             return redirect("servicios_deudas_medicos")
                     else:
+                        print("==========================no hay reporte============================")
                         try:
                             reporte_existente = Reporte.objects.filter(Medico=medico, Asistente=asistente, estado=False).first()                    
                             if reporte_existente:
