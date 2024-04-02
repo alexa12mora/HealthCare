@@ -139,7 +139,7 @@ class Cobros(models.Model):
     NombreDelCliente = models.CharField(max_length=100)
     NombrepacienteAsociado = models.CharField(max_length=100)
     MontoCobrar = models.DecimalField(max_digits=10, decimal_places=1)
-    TipoCirugia = models.CharField(max_length=20)
+    TipoCirugia = models.CharField(max_length=100)
     Medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
     numReferenciaBanco = models.CharField(max_length=30,blank=True)
     Estado = models.BooleanField(default=False)
