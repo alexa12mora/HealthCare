@@ -76,7 +76,6 @@
                                             Campo es requerido
                                         </div>
                                     </div>
-
                                 </div>
 
                                 <div class="card-header">
@@ -397,18 +396,22 @@
     $(document).ready(function() {
         $('#nombre_cliente_select').change(function() {
             if ($(this).val() === 'Agregar Nuevo') {
-                $('#nombre_cliente_select').replaceWith('<input type="text" class="form-control" id="nombre_cliente_input" name="NombreDelCliente">');
+                // Reemplaza solo la opción seleccionada con un nuevo input
+                $(this).replaceWith('<input type="text" class="form-control" id="nombre_cliente_input" name="NombreDelCliente">');
             }
         });
     });
-
+    
     $(document).ready(function() {
         $('#nombre_servicio_select').change(function() {
             if ($(this).val() === 'Agregar Nuevo') {
-                $('#nombre_servicio_select').replaceWith('<input type="text" class="form-control" id="nombre_servicio_select" name="NombreDelServicio">');
+                // Reemplaza solo la opción seleccionada con un nuevo input
+                $(this).replaceWith('<input type="text" class="form-control" id="nombre_servicio_input" name="TipoCirugia">');
             }
         });
     });
+    
+    
 
 
     var selectClientes = $('#selectclientes');

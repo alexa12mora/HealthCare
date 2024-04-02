@@ -1618,6 +1618,7 @@ def list_servicios_por_cobrar(request, pk=None):
     if request.method == 'POST':  
         form = CobrosForm(request.user,request.POST)
         if form.is_valid():
+            
             print(form.cleaned_data)
             cobro = form.save(commit=False)
             if cobro.numReferenciaBanco or cobro.FechaPago:

@@ -325,7 +325,7 @@ class CobrosForm(forms.ModelForm):
             'FechaPago': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'numReferenciaBanco': forms.TextInput(attrs={'class': 'form-control'}),
         }
-        
+
     def __init__(self,user, *args, **kwargs):
         super(CobrosForm, self).__init__(*args, **kwargs)
         fecha_actual = date.today()
