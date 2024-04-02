@@ -138,10 +138,10 @@ class Cobros(models.Model):
     FechaPago = models.DateField(null=True, blank=True)
     NombreDelCliente = models.CharField(max_length=100)
     NombrepacienteAsociado = models.CharField(max_length=100)
-    MontoCobrar = models.DecimalField(max_digits=10, decimal_places=1)
+    MontoCobrar = models.DecimalField(max_digits=100, decimal_places=1)
     TipoCirugia = models.CharField(max_length=100)
     Medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
-    numReferenciaBanco = models.CharField(max_length=30,blank=True)
+    numReferenciaBanco = models.CharField(max_length=100,blank=True)
     Estado = models.BooleanField(default=False)
     def __str__(self):
         return f"Factura {self.NumCobro}"
