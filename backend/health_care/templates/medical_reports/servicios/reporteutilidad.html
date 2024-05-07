@@ -7,16 +7,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- CSS -->
-<div class="col-xl-12 col-md-6">
-    <div class="card Recent-Users">
-        <div class="card-header">
-            <div class="float-left">
-                <img src="{% static 'assets/images/surgy1.2.png' %}" alt="Logo" style="max-width: 25%; "
-                    class="float-left">
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <div class="col-xl-12 col-md-6">
     <div class="card Recent-Users">
@@ -88,12 +79,26 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                   
+                        <button type="button" class="btn btn-link" id="btnGraficoDeBarras">Gráfico utilidad Tipo de Servicio</button>
+                        <button type="button" class="btn btn-link" id="btnGraficoAsistentes">Gráfico final pagado Asistente</button>
+                        <button type="button" class="btn btn-link" id="btnGraficoDeLineas">Gráfico de Utilidad por Fecha</button>
+                   
+                    
+                    <canvas id="graficoDeBarras" class="grafico" style="display: none;"></canvas>
+                    <canvas id="graficoAsistentes" class="grafico" style="display: none;"></canvas>
+                    <canvas id="graficoDeLineas" class="grafico" style="display: none;"></canvas>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+<style>
+    .grafico {
+        display: none;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     $(document).ready(function () {
         var miTabla = $('#miTabla').DataTable({
@@ -128,5 +133,199 @@
             }
         });
     });
+
+    
 </script>
+<script>
+   //Primer grafico
+    function obtenerDatosAgrupados() {
+        var datos = {};
+        var filas = document.querySelectorAll('#miTabla tbody tr');
+        filas.forEach(function(fila, index) {
+            // Excluir la última fila que contiene el total general
+            if (index !== (filas.length - 1)) {
+                var tipoServicio = fila.cells[1].textContent.trim();
+                var utilidadTexto = fila.cells[4].textContent.replace('$', '').trim();
+                // Corregir el formato del número (eliminar el cero después de la coma)
+                var utilidad = parseFloat(utilidadTexto.replace(',0', ''));
+                if (!datos[tipoServicio]) {
+                    datos[tipoServicio] = 0;
+                }
+                datos[tipoServicio] += utilidad;
+            }
+        });
+        return datos;
+    }
+    
+    // Función para generar el gráfico de barras
+    function generarGraficoDeBarras(datosAgrupados) {
+        var ctx = document.getElementById('graficoDeBarras').getContext('2d');
+        var tiposServicio = Object.keys(datosAgrupados);
+        var utilidades = Object.values(datosAgrupados);
+    
+        var graficoDeBarras = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: tiposServicio,
+                datasets: [{
+                    label: 'Utilidad por Tipo de Servicio',
+                    data: utilidades,
+                    backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Esto hará que las barras se coloquen horizontalmente
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    // Ejecutar al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        var datosAgrupados = obtenerDatosAgrupados();
+        generarGraficoDeBarras(datosAgrupados);
+    });
+
+    //segundo grafico
+    function obtenerMontosPorAsistente() {
+        var montosAsistentes = {};
+        var filas = document.querySelectorAll('#miTabla tbody tr');
+    
+        filas.forEach(function(fila) {
+            var listaAsistentes = fila.querySelectorAll('ul li');
+            listaAsistentes.forEach(function(item) {
+                var nombreAsistente = item.textContent.trim().split(' ')[0]; // Asumiendo que el nombre es la primera palabra
+                var montoTexto = item.querySelector('p').textContent.replace('$', '').trim();
+                var monto = parseFloat(montoTexto.replace(',0', '')); // Corregir el formato del número
+                if (!montosAsistentes[nombreAsistente]) {
+                    montosAsistentes[nombreAsistente] = 0;
+                }
+                montosAsistentes[nombreAsistente] += monto;
+            });
+        });
+        return montosAsistentes;
+    }
+    
+    // Función para generar el gráfico
+    function generarGraficoMontosAsistentes(montosAsistentes) {
+        var ctx = document.getElementById('graficoAsistentes').getContext('2d');
+        var nombresAsistentes = Object.keys(montosAsistentes);
+        var montos = Object.values(montosAsistentes);
+    
+        var graficoAsistentes = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: nombresAsistentes,
+                datasets: [{
+                    label: 'Monto Total Pagado a Asistentes',
+                    data: montos,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    // Ejecutar al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        var montosAsistentes = obtenerMontosPorAsistente();
+        generarGraficoMontosAsistentes(montosAsistentes);
+    });
+
+    //grafico de lineas
+    function obtenerUtilidadesPorFecha() {
+        var utilidadesFecha = {};
+        var filas = document.querySelectorAll('#miTabla tbody tr');
+    
+        filas.forEach(function(fila) {
+            var fecha = fila.cells[0].textContent.trim();
+            var utilidadTexto = fila.cells[4].textContent.trim();
+            // Asumiendo que la utilidad total está en la última columna y tiene un formato numérico adecuado
+            var utilidad = parseFloat(utilidadTexto.replace('$', '').replace(',0', ''));
+            if (!utilidadesFecha[fecha]) {
+                utilidadesFecha[fecha] = 0;
+            }
+            utilidadesFecha[fecha] += utilidad;
+        });
+        return utilidadesFecha;
+    }
+    
+    // Función para generar el gráfico de líneas
+    function generarGraficoDeLineas(utilidadesFecha) {
+        var ctx = document.getElementById('graficoDeLineas').getContext('2d');
+        var fechas = Object.keys(utilidadesFecha);
+        var utilidades = Object.values(utilidadesFecha);
+    
+        var graficoDeLineas = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: fechas,
+                datasets: [{
+                    label: 'Utilidad Total por Fecha',
+                    data: utilidades,
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    // Ejecutar al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        var utilidadesFecha = obtenerUtilidadesPorFecha();
+        generarGraficoDeLineas(utilidadesFecha);
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Función para ocultar todos los gráficos
+        function ocultarGraficos() {
+            document.querySelectorAll('.grafico').forEach(function(grafico) {
+                grafico.style.display = 'none';
+            });
+        }
+    
+        // Función para mostrar un gráfico específico
+        function mostrarGrafico(id) {
+            ocultarGraficos();
+            document.getElementById(id).style.display = 'block';
+        }
+    
+        // Eventos de clic para los botones
+        document.getElementById('btnGraficoDeBarras').addEventListener('click', function() {
+            mostrarGrafico('graficoDeBarras');
+        });
+    
+        document.getElementById('btnGraficoAsistentes').addEventListener('click', function() {
+            mostrarGrafico('graficoAsistentes');
+        });
+    
+        document.getElementById('btnGraficoDeLineas').addEventListener('click', function() {
+            mostrarGrafico('graficoDeLineas');
+        });
+    });
+    </script>
 {% endblock content %}

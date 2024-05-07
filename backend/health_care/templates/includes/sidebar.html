@@ -5,9 +5,9 @@
     <div class="navbar-brand header-logo">
       <a href="{% url 'index' %}" class="b-brand">
         <div class="">
-          <img src="{% static 'assets/images/logoonly.png' %}" alt="Logo" style="max-width: 40px; margin-right: 20px;">
+          <img src="{% static 'assets/images/logomedi.ico' %}" alt="Logo" style="max-width: 85%; margin-right: 70px;">
         </div>
-        <span class="b-title">SURGY PAY</span>
+       
       </a>
       <a class="mobile-menu" id="mobile-collapse" href="javascript:"><span></span></a>
     </div>
@@ -125,28 +125,9 @@
               completados</span></a>
         </li>
 
-        <li class="nav-item pcoded-menu-caption">
-          <label>REPORTES CUENTAS POR COBRAR</label>
-        </li>
-        <li data-username="form elements advance componant validation masking wizard picker select"
-        class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
-        <a href="{% url 'list_servicios_por_cobrar' %}" class="nav-link "><span class="pcoded-micon"><i style="color:white"
-              class="feather icon-file-plus"></i></span><span class="pcoded-mtext">Registro de servicios por cobrar</span></a>
-
-        <li data-username="form elements advance componant validation masking wizard picker select"
-          class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
-          <a href="{% url 'repo_servicios_por_cobrar' %}" class="nav-link "><span class="pcoded-micon"><i
-                style="color:white" class="feather icon-file-text"></i></span><span class="pcoded-mtext">Reporte servicios por cobrar</span></a>
-        </li>
+    
        
-        <li class="nav-item pcoded-menu-caption">
-          <label>Gestión deudas entre médicos</label>
-        </li>
-        <li data-username="form elements advance componant validation masking wizard picker select"
-        class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
-        <a href="{% url 'servicios_deudas_medicos' %}" class="nav-link "><span class="pcoded-micon"><i
-              style="color:white" class="feather icon-file-text"></i></span><span class="pcoded-mtext">Reportes</span></a>
-      </li>
+   
         <li class="nav-item pcoded-menu-caption">
           <label>MIS DATOS</label>
         </li>

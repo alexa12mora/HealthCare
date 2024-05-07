@@ -22,12 +22,10 @@
             <form method="post" class="card-body text-center">
                 {% csrf_token %}
 
-                <div class="mb-4">
-                    <i class="auth-icon">
-                        <img src="{% static 'assets/images/SURGYicongreen.ico' %}" alt="Logo" style="max-width: 16%; ">
-                    </i>
+                <div class="auth-icon" style="max-width: 200px; margin-top: -30px;">
+                    <img src="{% static 'assets/images/medicontrollogo.jpg' %}" alt="Logo" style="max-width: 100%; margin-left: 45px;">
                 </div>
-                <h3 class="mb-4">Registro</h3>
+
                 {% for field in form %}
                 <div class="input-group mb-3">
                     {{ field }}
