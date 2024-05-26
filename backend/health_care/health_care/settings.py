@@ -24,11 +24,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-3gujp=x^o9_dho(8@rye#bc-2k-$isjrxtrje1pfs_*@90)qll"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085', 'http://127.0.0.1:8000', 'http://127.0.0.1:5085']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://localhost:5085',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:5085',
+    'https://tame-hornets-cheat.loca.lt'  # Agrega tu URL aquí
+]
+
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'tame-hornets-cheat.loca.lt'  # Agrega tu URL aquí
+]
+
+
+
 
 # Application definition
 
